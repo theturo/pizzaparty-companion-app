@@ -1,0 +1,10 @@
+rules_version = '2';
+
+// Punto di partenza: tutto chiuso.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{percorso=**} {
+      allow read, write: if false;
+    }
+  }
+}

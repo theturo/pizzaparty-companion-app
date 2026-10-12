@@ -30,6 +30,14 @@ Il controllo prima del commit blocca due cose:
 
 Lo stesso controllo gira su GitHub a ogni push.
 
+### Emulatori Firebase
+Lo sviluppo gira sugli emulatori, con un progetto `demo-pizzaparty`, senza toccare i dati reali:
+```bash
+npm run emulatori
+```
+L'interfaccia degli emulatori è su `http://localhost:4000`.
+Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.net/) estratta in `~/.jdks/`, che lo script trova da solo.
+
 **Flusso di lavoro:** si lavora su un branch e si apre una pull request. Su `main`, che è protetto e va in produzione, si unisce solo dopo la revisione.
 
 ## Licenza
