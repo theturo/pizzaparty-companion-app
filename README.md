@@ -18,6 +18,20 @@ Sarà pubblicata su `app.pizza-party.net`.
 - Le autorizzazioni stanno nelle **regole di sicurezza** di Firebase, coperte da test automatici.
 - La configurazione web di Firebase è pubblica per natura: non è un segreto.
 
+## Sviluppo
+Dopo ogni nuovo clone si attivano i controlli prima del commit:
+```bash
+brew install gitleaks
+git config core.hooksPath .githooks
+```
+Il controllo prima del commit blocca due cose:
+- un'email dell'autore che non sia quella *noreply* di GitHub;
+- segreti, indirizzi email o link a documenti privati nei file (regole in `.gitleaks.toml`).
+
+Lo stesso controllo gira su GitHub a ogni push.
+
+**Flusso di lavoro:** si lavora su un branch e si apre una pull request. Su `main`, che è protetto e va in produzione, si unisce solo dopo la revisione.
+
 ## Licenza
 - Il **codice** è distribuito con licenza [MIT](LICENSE).
 - **Esclusi:** nome, grafiche, mascotte e testi del PizzaParty.
