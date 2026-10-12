@@ -1,0 +1,35 @@
+# --- Segreti: non devono MAI finire nella repo pubblica ---
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*serviceAccount*.json
+*-adminsdk-*.json
+.runtimeconfig.json
+
+# --- Dati personali ed export (iscritti, email, foto) ---
+export/
+exports/
+*.csv
+*.xlsx
+backup/
+
+# --- Lavoro locale ---
+scratch/
+*.log
+.DS_Store
+
+# --- Dipendenze e build ---
+node_modules/
+.svelte-kit/
+build/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# --- Firebase (emulatori e cache locali) ---
+.firebase/
+*-debug.log
+firebase-export-*/
