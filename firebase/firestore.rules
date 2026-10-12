@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Punto di partenza: tutto chiuso. Ogni blocco aprirà solo ciò che serve,
+// con i test che lo dimostrano.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{documento=**} {
+      allow read, write: if false;
+    }
+  }
+}

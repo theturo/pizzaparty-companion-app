@@ -32,3 +32,12 @@ regex = '''docs\.google\.com/(spreadsheets|document|forms)/d/[A-Za-z0-9_-]{20,}'
 id = "apps-script"
 description = "URL di un Apps Script pubblicato"
 regex = '''script\.google\.com/macros/s/[A-Za-z0-9_-]{20,}'''
+
+# Chiave web di Firebase: pubblica per natura (finisce nel browser), protetta dalle regole
+# di sicurezza e dalla restrizione ai domini dell'app. Ammessa solo questa, solo in questo file.
+[[allowlists]]
+description = "Configurazione web di Firebase (non segreta)"
+targetRules = ["gcp-api-key", "generic-api-key"]
+condition = "AND"
+paths = ['''^web/src/lib/firebase/config\.ts$''']
+regexes = ['''AIzaSyBsRdiyq_5Ha5ByGFS2ix2X-wyhxWjxcfA''']
