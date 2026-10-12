@@ -1,0 +1,31 @@
+# Configurazione di gitleaks: regole predefinite (chiavi, token) + regole del progetto.
+title = "PizzaParty Companion App"
+
+[extend]
+useDefault = true
+
+# Indirizzi email: nel codice pubblico non devono comparire email di persone.
+[[rules]]
+id = "email-personale"
+description = "Indirizzo email (possibile dato personale)"
+regex = '''[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'''
+[[rules.allowlists]]
+description = "Indirizzi tecnici e d'esempio"
+regexes = [
+  '''@users\.noreply\.github\.com''',
+  '''noreply@anthropic\.com''',
+  '''@example\.(com|org|net)''',
+  '''@pizza-party\.test''',
+]
+
+# ID dei Fogli e dei documenti Google: restano nella wiki privata.
+[[rules]]
+id = "documento-google"
+description = "Link a un Foglio o documento Google"
+regex = '''docs\.google\.com/(spreadsheets|document|forms)/d/[A-Za-z0-9_-]{20,}'''
+
+# Apps Script pubblicati (l'URL è una chiave d'accesso al backend).
+[[rules]]
+id = "apps-script"
+description = "URL di un Apps Script pubblicato"
+regex = '''script\.google\.com/macros/s/[A-Za-z0-9_-]{20,}'''

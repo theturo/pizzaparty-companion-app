@@ -1,0 +1,24 @@
+#!/bin/sh
+# Controlli prima di ogni commit nella repo PUBBLICA.
+# Si attiva una volta per clone con: git config core.hooksPath .githooks
+
+# 1. Autore con l'email noreply di GitHub, mai quella personale (D-018).
+email=$(git config user.email)
+case "$email" in
+  *@users.noreply.github.com) ;;
+  *)
+    echo "✋ Email dell'autore non consentita: $email"
+    echo "   Usa l'email noreply di GitHub: git config user.email <id>+<utente>@users.noreply.github.com"
+    exit 1
+    ;;
+esac
+
+# 2. Nessun segreto o dato personale nei file in commit.
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "✋ gitleaks non installato (brew install gitleaks): commit bloccato per sicurezza."
+  exit 1
+fi
+gitleaks git --pre-commit --staged --redact --no-banner || {
+  echo "✋ gitleaks ha trovato possibili segreti o dati personali: commit bloccato."
+  exit 1
+}
