@@ -17,6 +17,9 @@ regexes = [
   '''@example\.(com|org|net)''',
   '''@pizza-party\.test''',
 ]
+[[rules.allowlists]]
+description = "Licenze dei font: il contatto dell'autore è pubblico e il testo non si può modificare"
+paths = ['''(^|/)fonts/OFL-[A-Za-z]+\.txt$''']
 
 # ID dei Fogli e dei documenti Google: restano nella wiki privata.
 [[rules]]
