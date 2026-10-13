@@ -1,0 +1,41 @@
+/*
+ * Tema di PROVA "Odissea" — volutamente diverso dal 2026, per dimostrare che il telaio regge:
+ * altri caratteri, titoli maiuscoli, angoli vivi, niente pellicola, accento freddo.
+ * Non è un tema di edizione: il primo vero tema nascerà nella sessione grafica.
+ */
+@font-face { font-family: 'Orbitron'; font-weight: 700; font-display: swap; src: url('/fonts/orbitron-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Orbitron'; font-weight: 900; font-display: swap; src: url('/fonts/orbitron-latin-900-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Space Mono'; font-weight: 400; font-display: swap; src: url('/fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Space Mono'; font-weight: 700; font-display: swap; src: url('/fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+
+[data-tema='prova-odissea'] {
+  --tema-sfondo: #0b0e14;
+  --tema-sfondo-2: #121722;
+  --tema-superficie: #18202e;
+  --tema-campo: #070a0f;
+  --tema-testo: #e8eef7;
+  --tema-testo-attenuato: #a5b1c4;
+  --tema-accento: #7fd6ff;
+  --tema-accento-scuro: #3b8fb8;
+  --tema-sul-accento: #0b0e14;
+  --tema-secondario: #e0463a;
+  --tema-conferma: #5fbf8f;
+  --tema-evidenza: #ffb347;
+
+  --tema-font-titoli: 'Orbitron', system-ui, sans-serif;
+  --tema-font-etichette: 'Space Mono', ui-monospace, monospace;
+  --tema-titoli-stile: normal;
+  --tema-titoli-peso: 900;
+  --tema-titoli-maiuscolo: uppercase;
+  --tema-titoli-spaziatura: 0.04em;
+  --tema-etichette-maiuscolo: uppercase;
+  --tema-etichette-spaziatura: 0.12em;
+  --tema-raggio-s: 2px;
+  --tema-raggio-m: 4px;
+
+  --tema-pellicola: none;
+  --tema-grana: 0.03;
+
+  --tema-dino-pelle: #5a6478;
+  --tema-dino-dettagli: #7fd6ff;
+}

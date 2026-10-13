@@ -30,6 +30,15 @@ Il controllo prima del commit blocca due cose:
 
 Lo stesso controllo gira su GitHub a ogni push.
 
+### Sistema grafico e temi
+- Le variabili e i temi delle edizioni sono in `web/src/lib/tema/`.
+- La vetrina con tutti gli elementi e il selettore dei temi è su `/stile`.
+- Ogni tema deve avere un fondo scuro e contrasti leggibili. Lo verifica:
+```bash
+npm run controlla-temi
+```
+Il controllo fa parte di `npm run check`, quindi gira anche su ogni PR.
+
 ### Icone dell'app
 Le icone PNG si generano da `web/static/icons/icona.svg`:
 ```bash

@@ -9,31 +9,14 @@
 
 <section>
   <p class="etichetta">In arrivo</p>
-  <h1>{titolo}</h1>
-  <p>{descrizione}</p>
+  <h1 class="titolo">{titolo}</h1>
+  <p class="attenuato">{descrizione}</p>
 </section>
 
 <style>
   section {
     display: grid;
-    gap: 8px;
-    padding-top: 24px;
-  }
-  .etichetta {
-    margin: 0;
-    font-family: 'Kalam', cursive;
-    font-weight: 700;
-    color: var(--gold);
-  }
-  h1 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 800;
-    font-size: 2.2rem;
-  }
-  p {
-    margin: 0;
-    color: var(--parchment-dim);
+    gap: var(--spazio-2);
+    padding-top: var(--spazio-5);
   }
 </style>
