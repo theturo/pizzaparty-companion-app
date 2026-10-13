@@ -13,9 +13,11 @@
     "build": "npm run build -w web",
     "check": "npm run check -w web",
     "preview": "npm run preview -w web",
-    "emulatori": "sh scripts/emulatori.sh"
+    "emulatori": "sh scripts/emulatori.sh",
+    "icone": "node scripts/icone.mjs"
   },
   "devDependencies": {
-    "firebase-tools": "15.31.0"
+    "firebase-tools": "15.31.0",
+    "@resvg/resvg-js": "2.6.2"
   }
 }

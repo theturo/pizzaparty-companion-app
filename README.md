@@ -30,6 +30,12 @@ Il controllo prima del commit blocca due cose:
 
 Lo stesso controllo gira su GitHub a ogni push.
 
+### Icone dell'app
+Le icone PNG si generano da `web/static/icons/icona.svg`:
+```bash
+npm run icone
+```
+
 ### Emulatori Firebase
 Lo sviluppo gira sugli emulatori, con un progetto `demo-pizzaparty`, senza toccare i dati reali:
 ```bash

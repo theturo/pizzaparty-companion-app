@@ -8,7 +8,9 @@
 
 :root {
   --bg: #151217;
+  --bg-2: #1d1922;
   --card: #221d29;
+  --gold-dark: #c99a1e;
   --gold: #f5c934;
   --parchment: #f3e8d6;
   --parchment-dim: #cabfa8;
@@ -23,4 +25,5 @@ body {
   background: var(--bg);
   color: var(--parchment);
   font: 16px/1.5 system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
