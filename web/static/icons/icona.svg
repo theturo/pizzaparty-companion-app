@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icona provvisoria (0.6): fetta di pizza sulla palette del PizzaParty.
+       Il disegno sta nel cerchio centrale (raggio 40%), quindi vale anche come icona "maskable". -->
+  <rect width="512" height="512" fill="#151217"/>
+  <path d="M256 412 L132 162 Q256 100 380 162 Z" fill="#f5c934"/>
+  <path d="M126 158 Q256 88 386 158" fill="none" stroke="#c99a1e" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="218" cy="204" r="22" fill="#d24a30"/>
+  <circle cx="292" cy="216" r="20" fill="#d24a30"/>
+  <circle cx="254" cy="288" r="18" fill="#d24a30"/>
+  <path d="M300 268 q14 -14 26 0 q-14 14 -26 0 Z" fill="#5c8a4a"/>
+</svg>

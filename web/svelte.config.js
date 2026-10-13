@@ -7,6 +7,8 @@ export default {
   kit: {
     // Sito statico per GitHub Pages: ogni pagina diventa un file HTML.
     adapter: adapter({ pages: 'build', assets: 'build', fallback: '404.html', strict: true }),
+    // Il service worker lo registriamo noi (lib/pwa/aggiornamenti), per gestire il banner "Nuova versione".
+    serviceWorker: { register: false },
     // CSP rigida generata da SvelteKit, con gli hash dei suoi script di avvio.
     csp: {
       mode: 'hash',

@@ -1,21 +1,20 @@
 <svelte:head>
-  <title>PizzaParty · Companion App</title>
+  <title>PizzaParty</title>
   <meta name="description" content="L'app che accompagna il PizzaParty. In costruzione." />
 </svelte:head>
 
-<main>
+<section>
   <p class="etichetta">Companion App</p>
   <h1>Il forno si sta scaldando.</h1>
-  <p>L'app del PizzaParty è in costruzione. Ci vediamo in primavera.</p>
-</main>
+  <p>Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in primavera.</p>
+</section>
 
 <style>
-  main {
-    min-height: 100dvh;
+  section {
+    min-height: 60dvh;
     display: grid;
     place-content: center;
     gap: 12px;
-    padding: 24px 16px;
     text-align: center;
   }
   .etichetta {
