@@ -1,3 +1,8 @@
+<script lang="ts">
+  import Dinosauro from '$lib/componenti/Dinosauro.svelte';
+  import Pellicola from '$lib/componenti/Pellicola.svelte';
+</script>
+
 <svelte:head>
   <title>PizzaParty</title>
   <meta name="description" content="L'app che accompagna il PizzaParty. In costruzione." />
@@ -5,8 +10,14 @@
 
 <section>
   <p class="etichetta">Companion App</p>
-  <h1>Il forno si sta scaldando.</h1>
-  <p>Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in primavera.</p>
+  <h1 class="titolo">Il forno si sta scaldando.</h1>
+  <p class="attenuato">
+    Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in primavera.
+  </p>
+  <div class="mascotte">
+    <Dinosauro larghezza={180} cappellino />
+    <Pellicola />
+  </div>
 </section>
 
 <style>
@@ -14,25 +25,18 @@
     min-height: 60dvh;
     display: grid;
     place-content: center;
-    gap: 12px;
+    gap: var(--spazio-3);
     text-align: center;
   }
-  .etichetta {
-    margin: 0;
-    font-family: 'Kalam', cursive;
-    font-weight: 700;
-    color: var(--gold);
+  .titolo {
+    font-size: var(--testo-xxl);
   }
-  h1 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 800;
-    font-size: clamp(2rem, 8vw, 3.5rem);
-    line-height: 1.1;
+  .mascotte {
+    display: grid;
+    justify-items: center;
+    margin-top: var(--spazio-5);
   }
-  p {
-    margin: 0;
-    color: var(--parchment-dim);
+  .mascotte :global(.pellicola) {
+    width: 100%;
   }
 </style>

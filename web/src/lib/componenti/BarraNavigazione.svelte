@@ -31,8 +31,9 @@
     inset: auto 0 0 0;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    background: var(--bg-2);
-    border-top: 1px solid var(--card);
+    min-height: var(--altezza-barra);
+    background: var(--colore-sfondo-2);
+    border-top: 1px solid var(--colore-superficie);
     padding-bottom: env(safe-area-inset-bottom);
     z-index: 10;
   }
@@ -40,18 +41,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 2px;
-    padding: 8px 0 6px;
-    color: var(--parchment-dim);
+    padding: var(--spazio-2) 0 6px;
+    color: var(--colore-testo-attenuato);
     text-decoration: none;
     font-size: 0.7rem;
   }
   a[aria-current='page'] {
-    color: var(--gold);
+    color: var(--colore-accento);
   }
   a:focus-visible {
-    outline: 2px solid var(--gold);
+    outline: 2px solid var(--colore-accento);
     outline-offset: -4px;
-    border-radius: 8px;
+    border-radius: var(--raggio-s);
   }
 </style>

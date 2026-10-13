@@ -11,10 +11,11 @@
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
-    "check": "npm run check -w web",
+    "check": "npm run controlla-temi && npm run check -w web",
     "preview": "npm run preview -w web",
     "emulatori": "sh scripts/emulatori.sh",
-    "icone": "node scripts/icone.mjs"
+    "icone": "node scripts/icone.mjs",
+    "controlla-temi": "node scripts/controlla-temi.mjs"
   },
   "devDependencies": {
     "firebase-tools": "15.31.0",

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '../app.css';
+  import '$lib/tema/tema.css';
   import { onMount } from 'svelte';
   import BarraNavigazione from '$lib/componenti/BarraNavigazione.svelte';
   import BannerAggiornamento from '$lib/componenti/BannerAggiornamento.svelte';
@@ -21,9 +21,10 @@
 
 <style>
   main {
-    max-width: 560px;
+    max-width: var(--larghezza-contenuto);
     margin: 0 auto;
     /* Spazio per la barra in basso e per le aree "sicure" degli schermi con notch. */
-    padding: calc(16px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));
+    padding: calc(var(--spazio-4) + env(safe-area-inset-top)) var(--spazio-4)
+      calc(var(--altezza-barra) + var(--spazio-5) + env(safe-area-inset-bottom));
   }
 </style>

@@ -1,0 +1,131 @@
+/*
+ * Sistema grafico (D-023): tre livelli.
+ *
+ * 1. BASE FISSA (questo file): spaziature, raggi, dimensioni, durate. Non cambia tra le edizioni.
+ * 2. RUOLI (questo file): i nomi che usano le schermate (--colore-accento, --font-titoli…).
+ *    Le schermate non usano MAI un colore o un font diretto.
+ * 3. TEMA DELL'EDIZIONE (temi/*.css): assegna i valori --tema-* sotto [data-tema='…'].
+ *
+ * Regola della base: il fondo è sempre scuro e il testo deve restare leggibile
+ * (contrasto controllato da `npm run controlla-temi`).
+ */
+
+:root {
+  /* ---- 1. Base fissa ---- */
+  --spazio-1: 4px;
+  --spazio-2: 8px;
+  --spazio-3: 12px;
+  --spazio-4: 16px;
+  --spazio-5: 24px;
+  --spazio-6: 32px;
+  --spazio-7: 48px;
+
+  --testo-s: 0.8rem;
+  --testo-m: 1rem;
+  --testo-l: 1.25rem;
+  --testo-xl: 2.2rem;
+  --testo-xxl: clamp(2rem, 8vw, 3.5rem);
+
+  --larghezza-contenuto: 560px;
+  --altezza-barra: 64px;
+  --durata-breve: 150ms;
+  --durata-media: 250ms;
+  color-scheme: dark;
+
+  /* ---- 2. Ruoli (con un valore di riserva se il tema non li definisce) ---- */
+  --colore-sfondo: var(--tema-sfondo, #151217);
+  --colore-sfondo-2: var(--tema-sfondo-2, #1d1922);
+  --colore-superficie: var(--tema-superficie, #221d29);
+  --colore-campo: var(--tema-campo, #100d14);
+  --colore-testo: var(--tema-testo, #f3e8d6);
+  --colore-testo-attenuato: var(--tema-testo-attenuato, #cabfa8);
+  --colore-accento: var(--tema-accento, #f5c934);
+  --colore-accento-scuro: var(--tema-accento-scuro, #c99a1e);
+  --colore-sul-accento: var(--tema-sul-accento, #151217);
+  --colore-secondario: var(--tema-secondario, #d24a30);
+  --colore-conferma: var(--tema-conferma, #5c8a4a);
+  --colore-evidenza: var(--tema-evidenza, #ff8a4d);
+
+  --font-titoli: var(--tema-font-titoli, Georgia, serif);
+  --font-etichette: var(--tema-font-etichette, cursive);
+  --font-testo: var(--tema-font-testo, system-ui, -apple-system, sans-serif);
+  --titoli-stile: var(--tema-titoli-stile, normal);
+  --titoli-peso: var(--tema-titoli-peso, 800);
+  --titoli-maiuscolo: var(--tema-titoli-maiuscolo, none);
+  --titoli-spaziatura: var(--tema-titoli-spaziatura, normal);
+  --etichette-peso: var(--tema-etichette-peso, 700);
+  --etichette-maiuscolo: var(--tema-etichette-maiuscolo, none);
+  --etichette-spaziatura: var(--tema-etichette-spaziatura, normal);
+
+  --raggio-s: var(--tema-raggio-s, 8px);
+  --raggio-m: var(--tema-raggio-m, 12px);
+
+  /* Motivi grafici: il tema li accende, li spegne o li ricolora. */
+  --pellicola: var(--tema-pellicola, flex);
+  --pellicola-colore: var(--tema-pellicola-colore, #0e0c11);
+  --pellicola-fori: var(--tema-pellicola-fori, #2b2531);
+  --grana: var(--tema-grana, 0);
+
+  /* Mascotte */
+  --dino-pelle: var(--tema-dino-pelle, #4a4152);
+  --dino-dettagli: var(--tema-dino-dettagli, #f5c934);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--colore-sfondo);
+  color: var(--colore-testo);
+  font: var(--testo-m) / 1.5 var(--font-testo);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Grana da pellicola sopra tutta la pagina (intensità decisa dal tema, 0 = spenta). */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--grana);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* ---- Stili tipografici comuni ---- */
+.titolo {
+  margin: 0;
+  font-family: var(--font-titoli);
+  font-style: var(--titoli-stile);
+  font-weight: var(--titoli-peso);
+  text-transform: var(--titoli-maiuscolo);
+  letter-spacing: var(--titoli-spaziatura);
+  font-size: var(--testo-xl);
+  line-height: 1.1;
+}
+
+.etichetta {
+  margin: 0;
+  font-family: var(--font-etichette);
+  font-weight: var(--etichette-peso);
+  text-transform: var(--etichette-maiuscolo);
+  letter-spacing: var(--etichette-spaziatura);
+  color: var(--colore-accento);
+}
+
+.attenuato {
+  margin: 0;
+  color: var(--colore-testo-attenuato);
+}
+
+a {
+  color: var(--colore-accento);
+}
+
+:focus-visible {
+  outline: 2px solid var(--colore-accento);
+  outline-offset: 2px;
+}
