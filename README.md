@@ -43,6 +43,7 @@ npm run formatta   # formatta tutto (lo fa anche l'hook prima di ogni commit)
 npm run lint       # formattazione + ESLint
 npm test           # test unitari (Vitest)
 npm run test:e2e   # test nel browser (Playwright)
+npm run test:regole # regole di sicurezza di Firebase sugli emulatori (serve Java)
 ```
 
 - I test nel browser simulano un telefono: Chromium in locale, Chromium e WebKit (Safari) su GitHub.
@@ -78,6 +79,12 @@ npm run emulatori
 
 L'interfaccia degli emulatori è su `http://localhost:4000`.
 Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.net/) estratta in `~/.jdks/`, che lo script trova da solo.
+
+### Pubblicazione delle regole Firebase
+
+- Le regole in `firebase/` si pubblicano da sole quando cambiano su `main`, dopo aver superato i test (workflow "Regole Firebase").
+- GitHub accede a Google Cloud con **Workload Identity Federation**: nessuna chiave salvata.
+- L'accesso si configura una volta sola con `scripts/cloud-shell/configura-pubblicazione-regole.sh`, lanciato in Google Cloud Shell.
 
 **Flusso di lavoro:** si lavora su un branch e si apre una pull request. Su `main`, che è protetto e va in produzione, si unisce solo dopo la revisione.
 

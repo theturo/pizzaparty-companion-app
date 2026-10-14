@@ -1,0 +1,60 @@
+# Pubblica le regole di sicurezza di Firebase quando cambiano su main (D-022).
+# Prima rifà i test sugli emulatori; poi accede a Google Cloud con Workload Identity
+# Federation: nessuna chiave salvata, solo un accesso temporaneo concesso a questa repo
+# e solo nell'ambiente "firebase-produzione" (riservato a main).
+name: Regole Firebase
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firebase/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'tests/regole/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: regole-firebase
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run test:regole
+
+  pubblica:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: firebase-produzione
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Accesso a Google Cloud (senza chiavi)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/1054091705174/locations/global/workloadIdentityPools/github/providers/github-actions
+          service_account: github-regole@pizzaparty-companion.iam.gserviceaccount.com
+      - name: Pubblica regole e indici
+        run: npx firebase deploy --only firestore:rules,firestore:indexes,storage --project pizzaparty-companion --non-interactive

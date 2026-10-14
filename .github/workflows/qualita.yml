@@ -35,3 +35,19 @@ jobs:
           name: rapporto-playwright
           path: web/playwright-report/
           retention-days: 7
+
+  regole:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Test delle regole di sicurezza (emulatori Firebase)
+        run: npm run test:regole
