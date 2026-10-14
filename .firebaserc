@@ -1,5 +1,21 @@
 {
   "projects": {
     "default": "pizzaparty-companion"
+  },
+  "targets": {
+    "pizzaparty-companion": {
+      "storage": {
+        "foto": [
+          "pizzaparty-companion.firebasestorage.app"
+        ]
+      }
+    },
+    "demo-pizzaparty": {
+      "storage": {
+        "foto": [
+          "demo-pizzaparty.appspot.com"
+        ]
+      }
+    }
   }
 }
