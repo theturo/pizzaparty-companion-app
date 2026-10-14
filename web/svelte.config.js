@@ -17,7 +17,11 @@ export default {
         'script-src': ['self'],
         // Unica eccezione: lo stile fisso di #svelte-announcer (annunci per i lettori di schermo),
         // autorizzato con il suo hash e nient'altro. Vedi wiki: architettura/Stack.
-        'style-src': ['self', 'unsafe-hashes', 'sha256-S8qMpvofolR8Mpjy4kQvEm7m1q8clzU4dfDH0AmvZjo='],
+        'style-src': [
+          'self',
+          'unsafe-hashes',
+          'sha256-S8qMpvofolR8Mpjy4kQvEm7m1q8clzU4dfDH0AmvZjo=',
+        ],
         'img-src': ['self', 'data:'],
         'font-src': ['self'],
         'connect-src': ['self'],

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -9,7 +10,7 @@
 <section>
   <p class="etichetta">Errore {page.status}</p>
   <h1 class="titolo">Questa pizza non è nel menu.</h1>
-  <p><a href="/">Torna alla Home</a></p>
+  <p><a href={resolve('/')}>Torna alla Home</a></p>
 </section>
 
 <style>

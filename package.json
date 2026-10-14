@@ -15,10 +15,22 @@
     "preview": "npm run preview -w web",
     "emulatori": "sh scripts/emulatori.sh",
     "icone": "node scripts/icone.mjs",
-    "controlla-temi": "node scripts/controlla-temi.mjs"
+    "controlla-temi": "node scripts/controlla-temi.mjs",
+    "formatta": "prettier --write .",
+    "lint": "prettier --check . && eslint .",
+    "test": "npm run test -w web",
+    "test:e2e": "npm run test:e2e -w web"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@resvg/resvg-js": "2.6.2",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-svelte": "^3.23.0",
     "firebase-tools": "15.31.0",
-    "@resvg/resvg-js": "2.6.2"
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-svelte": "^4.1.1",
+    "typescript-eslint": "^8.71.0"
   }
 }

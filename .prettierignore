@@ -1,0 +1,8 @@
+# File generati, dipendenze e asset binari
+node_modules/
+build/
+.svelte-kit/
+playwright-report/
+test-results/
+package-lock.json
+web/static/

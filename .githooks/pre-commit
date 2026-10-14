@@ -13,7 +13,29 @@ case "$email" in
     ;;
 esac
 
-# 2. Nessun segreto o dato personale nei file in commit.
+# 2. Formattazione automatica dei file in commit (Prettier).
+#    Si formattano solo i file interamente in commit: se un file ha anche modifiche
+#    non aggiunte, lo si lascia com'è (lo segnalerà la CI) per non aggiungerle per errore.
+in_commit=$(git diff --cached --name-only --diff-filter=ACMR)
+non_aggiunti=$(git diff --name-only)
+da_formattare=""
+for f in $in_commit; do
+  case "$f" in
+    *.ts|*.js|*.mjs|*.svelte|*.css|*.json|*.md|*.yml|*.yaml|*.html) ;;
+    *) continue ;;
+  esac
+  if echo "$non_aggiunti" | grep -qx "$f"; then
+    echo "ℹ️  $f ha modifiche non aggiunte: non lo formatto (npm run formatta)."
+  else
+    da_formattare="$da_formattare $f"
+  fi
+done
+if [ -n "$da_formattare" ]; then
+  # shellcheck disable=SC2086
+  npx --no-install prettier --write --ignore-unknown --log-level warn $da_formattare && git add $da_formattare
+fi
+
+# 3. Nessun segreto o dato personale nei file in commit.
 if ! command -v gitleaks >/dev/null 2>&1; then
   echo "✋ gitleaks non installato (brew install gitleaks): commit bloccato per sicurezza."
   exit 1
