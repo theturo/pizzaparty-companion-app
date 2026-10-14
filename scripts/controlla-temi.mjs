@@ -51,7 +51,10 @@ for (const file of fileTemi) {
   if (!ingresso.includes(`./temi/${file}`)) errore('non è importato in tema.css');
 
   const colori = Object.fromEntries(
-    [...css.matchAll(/--tema-([\w-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)].map(([, nome, valore]) => [nome, valore]),
+    [...css.matchAll(/--tema-([\w-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)].map(([, nome, valore]) => [
+      nome,
+      valore,
+    ]),
   );
   for (const [primo, sfondo, minimo] of COPPIE) {
     if (!colori[primo] || !colori[sfondo]) {
@@ -59,7 +62,8 @@ for (const file of fileTemi) {
       continue;
     }
     const valore = contrasto(colori[primo], colori[sfondo]);
-    if (valore < minimo) errore(`${primo} su ${sfondo}: contrasto ${valore.toFixed(2)} (minimo ${minimo})`);
+    if (valore < minimo)
+      errore(`${primo} su ${sfondo}: contrasto ${valore.toFixed(2)} (minimo ${minimo})`);
   }
   if (colori.sfondo && luminanza(colori.sfondo) > SFONDO_MASSIMO) {
     errore(`lo sfondo ${colori.sfondo} è troppo chiaro: la base dell'app è scura`);

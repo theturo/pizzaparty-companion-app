@@ -2,6 +2,7 @@
   // Barra in basso con le cinque sezioni dell'app.
   // Icone Lucide (licenza ISC): provvisorie, da sostituire con disegni a tema (vedi wiki).
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
   import { House, Trophy, Camera, Pizza, User } from '@lucide/svelte';
 
   const sezioni = [
@@ -10,7 +11,7 @@
     { href: '/pizzagram', etichetta: 'Pizzagram', icona: Camera },
     { href: '/ordina', etichetta: 'Ordina', icona: Pizza },
     { href: '/profilo', etichetta: 'Profilo', icona: User },
-  ];
+  ] as const;
 
   const attiva = (href: string) =>
     href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
@@ -18,7 +19,7 @@
 
 <nav aria-label="Sezioni">
   {#each sezioni as { href, etichetta, icona: Icona } (href)}
-    <a {href} aria-current={attiva(href) ? 'page' : undefined}>
+    <a href={resolve(href)} aria-current={attiva(href) ? 'page' : undefined}>
       <Icona size={24} strokeWidth={attiva(href) ? 2.4 : 1.8} aria-hidden="true" />
       <span>{etichetta}</span>
     </a>

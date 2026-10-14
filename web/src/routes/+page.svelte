@@ -12,7 +12,8 @@
   <p class="etichetta">Companion App</p>
   <h1 class="titolo">Il forno si sta scaldando.</h1>
   <p class="attenuato">
-    Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in primavera.
+    Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in
+    primavera.
   </p>
   <div class="mascotte">
     <Dinosauro larghezza={180} cappellino />

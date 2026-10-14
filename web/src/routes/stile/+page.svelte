@@ -2,6 +2,7 @@
   // Vetrina del sistema grafico: tutti gli elementi con il tema scelto.
   // Serve per rivedere i temi (sessione grafica, PR dei temi); non è nella barra di navigazione.
   import { onDestroy } from 'svelte';
+  import { resolve } from '$app/paths';
   import { TEMI, TEMA_PREDEFINITO, applicaTema, type IdTema } from '$lib/tema/temi';
   import Bottone from '$lib/componenti/Bottone.svelte';
   import Scheda from '$lib/componenti/Scheda.svelte';
@@ -16,8 +17,17 @@
   });
 
   const colori = [
-    'sfondo', 'sfondo-2', 'superficie', 'campo', 'testo', 'testo-attenuato',
-    'accento', 'accento-scuro', 'secondario', 'conferma', 'evidenza',
+    'sfondo',
+    'sfondo-2',
+    'superficie',
+    'campo',
+    'testo',
+    'testo-attenuato',
+    'accento',
+    'accento-scuro',
+    'secondario',
+    'conferma',
+    'evidenza',
   ];
 </script>
 
@@ -74,7 +84,11 @@
     </div>
     <Scheda>
       <p class="etichetta">Scheda</p>
-      <p>Contenitore per ordini, trofei e informazioni. <a href="/stile">Un collegamento</a>.</p>
+      <p>
+        Contenitore per ordini, trofei e informazioni. <a href={resolve('/stile')}
+          >Un collegamento</a
+        >.
+      </p>
     </Scheda>
   </section>
 
@@ -135,15 +149,37 @@
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.15);
     flex: none;
   }
-  .c-sfondo { background: var(--colore-sfondo); }
-  .c-sfondo-2 { background: var(--colore-sfondo-2); }
-  .c-superficie { background: var(--colore-superficie); }
-  .c-campo { background: var(--colore-campo); }
-  .c-testo { background: var(--colore-testo); }
-  .c-testo-attenuato { background: var(--colore-testo-attenuato); }
-  .c-accento { background: var(--colore-accento); }
-  .c-accento-scuro { background: var(--colore-accento-scuro); }
-  .c-secondario { background: var(--colore-secondario); }
-  .c-conferma { background: var(--colore-conferma); }
-  .c-evidenza { background: var(--colore-evidenza); }
+  .c-sfondo {
+    background: var(--colore-sfondo);
+  }
+  .c-sfondo-2 {
+    background: var(--colore-sfondo-2);
+  }
+  .c-superficie {
+    background: var(--colore-superficie);
+  }
+  .c-campo {
+    background: var(--colore-campo);
+  }
+  .c-testo {
+    background: var(--colore-testo);
+  }
+  .c-testo-attenuato {
+    background: var(--colore-testo-attenuato);
+  }
+  .c-accento {
+    background: var(--colore-accento);
+  }
+  .c-accento-scuro {
+    background: var(--colore-accento-scuro);
+  }
+  .c-secondario {
+    background: var(--colore-secondario);
+  }
+  .c-conferma {
+    background: var(--colore-conferma);
+  }
+  .c-evidenza {
+    background: var(--colore-evidenza);
+  }
 </style>

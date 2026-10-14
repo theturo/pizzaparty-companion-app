@@ -1,0 +1,37 @@
+# Qualità del codice su ogni push e pull request:
+# formattazione e lint, test unitari, test end-to-end su Chromium e WebKit (formato telefono).
+name: Qualità
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  qualita:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Formattazione e lint
+        run: npm run lint
+      - name: Test unitari
+        run: npm test
+      - name: Browser per i test end-to-end
+        run: npx playwright install --with-deps chromium webkit
+      - name: Test end-to-end
+        run: npm run test:e2e
+      - name: Rapporto dei test (solo se falliscono)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapporto-playwright
+          path: web/playwright-report/
+          retention-days: 7
