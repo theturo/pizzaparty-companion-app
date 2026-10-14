@@ -26,8 +26,11 @@ echo "▶ Account tecnico $EMAIL"
 gcloud iam service-accounts describe "$EMAIL" >/dev/null 2>&1 ||
   gcloud iam service-accounts create "$ACCOUNT" --display-name="GitHub Actions: pubblicazione regole Firebase"
 
-echo "▶ Permessi minimi (regole, indici, lettura dei servizi attivi)"
-for RUOLO in roles/firebaserules.admin roles/datastore.indexAdmin roles/serviceusage.serviceUsageConsumer; do
+echo "▶ Permessi minimi (regole, indici, lettura dei servizi attivi e del bucket predefinito)"
+# firebasestorage.viewer: serve a Firebase per sapere qual è il bucket a cui applicare le regole di Storage
+# (legge solo le informazioni sul bucket, non i file).
+for RUOLO in roles/firebaserules.admin roles/datastore.indexAdmin roles/serviceusage.serviceUsageConsumer \
+  roles/firebasestorage.viewer; do
   gcloud projects add-iam-policy-binding "$PROGETTO" --member="serviceAccount:$EMAIL" \
     --role="$RUOLO" --condition=None --quiet >/dev/null
 done
