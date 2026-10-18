@@ -46,3 +46,16 @@ test('una pagina inesistente mostra la pagina di errore', async ({ page }) => {
   await page.getByRole('link', { name: 'Torna alla Home' }).click();
   await expect(page).toHaveURL('/');
 });
+
+test('dal profilo si vedono versione e novità', async ({ page }) => {
+  const { version } = await import('../../package.json', { with: { type: 'json' } }).then(
+    (m) => m.default,
+  );
+  await page.goto('/profilo');
+  await page.getByRole('link', { name: `PizzaParty v${version} · Novità e informazioni` }).click();
+  await expect(page).toHaveURL('/informazioni');
+  await expect(page.getByText(`Versione ${version}`)).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 3, name: new RegExp(`^${version}`) }),
+  ).toBeVisible();
+});

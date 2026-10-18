@@ -20,6 +20,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Versione alzata e CHANGELOG aggiornato
+        if: github.event_name == 'pull_request'
+        run: git fetch --depth=1 origin main && npm run controlla-versione
       - name: Formattazione e lint
         run: npm run lint
       - name: Test unitari
