@@ -4,11 +4,13 @@
   import BarraNavigazione from '$lib/componenti/BarraNavigazione.svelte';
   import BannerAggiornamento from '$lib/componenti/BannerAggiornamento.svelte';
   import { registraServiceWorker } from '$lib/pwa/aggiornamenti.svelte';
+  import { avviaSessione } from '$lib/account/sessione.svelte';
 
   let { children } = $props();
 
   onMount(() => {
     registraServiceWorker();
+    avviaSessione();
   });
 </script>
 

@@ -27,9 +27,13 @@ jobs:
         run: npm run lint
       - name: Test unitari
         run: npm test
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
       - name: Browser per i test end-to-end
         run: npx playwright install --with-deps chromium webkit
-      - name: Test end-to-end
+      - name: Test end-to-end (con gli emulatori Firebase)
         run: npm run test:e2e
       - name: Rapporto dei test (solo se falliscono)
         if: failure()

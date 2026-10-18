@@ -80,6 +80,12 @@ npm run emulatori
 L'interfaccia degli emulatori è su `http://localhost:4000`.
 Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.net/) estratta in `~/.jdks/`, che lo script trova da solo.
 
+### Account (in sviluppo)
+
+- Accesso con **link email per verificare, poi password**.
+- In sviluppo (`npm run dev`) e nei test l'app usa **sempre gli emulatori**: per provare la registrazione avvia prima `npm run emulatori`. I link "mandati via email" si leggono nell'interfaccia degli emulatori, alla voce Authentication.
+- **In produzione le pagine degli account restano nascoste** finché non sono pronti informativa, approvazione e cancellazione dei dati. Lo decide l'interruttore `ACCOUNT_ATTIVI` in `web/vite.config.ts`.
+
 ### Pubblicazione delle regole Firebase
 
 - Le regole in `firebase/` si pubblicano da sole quando cambiano su `main`, dopo aver superato i test (workflow "Regole Firebase").
