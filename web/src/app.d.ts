@@ -7,6 +7,10 @@ declare global {
   const __COMMIT__: string;
   /** Data della build (AAAA-MM-GG). */
   const __DATA_BUILD__: string;
+  /** L'app usa gli emulatori Firebase locali (sviluppo e test), mai il progetto reale. */
+  const __EMULATORI__: boolean;
+  /** Le funzioni con account sono visibili (in produzione solo a blocco 1 completo). */
+  const __ACCOUNT_ATTIVI__: boolean;
 }
 
 export {};

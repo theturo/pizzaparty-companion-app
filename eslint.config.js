@@ -22,7 +22,15 @@ export default ts.config(
   prettier,
   ...svelte.configs.prettier,
   {
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        // Interruttori iniettati da Vite al momento della build (web/vite.config.ts).
+        __EMULATORI__: 'readonly',
+        __ACCOUNT_ATTIVI__: 'readonly',
+      },
+    },
   },
   {
     files: ['**/*.svelte', '**/*.svelte.ts'],

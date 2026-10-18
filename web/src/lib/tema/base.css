@@ -129,3 +129,47 @@ a {
   outline: 2px solid var(--colore-accento);
   outline-offset: 2px;
 }
+
+/* ---- Moduli ---- */
+.modulo {
+  display: grid;
+  gap: var(--spazio-4);
+}
+.campo {
+  display: grid;
+  gap: var(--spazio-1);
+}
+.campo > span {
+  font-size: var(--testo-s);
+  color: var(--colore-testo-attenuato);
+}
+.campo input {
+  background: var(--colore-campo);
+  color: var(--colore-testo);
+  border: 1px solid var(--colore-superficie);
+  border-radius: var(--raggio-s);
+  padding: var(--spazio-3);
+  font: inherit;
+  min-width: 0;
+}
+.campo input:focus-visible {
+  outline: 2px solid var(--colore-accento);
+  outline-offset: 0;
+}
+.spunta {
+  display: flex;
+  gap: var(--spazio-2);
+  align-items: flex-start;
+}
+.spunta input {
+  margin-top: 4px;
+  accent-color: var(--colore-accento);
+}
+.messaggio-errore {
+  margin: 0;
+  color: var(--colore-secondario);
+}
+.messaggio-ok {
+  margin: 0;
+  color: var(--colore-conferma);
+}

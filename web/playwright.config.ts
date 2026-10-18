@@ -21,10 +21,24 @@ export default defineConfig({
     },
     ...(inCI ? [{ name: 'webkit-telefono', use: { ...devices['iPhone 15'] } }] : []),
   ],
-  webServer: {
-    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
-    url: 'http://localhost:4173',
-    reuseExistingServer: !inCI,
-    timeout: 180_000,
-  },
+  webServer: [
+    // Emulatori Firebase (Auth + Firestore) con il progetto finto: i test non toccano mai i dati reali.
+    {
+      command: 'sh scripts/emulatori.sh --only auth,firestore',
+      cwd: '..',
+      port: 9099,
+      reuseExistingServer: !inCI,
+      timeout: 120_000,
+      // Chiusura come un Ctrl+C: Firebase spegne anche gli emulatori Java (altrimenti restano accesi).
+      gracefulShutdown: { signal: 'SIGINT', timeout: 15_000 },
+    },
+    // L'app compilata collegata agli emulatori, con gli account attivi.
+    {
+      command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+      env: { EMULATORI: 'true' },
+      url: 'http://localhost:4173',
+      reuseExistingServer: !inCI,
+      timeout: 180_000,
+    },
+  ],
 });

@@ -1,6 +1,23 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
+// Servizi Firebase usati dal browser (accesso, sessione, database).
+const firebase = [
+  'https://identitytoolkit.googleapis.com',
+  'https://securetoken.googleapis.com',
+  'https://firestore.googleapis.com',
+];
+// Emulatori locali: solo in sviluppo e nelle build di prova (EMULATORI=true).
+const emulatori =
+  process.env.NODE_ENV !== 'production' || process.env.EMULATORI === 'true'
+    ? [
+        'http://localhost:9099',
+        'http://127.0.0.1:9099',
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
+      ]
+    : [];
+
 /** @type {import('@sveltejs/kit').Config} */
 export default {
   preprocess: vitePreprocess(),
@@ -24,7 +41,7 @@ export default {
         ],
         'img-src': ['self', 'data:'],
         'font-src': ['self'],
-        'connect-src': ['self'],
+        'connect-src': ['self', ...firebase, ...emulatori],
         'manifest-src': ['self'],
         'worker-src': ['self'],
         'object-src': ['none'],
