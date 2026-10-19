@@ -22,11 +22,14 @@ export default defineConfig({
     ...(inCI ? [{ name: 'webkit-telefono', use: { ...devices['iPhone 15'] } }] : []),
   ],
   webServer: [
-    // Emulatori Firebase (Auth + Firestore) con il progetto finto: i test non toccano mai i dati reali.
+    // Emulatori Firebase (Auth, Firestore, Functions) con il progetto finto: mai i dati reali.
     {
-      command: 'sh scripts/emulatori.sh --only auth,firestore',
+      command:
+        'npm run build -w functions && sh scripts/emulatori.sh --only auth,firestore,functions',
       cwd: '..',
-      port: 9099,
+      // Pronti solo quando anche le Functions sono caricate (l'ultima dell'elenco risponde):
+      // altrimenti i primi test scrivono prima che i trigger siano in ascolto.
+      url: 'http://127.0.0.1:5001/demo-pizzaparty/europe-west8/rigeneraInvito',
       reuseExistingServer: !inCI,
       timeout: 120_000,
       // Chiusura come un Ctrl+C: Firebase spegne anche gli emulatori Java (altrimenti restano accesi).

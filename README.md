@@ -86,6 +86,13 @@ Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.n
 - In sviluppo (`npm run dev`) e nei test l'app usa **sempre gli emulatori**: per provare la registrazione avvia prima `npm run emulatori`. I link "mandati via email" si leggono nell'interfaccia degli emulatori, alla voce Authentication.
 - **In produzione le pagine degli account restano nascoste** finché non sono pronti informativa, approvazione e cancellazione dei dati. Lo decide l'interruttore `ACCOUNT_ATTIVI` in `web/vite.config.ts`.
 
+### Cloud Functions
+
+- In `functions/` (TypeScript, Node 22, regione `europe-west8`): approvazione e rifiuto delle richieste, link d'invito, schede pubbliche dei profili.
+- **Emulatore:** `npm run emulatori` le compila e le avvia insieme ad Auth e Firestore.
+- **Pubblicazione:** il workflow "Cloud Functions" le pubblica quando cambiano su `main`, senza chiavi. L'accesso si prepara una volta con `scripts/cloud-shell/configura-pubblicazione-functions.sh`.
+- **Primo admin:** dopo essersi registrati nell'app, `scripts/cloud-shell/nomina-admin.sh <email>` in Cloud Shell.
+
 ### Pubblicazione delle regole Firebase
 
 - Le regole in `firebase/` si pubblicano da sole quando cambiano su `main`, dopo aver superato i test (workflow "Regole Firebase").

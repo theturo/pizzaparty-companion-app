@@ -33,3 +33,6 @@ test-results/
 .firebase/
 *-debug.log
 firebase-export-*/
+
+# Cloud Functions compilate
+functions/lib/

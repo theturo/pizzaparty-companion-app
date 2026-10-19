@@ -11,6 +11,7 @@ export default ts.config(
     ignores: [
       '**/node_modules/',
       '**/build/',
+      'functions/lib/',
       '**/.svelte-kit/',
       '**/playwright-report/',
       '**/test-results/',

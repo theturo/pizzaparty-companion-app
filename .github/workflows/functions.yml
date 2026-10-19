@@ -1,0 +1,55 @@
+# Pubblica le Cloud Functions quando cambiano su main (D-034), come per le regole (D-022):
+# prima compila e testa, poi accede a Google Cloud senza chiavi (Workload Identity Federation)
+# nell'ambiente "firebase-produzione", riservato a main.
+name: Cloud Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'firebase.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloud-functions
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Compilazione e test delle Functions
+        run: npm run build -w functions && npm run test -w functions
+
+  pubblica:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: firebase-produzione
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Accesso a Google Cloud (senza chiavi)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/1054091705174/locations/global/workloadIdentityPools/github/providers/github-actions
+          service_account: github-functions@pizzaparty-companion.iam.gserviceaccount.com
+      # --force: rimuove le Functions tolte dal codice e imposta la pulizia delle vecchie build.
+      - name: Pubblica le Functions
+        run: npx firebase deploy --only functions --project pizzaparty-companion --non-interactive --force

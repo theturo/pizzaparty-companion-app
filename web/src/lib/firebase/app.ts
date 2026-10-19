@@ -15,12 +15,14 @@ import {
   connectFirestoreEmulator,
   type Firestore,
 } from 'firebase/firestore';
-import { firebaseConfig, PROGETTO_EMULATORI } from './config';
+import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
+import { firebaseConfig, PROGETTO_EMULATORI, REGIONE_FUNCTIONS } from './config';
 
 export interface Firebase {
   app: FirebaseApp;
   auth: Auth;
   db: Firestore;
+  functions: Functions;
 }
 
 let istanza: Firebase | null = null;
@@ -41,11 +43,14 @@ export function firebase(): Firebase {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
   });
 
+  const functions = getFunctions(app, REGIONE_FUNCTIONS);
+
   if (__EMULATORI__) {
     connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
+    connectFunctionsEmulator(functions, '127.0.0.1', 5001);
   }
 
-  istanza = { app, auth, db };
+  istanza = { app, auth, db, functions };
   return istanza;
 }
