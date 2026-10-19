@@ -22,16 +22,18 @@ echo "▶ Servizi necessari (può richiedere qualche minuto)"
 gcloud services enable cloudfunctions.googleapis.com cloudbuild.googleapis.com \
   artifactregistry.googleapis.com run.googleapis.com eventarc.googleapis.com \
   pubsub.googleapis.com compute.googleapis.com firestore.googleapis.com \
-  identitytoolkit.googleapis.com firebaseextensions.googleapis.com
+  identitytoolkit.googleapis.com firebaseextensions.googleapis.com cloudbilling.googleapis.com
 
 echo "▶ Account tecnico $EMAIL"
 gcloud iam service-accounts describe "$EMAIL" >/dev/null 2>&1 ||
   gcloud iam service-accounts create "$ACCOUNT" --display-name="GitHub Actions: pubblicazione Cloud Functions"
 
 echo "▶ Permessi per pubblicare le Functions (nessun accesso ai dati)"
+# datastore.indexAdmin: legge le informazioni sul database (non i documenti) per i trigger di Firestore.
+# browser: legge nome e impostazioni del progetto, compresa la fatturazione collegata (piano Blaze).
 for RUOLO in roles/cloudfunctions.admin roles/run.admin roles/artifactregistry.admin \
   roles/cloudbuild.builds.editor roles/serviceusage.serviceUsageConsumer \
-  roles/firebaseextensions.viewer roles/iam.securityReviewer; do
+  roles/firebaseextensions.viewer roles/iam.securityReviewer roles/datastore.indexAdmin roles/browser; do
   gcloud projects add-iam-policy-binding "$PROGETTO" --member="serviceAccount:$EMAIL" \
     --role="$RUOLO" --condition=None --quiet >/dev/null
 done

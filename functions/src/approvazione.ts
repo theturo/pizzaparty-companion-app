@@ -6,6 +6,7 @@ import {
   db,
   auth,
   REGIONE,
+  CHIAMABILE,
   soloAdmin,
   uidValido,
   aggiungiPermessi,
@@ -59,7 +60,7 @@ export const nuovaRichiesta = onDocumentCreated(
 );
 
 /** L'admin approva una richiesta: permesso "approvato", profilo pubblico, link d'invito. */
-export const approvaRichiesta = onCall({ region: REGIONE }, async (richiesta) => {
+export const approvaRichiesta = onCall(CHIAMABILE, async (richiesta) => {
   const admin = soloAdmin(richiesta);
   const uid = uidValido(richiesta.data?.uid);
 
@@ -90,7 +91,7 @@ export const approvaRichiesta = onCall({ region: REGIONE }, async (richiesta) =>
 });
 
 /** L'admin rifiuta: account e dati si cancellano subito (D-033). */
-export const rifiutaRichiesta = onCall({ region: REGIONE }, async (richiesta) => {
+export const rifiutaRichiesta = onCall(CHIAMABILE, async (richiesta) => {
   soloAdmin(richiesta);
   const uid = uidValido(richiesta.data?.uid);
 
@@ -112,7 +113,7 @@ export const rifiutaRichiesta = onCall({ region: REGIONE }, async (richiesta) =>
 });
 
 /** Chi è approvato cambia il proprio link d'invito (il vecchio smette di funzionare). */
-export const rigeneraInvito = onCall({ region: REGIONE }, async (richiesta) => {
+export const rigeneraInvito = onCall(CHIAMABILE, async (richiesta) => {
   if (!richiesta.auth || richiesta.auth.token.approvato !== true)
     throw new HttpsError('permission-denied', 'Solo gli account approvati hanno un invito.');
   const uid = richiesta.auth.uid;

@@ -13,6 +13,13 @@ export const auth = getAuth();
 /** Stessa regione di Firestore: i trigger del database devono stare lì. */
 export const REGIONE = 'europe-west8';
 
+/**
+ * Opzioni delle Functions chiamate dall'app. "public" vuol dire che le richieste arrivano
+ * al nostro codice, che poi controlla chi chiama (accesso, admin). Va dichiarato qui:
+ * Firebase lo imposta a ogni pubblicazione, non solo quando crea la Function.
+ */
+export const CHIAMABILE = { region: REGIONE, invoker: 'public' } as const;
+
 /** Permessi speciali sul token (custom claims), letti anche dalle regole. */
 export interface Permessi {
   admin?: boolean;
