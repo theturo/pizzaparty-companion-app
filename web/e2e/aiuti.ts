@@ -17,7 +17,7 @@ export async function registra(
   await page.goto(invito ? `/registrati?invito=${invito}` : '/registrati');
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Mandami il link' }).click();
-  await expect(page.getByRole('status')).toContainText(email);
+  await expect(page.getByRole('status').filter({ hasText: email })).toBeVisible();
 
   const link = await ultimoLink(email, 'EMAIL_SIGNIN');
   await page.goto(`/azione${link.search}`);

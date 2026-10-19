@@ -10,7 +10,7 @@ test('registrazione completa con link d\'invito: link email, password, profilo "
   await page.goto('/registrati?invito=giulia-1234');
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Mandami il link' }).click();
-  await expect(page.getByRole('status')).toContainText(email);
+  await expect(page.getByRole('status').filter({ hasText: email })).toBeVisible();
 
   // 2. Si apre il link "ricevuto via email", passando dalla pagina d'azione come nella realtà.
   const link = await ultimoLink(email, 'EMAIL_SIGNIN');
@@ -93,7 +93,7 @@ test('password dimenticata: link email, nuova password, accesso', async ({ page 
   await page.goto('/password-dimenticata');
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Mandami il link' }).click();
-  await expect(page.getByRole('status')).toContainText(email);
+  await expect(page.getByRole('status').filter({ hasText: email })).toBeVisible();
 
   const link = await ultimoLink(email, 'PASSWORD_RESET');
   await page.goto(`/azione${link.search}`);
