@@ -35,9 +35,12 @@ for RUOLO in roles/cloudfunctions.admin roles/run.admin roles/artifactregistry.a
   gcloud projects add-iam-policy-binding "$PROGETTO" --member="serviceAccount:$EMAIL" \
     --role="$RUOLO" --condition=None --quiet >/dev/null
 done
-# Può "usare" solo l'account che esegue le Functions, non altri.
-gcloud iam service-accounts add-iam-policy-binding "$COMPUTE" --role=roles/iam.serviceAccountUser \
-  --member="serviceAccount:$EMAIL" --quiet >/dev/null
+# Può "usare" solo l'account che esegue le Functions e l'account predefinito del progetto
+# (Firebase controlla quest'ultimo prima di ogni pubblicazione), non altri.
+for ACCOUNT_USATO in "$COMPUTE" "$PROGETTO@appspot.gserviceaccount.com"; do
+  gcloud iam service-accounts add-iam-policy-binding "$ACCOUNT_USATO" --role=roles/iam.serviceAccountUser \
+    --member="serviceAccount:$EMAIL" --quiet >/dev/null
+done
 
 echo "▶ Permessi degli agenti Google (build e collegamento Firestore → Functions)"
 gcloud projects add-iam-policy-binding "$PROGETTO" --member="serviceAccount:$COMPUTE" \

@@ -3,6 +3,11 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.3.1 — 2026-10-19
+
+- Su iPhone (Safari) non compare più per errore l'avviso "nuova versione" alla prima visita.
+- Correzioni interne: test più precisi e preparazione della pubblicazione delle Functions.
+
 ## 0.3.0 — 2026-10-19
 
 - In preparazione (non ancora visibili): approvazione degli account dal pannello admin, link d'invito personale, profili visibili tra approvati.

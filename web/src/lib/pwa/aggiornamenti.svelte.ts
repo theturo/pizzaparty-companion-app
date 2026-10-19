@@ -29,8 +29,13 @@ export async function registraServiceWorker(): Promise<void> {
   if (registrazione.waiting && giaControllata) segnala(registrazione.waiting);
   registrazione.addEventListener('updatefound', () => {
     const nuovo = registrazione.installing;
+    // È una versione NUOVA solo se ce n'era già una attiva prima di questa installazione.
+    // Alla prima visita non c'è: senza questo controllo Safari mostrava il banner per errore.
+    const attivaPrima = registrazione.active;
     nuovo?.addEventListener('statechange', () => {
-      if (nuovo.state === 'installed' && navigator.serviceWorker.controller) segnala(nuovo);
+      if (nuovo.state === 'installed' && attivaPrima && navigator.serviceWorker.controller) {
+        segnala(nuovo);
+      }
     });
   });
 
