@@ -109,3 +109,15 @@ export async function impostaNuovaPassword(codice: string, password: string) {
 export async function confermaEmail(codice: string) {
   await applyActionCode(firebase().auth, codice);
 }
+
+// ---- Approvazione e inviti (Cloud Functions, D-034) ----
+
+async function chiama<T>(nome: string, dati?: unknown): Promise<T> {
+  const { httpsCallable } = await import('firebase/functions');
+  const risposta = await httpsCallable(firebase().functions, nome)(dati);
+  return risposta.data as T;
+}
+
+export const approvaRichiesta = (uid: string) => chiama('approvaRichiesta', { uid });
+export const rifiutaRichiesta = (uid: string) => chiama('rifiutaRichiesta', { uid });
+export const rigeneraInvito = () => chiama<{ codice: string }>('rigeneraInvito');

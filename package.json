@@ -1,10 +1,11 @@
 {
   "name": "pizzaparty-companion-app",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "workspaces": [
-    "web"
+    "web",
+    "functions"
   ],
   "engines": {
     "node": ">=24"
@@ -12,17 +13,18 @@
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
-    "check": "npm run controlla-temi && tsc -p tests && npm run check -w web",
+    "check": "npm run controlla-temi && tsc -p tests && tsc -p functions --noEmit && npm run check -w web",
     "preview": "npm run preview -w web",
-    "emulatori": "sh scripts/emulatori.sh",
+    "emulatori": "npm run build -w functions && sh scripts/emulatori.sh",
     "icone": "node scripts/icone.mjs",
     "controlla-temi": "node scripts/controlla-temi.mjs",
     "formatta": "prettier --write .",
     "lint": "prettier --check . && eslint .",
-    "test": "npm run test -w web",
+    "test": "npm run test -w web && npm run test -w functions",
     "test:e2e": "npm run test:e2e -w web",
     "test:regole": "sh scripts/emulatori.sh test",
-    "controlla-versione": "node scripts/controlla-versione.mjs"
+    "controlla-versione": "node scripts/controlla-versione.mjs",
+    "build:functions": "npm run build -w functions"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

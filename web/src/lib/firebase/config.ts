@@ -13,3 +13,6 @@ export const firebaseConfig = {
 
 // Progetto finto usato dagli emulatori locali (npm run emulatori): nessun accesso ai dati reali.
 export const PROGETTO_EMULATORI = 'demo-pizzaparty';
+
+// Regione delle Cloud Functions: la stessa di Firestore (D-034).
+export const REGIONE_FUNCTIONS = 'europe-west8';

@@ -15,6 +15,13 @@ service cloud.firestore {
     function emailVerificata() {
       return request.auth.token.email_verified == true;
     }
+    // Permessi speciali sul token, assegnati solo dalle Cloud Functions (D-034).
+    function admin() {
+      return connesso() && request.auth.token.admin == true;
+    }
+    function approvato() {
+      return connesso() && request.auth.token.approvato == true;
+    }
     // Stesso elenco di web/src/lib/account/avatar.ts (un test controlla che coincidano).
     function avatarValido(avatar) {
       return avatar in ['margherita', 'diavola', 'fetta', 'peperoncino', 'basilico', 'pomodoro', 'forno', 'chef', 'pala', 'funghi', 'birra', 'fiamma'];
@@ -42,8 +49,8 @@ service cloud.firestore {
     // ---- Profili (D-024, D-025, D-031) ----
     // L'email non si salva qui: resta in Authentication (minimizzazione).
     match /utenti/{uid} {
-      // Per ora ognuno vede solo il proprio profilo (gli altri, da approvati, con la 1.2).
-      allow read: if eLaPersona(uid);
+      // Profilo privato: lo vedono solo la persona e l'admin. Degli altri si vede "profili/{uid}".
+      allow read: if eLaPersona(uid) || admin();
 
       // Si crea una volta sola, dopo aver verificato l'email, sempre "in attesa".
       allow create: if eLaPersona(uid) && emailVerificata()
@@ -56,7 +63,7 @@ service cloud.firestore {
         && accettazioniValide(request.resource.data.accettazioni)
         && request.resource.data.creato == request.time;
 
-      // La persona può cambiare solo nome e avatar; lo stato lo decide l'admin (1.2).
+      // La persona può cambiare solo nome e avatar; stato, invito e approvazione li scrivono le Functions.
       allow update: if eLaPersona(uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'avatar'])
         && nomeValido(request.resource.data.nome)
@@ -64,6 +71,23 @@ service cloud.firestore {
 
       // La cancellazione dell'account passa da una funzione sul server (1.3).
       allow delete: if false;
+    }
+
+    // ---- Schede pubbliche: nome e avatar, visibili tra approvati (D-033) ----
+    match /profili/{uid} {
+      allow read: if approvato() || admin();
+      allow write: if false;
+    }
+
+    // ---- Richieste in attesa, con l'email: solo per l'admin (D-034) ----
+    match /richieste/{uid} {
+      allow read: if admin();
+      allow write: if false;
+    }
+
+    // ---- Codici d'invito: li leggono e scrivono solo le Functions ----
+    match /inviti/{codice} {
+      allow read, write: if false;
     }
 
     // ---- Tutto il resto: chiuso ----

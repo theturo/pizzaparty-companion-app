@@ -24,8 +24,8 @@ export async function ultimoLink(email: string, tipo: CodiceEmail['requestType']
   throw new Error(`Nessuna email ${tipo} per ${email}`);
 }
 
-/** Crea direttamente un account con password (email non verificata, senza profilo). */
-export async function creaAccount(email: string, password: string): Promise<void> {
+/** Crea direttamente un account con password (email non verificata, senza profilo). Restituisce l'uid. */
+export async function creaAccount(email: string, password: string): Promise<string> {
   const risposta = await fetch(
     `${AUTH}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=chiave-finta`,
     {
@@ -35,4 +35,18 @@ export async function creaAccount(email: string, password: string): Promise<void
     },
   );
   if (!risposta.ok) throw new Error(`Account non creato: ${await risposta.text()}`);
+  return ((await risposta.json()) as { localId: string }).localId;
+}
+
+/** Dà il permesso admin a un account, come farà lo script per Cloud Shell (D-034). */
+export async function rendiAdmin(uid: string): Promise<void> {
+  const risposta = await fetch(
+    `${AUTH}/identitytoolkit.googleapis.com/v1/projects/${PROGETTO}/accounts:update`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+      body: JSON.stringify({ localId: uid, customAttributes: JSON.stringify({ admin: true }) }),
+    },
+  );
+  if (!risposta.ok) throw new Error(`Permesso admin non assegnato: ${await risposta.text()}`);
 }

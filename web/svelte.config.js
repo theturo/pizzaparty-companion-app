@@ -1,11 +1,12 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-// Servizi Firebase usati dal browser (accesso, sessione, database).
+// Servizi Firebase usati dal browser (accesso, sessione, database, Cloud Functions).
 const firebase = [
   'https://identitytoolkit.googleapis.com',
   'https://securetoken.googleapis.com',
   'https://firestore.googleapis.com',
+  'https://europe-west8-pizzaparty-companion.cloudfunctions.net',
 ];
 // Emulatori locali: solo in sviluppo e nelle build di prova (EMULATORI=true).
 const emulatori =
@@ -15,6 +16,7 @@ const emulatori =
         'http://127.0.0.1:9099',
         'http://localhost:8080',
         'http://127.0.0.1:8080',
+        'http://127.0.0.1:5001',
       ]
     : [];
 

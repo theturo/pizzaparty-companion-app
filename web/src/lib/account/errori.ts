@@ -15,6 +15,9 @@ const MESSAGGI: Record<string, string> = {
   'auth/password-does-not-meet-requirements': 'La password è troppo debole: usane una più lunga.',
   'auth/requires-recent-login': 'Per sicurezza, esci e accedi di nuovo prima di questa operazione.',
   'auth/user-disabled': 'Questo account è stato disattivato.',
+  'functions/permission-denied': 'Non hai il permesso per farlo.',
+  'functions/failed-precondition': 'Questa richiesta è già stata gestita.',
+  'functions/unavailable': 'Il server non risponde. Riprova tra poco.',
 };
 
 export function messaggioErrore(errore: unknown): string {

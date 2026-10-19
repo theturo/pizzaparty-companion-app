@@ -17,6 +17,8 @@ regexes = [
   '''@example\.(com|org|net)''',
   '''@pizza-party\.test''',
   '''@[a-z0-9-]+\.iam\.gserviceaccount\.com''',
+  '''@developer\.gserviceaccount\.com''',
+  '''@esempio\.it''',
 ]
 [[rules.allowlists]]
 description = "Licenze dei font: il contatto dell'autore è pubblico e il testo non si può modificare"

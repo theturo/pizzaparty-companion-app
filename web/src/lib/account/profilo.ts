@@ -21,6 +21,9 @@ export interface Profilo {
   accettazioni: { maggiorenne: true; condizioni: string; privacy: string; il: unknown };
   /** Data di creazione (timestamp del server). */
   creato: unknown;
+  /** Scritti dalle Cloud Functions all'approvazione (D-034). */
+  codiceInvito?: string;
+  approvatoIl?: unknown;
 }
 
 export function controllaNome(nome: string): string | null {

@@ -6,6 +6,7 @@
   import Scheda from '$lib/componenti/Scheda.svelte';
   import ImmagineAvatar from '$lib/componenti/ImmagineAvatar.svelte';
   import VersioneApp from '$lib/componenti/VersioneApp.svelte';
+  import LinkInvito from '$lib/componenti/LinkInvito.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
 
   const STATI = {
@@ -51,6 +52,12 @@
         </p>
       {/if}
     </Scheda>
+    {#if sessione.permessi.admin}
+      <p><a href={resolve('/admin')}>Pannello admin: richieste di account</a></p>
+    {/if}
+    {#if sessione.profilo.stato === 'approvato' && sessione.profilo.codiceInvito}
+      <LinkInvito codice={sessione.profilo.codiceInvito} />
+    {/if}
     <Bottone variante="secondario" onclick={esci}>Esci</Bottone>
   {/if}
 </PaginaAccount>
