@@ -5,7 +5,7 @@ import { ID_AVATAR } from './avatar';
 export type StatoAccount = 'in_attesa' | 'approvato' | 'sospeso';
 
 /** Versione di informativa e condizioni d'uso accettate (D-031). Cambia quando cambiano i testi. */
-export const VERSIONE_DOCUMENTI = '2026-10-bozza';
+export const VERSIONE_DOCUMENTI = '2026-10';
 
 export const NOME_MIN = 2;
 export const NOME_MAX = 40;

@@ -12,6 +12,7 @@ import {
   aggiungiPermessi,
   generaCodiceInvito,
 } from './comune.js';
+import { cancellaTuttoDi } from './dati.js';
 
 interface InvitatoDa {
   codice: string | null;
@@ -102,13 +103,7 @@ export const rifiutaRichiesta = onCall(CHIAMABILE, async (richiesta) => {
       'Si possono rifiutare solo le richieste in attesa.',
     );
 
-  await auth.deleteUser(uid).catch((e: { code?: string }) => {
-    if (e.code !== 'auth/user-not-found') throw e;
-  });
-  const batch = db.batch();
-  batch.delete(db.doc(`utenti/${uid}`));
-  batch.delete(db.doc(`richieste/${uid}`));
-  await batch.commit();
+  await cancellaTuttoDi(uid);
   return { rifiutato: uid };
 });
 

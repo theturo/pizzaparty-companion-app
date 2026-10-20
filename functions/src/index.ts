@@ -6,3 +6,4 @@ export {
   rigeneraInvito,
   aggiornaProfiloPubblico,
 } from './approvazione.js';
+export { esportaMieiDati, eliminaMioAccount, puliziaPeriodica } from './privacy.js';
