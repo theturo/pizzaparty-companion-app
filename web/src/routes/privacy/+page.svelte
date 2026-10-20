@@ -14,8 +14,8 @@
   <h2>Chi tratta i tuoi dati</h2>
   <p>
     Il titolare del trattamento è <strong>{TITOLARE}</strong>, organizzatore del PizzaParty, a
-    titolo personale e senza scopo di lucro. Per qualsiasi domanda o richiesta sui tuoi dati scrivi
-    a
+    titolo personale e senza scopo di lucro.<br />
+    Per qualsiasi domanda o richiesta sui tuoi dati scrivi a
     <a href="mailto:{CONTATTO_PRIVACY}">{CONTATTO_PRIVACY}</a>.
   </p>
 
