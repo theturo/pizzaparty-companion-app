@@ -16,6 +16,8 @@ regexes = [
   '''noreply@anthropic\.com''',
   '''@example\.(com|org|net)''',
   '''@pizza-party\.test''',
+  # Alias pubblico per le richieste privacy (D-027): inoltra ad Arturo, non è la sua email.
+  '''privacy@pizza-party\.net''',
   '''@[a-z0-9-]+\.iam\.gserviceaccount\.com''',
   '''@developer\.gserviceaccount\.com''',
   '''@appspot\.gserviceaccount\.com''',

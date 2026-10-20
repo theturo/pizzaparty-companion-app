@@ -121,3 +121,35 @@ async function chiama<T>(nome: string, dati?: unknown): Promise<T> {
 export const approvaRichiesta = (uid: string) => chiama('approvaRichiesta', { uid });
 export const rifiutaRichiesta = (uid: string) => chiama('rifiutaRichiesta', { uid });
 export const rigeneraInvito = () => chiama<{ codice: string }>('rigeneraInvito');
+
+// ---- Profilo e diritti (D-035) ----
+
+export async function modificaProfilo(dati: { nome: string; avatar: string }) {
+  const { auth, db } = firebase();
+  const { updateDoc } = await import('firebase/firestore');
+  const utente = auth.currentUser;
+  if (!utente) throw new Error('Sessione assente');
+  await updateDoc(doc(db, 'utenti', utente.uid), { nome: dati.nome.trim(), avatar: dati.avatar });
+}
+
+/** Chiede di nuovo la password: serve per le operazioni delicate (cambio password, eliminazione). */
+async function confermaPassword(password: string) {
+  const { EmailAuthProvider, reauthenticateWithCredential } = await import('firebase/auth');
+  const utente = firebase().auth.currentUser;
+  if (!utente?.email) throw new Error('Sessione assente');
+  await reauthenticateWithCredential(utente, EmailAuthProvider.credential(utente.email, password));
+  return utente;
+}
+
+export async function cambiaPassword(attuale: string, nuova: string) {
+  const utente = await confermaPassword(attuale);
+  await updatePassword(utente, nuova);
+}
+
+export const esportaMieiDati = () => chiama<Record<string, unknown>>('esportaMieiDati');
+
+export async function eliminaAccount(password: string) {
+  await confermaPassword(password);
+  await chiama('eliminaMioAccount');
+  await signOut(firebase().auth);
+}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Profilo: per ora identità e stato dell'account. Modifica, privacy e inviti arrivano con la 1.2–1.3.
+  // Profilo: identità, stato, invito, sicurezza e diritti sui propri dati (D-035).
   import { resolve } from '$app/paths';
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
   import Bottone from '$lib/componenti/Bottone.svelte';
@@ -7,6 +7,8 @@
   import ImmagineAvatar from '$lib/componenti/ImmagineAvatar.svelte';
   import VersioneApp from '$lib/componenti/VersioneApp.svelte';
   import LinkInvito from '$lib/componenti/LinkInvito.svelte';
+  import ModificaProfilo from '$lib/componenti/ModificaProfilo.svelte';
+  import CambioPassword from '$lib/componenti/CambioPassword.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
 
   const STATI = {
@@ -14,6 +16,9 @@
     approvato: 'Approvato',
     sospeso: 'Sospeso',
   } as const;
+
+  let inModifica = $state(false);
+  let cambioPassword = $state(false);
 
   async function esci() {
     const { esci } = await import('$lib/account/azioni');
@@ -37,37 +42,79 @@
     <p><a href={resolve('/completa')}>Completa la registrazione</a></p>
   {:else}
     <Scheda>
-      <div class="identita">
-        <ImmagineAvatar id={sessione.profilo.avatar} dimensione={64} />
-        <div>
-          <p class="nome">{sessione.profilo.nome}</p>
-          <p class="attenuato">{sessione.utente?.email}</p>
+      {#if inModifica}
+        <ModificaProfilo profilo={sessione.profilo} chiudi={() => (inModifica = false)} />
+      {:else}
+        <div class="identita">
+          <ImmagineAvatar id={sessione.profilo.avatar} dimensione={64} />
+          <div>
+            <p class="nome">{sessione.profilo.nome}</p>
+            <p class="attenuato">{sessione.utente?.email}</p>
+          </div>
         </div>
-      </div>
-      <p class="stato stato-{sessione.profilo.stato}">{STATI[sessione.profilo.stato]}</p>
-      {#if sessione.profilo.stato === 'in_attesa'}
-        <p class="attenuato">
-          Arturo controlla ogni nuova richiesta. Intanto puoi dare un'occhiata alle parti pubbliche
-          dell'app.
-        </p>
+        <p class="stato stato-{sessione.profilo.stato}">{STATI[sessione.profilo.stato]}</p>
+        {#if sessione.profilo.stato === 'in_attesa'}
+          <p class="attenuato">
+            Arturo controlla ogni nuova richiesta. Intanto puoi dare un'occhiata alle parti
+            pubbliche dell'app.
+          </p>
+        {/if}
+        <div class="azioni">
+          <Bottone variante="secondario" onclick={() => (inModifica = true)}>Modifica</Bottone>
+        </div>
       {/if}
     </Scheda>
+
     {#if sessione.permessi.admin}
       <p><a href={resolve('/admin')}>Pannello admin: richieste di account</a></p>
     {/if}
     {#if sessione.profilo.stato === 'approvato' && sessione.profilo.codiceInvito}
       <LinkInvito codice={sessione.profilo.codiceInvito} />
     {/if}
-    <Bottone variante="secondario" onclick={esci}>Esci</Bottone>
+
+    <Scheda>
+      <p class="etichetta">Sicurezza</p>
+      {#if cambioPassword}
+        <CambioPassword chiudi={() => (cambioPassword = false)} />
+      {:else}
+        <div class="azioni sinistra">
+          <Bottone variante="secondario" onclick={() => (cambioPassword = true)}>
+            Cambia password
+          </Bottone>
+          <Bottone variante="secondario" onclick={esci}>Esci</Bottone>
+        </div>
+      {/if}
+    </Scheda>
+
+    <Scheda>
+      <p class="etichetta">I tuoi dati</p>
+      <p class="attenuato">
+        Puoi vedere e scaricare tutto ciò che l'app conserva su di te, oppure eliminare l'account.
+      </p>
+      <ul class="collegamenti">
+        <li><a href={resolve('/profilo/dati')}>Vedi e scarica i tuoi dati</a></li>
+        <li><a href={resolve('/privacy')}>Informativa privacy</a></li>
+        <li><a href={resolve('/condizioni')}>Condizioni d'uso</a></li>
+        <li><a class="pericolo" href={resolve('/profilo/elimina')}>Elimina l'account</a></li>
+      </ul>
+    </Scheda>
   {/if}
 </PaginaAccount>
 
 <VersioneApp />
 
 <style>
+  p {
+    margin: 0;
+  }
   .azioni {
     display: flex;
     gap: var(--spazio-2);
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .azioni.sinistra {
+    justify-content: flex-start;
   }
   .pulsante {
     background: var(--colore-accento);
@@ -88,17 +135,24 @@
     gap: var(--spazio-3);
   }
   .nome {
-    margin: 0;
     font-weight: 700;
     font-size: var(--testo-l);
   }
   .stato {
-    margin: 0;
     font-family: var(--font-etichette);
     font-weight: var(--etichette-peso);
     color: var(--colore-evidenza);
   }
   .stato-approvato {
     color: var(--colore-conferma);
+  }
+  .collegamenti {
+    margin: 0;
+    padding-left: var(--spazio-5);
+    display: grid;
+    gap: var(--spazio-2);
+  }
+  .pericolo {
+    color: var(--colore-secondario);
   }
 </style>

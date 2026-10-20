@@ -22,7 +22,8 @@ echo "▶ Servizi necessari (può richiedere qualche minuto)"
 gcloud services enable cloudfunctions.googleapis.com cloudbuild.googleapis.com \
   artifactregistry.googleapis.com run.googleapis.com eventarc.googleapis.com \
   pubsub.googleapis.com compute.googleapis.com firestore.googleapis.com \
-  identitytoolkit.googleapis.com firebaseextensions.googleapis.com cloudbilling.googleapis.com
+  identitytoolkit.googleapis.com firebaseextensions.googleapis.com cloudbilling.googleapis.com \
+  cloudscheduler.googleapis.com
 
 echo "▶ Account tecnico $EMAIL"
 gcloud iam service-accounts describe "$EMAIL" >/dev/null 2>&1 ||
@@ -31,9 +32,11 @@ gcloud iam service-accounts describe "$EMAIL" >/dev/null 2>&1 ||
 echo "▶ Permessi per pubblicare le Functions (nessun accesso ai dati)"
 # datastore.indexAdmin: legge le informazioni sul database (non i documenti) per i trigger di Firestore.
 # browser: legge nome e impostazioni del progetto, compresa la fatturazione collegata (piano Blaze).
+# cloudscheduler.admin: crea le attività programmate (es. la pulizia notturna dei dati, D-035).
 for RUOLO in roles/cloudfunctions.admin roles/run.admin roles/artifactregistry.admin \
   roles/cloudbuild.builds.editor roles/serviceusage.serviceUsageConsumer \
-  roles/firebaseextensions.viewer roles/iam.securityReviewer roles/datastore.indexAdmin roles/browser; do
+  roles/firebaseextensions.viewer roles/iam.securityReviewer roles/datastore.indexAdmin roles/browser \
+  roles/cloudscheduler.admin; do
   gcloud projects add-iam-policy-binding "$PROGETTO" --member="serviceAccount:$EMAIL" \
     --role="$RUOLO" --condition=None --quiet >/dev/null
 done
