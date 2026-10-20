@@ -79,7 +79,7 @@ test('informativa e condizioni sono complete e collegate', async ({ page }) => {
     'Chi tratta i tuoi dati',
     'Quali dati usiamo',
     'Perché li usiamo',
-    'Fornitori e dove stanno i dati',
+    'Fornitori e dove vengono archiviati i dati',
     'Per quanto tempo',
     'I tuoi diritti',
   ]) {

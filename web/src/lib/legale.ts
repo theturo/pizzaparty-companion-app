@@ -2,7 +2,7 @@
 import { VERSIONE_DOCUMENTI } from '$lib/account/profilo';
 
 /** Titolare del trattamento: nome e cognome, come richiesto dal GDPR (D-035). */
-export const TITOLARE = '[Nome e cognome da confermare]';
+export const TITOLARE = 'Arturo Scalori';
 /** Alias che inoltra ad Arturo: la sua email personale non compare mai (D-027). */
 export const CONTATTO_PRIVACY = 'privacy@pizza-party.net';
 export const VERSIONE = VERSIONE_DOCUMENTI;

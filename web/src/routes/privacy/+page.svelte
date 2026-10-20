@@ -8,8 +8,8 @@
 <DocumentoLegale titolo="Informativa privacy">
   <p>
     La PizzaParty Companion App è l'app che accompagna il PizzaParty, una festa privata tra amici.
-    Qui trovi, senza giri di parole, quali dati usa, perché e cosa puoi farci tu.
   </p>
+  <p>Qui trovi, senza giri di parole, quali dati usa, perché e cosa puoi farci tu.</p>
 
   <h2>Chi tratta i tuoi dati</h2>
   <p>
@@ -71,7 +71,7 @@
     <li>I dati non vengono venduti, ceduti o usati per altri scopi.</li>
   </ul>
 
-  <h2>Fornitori e dove stanno i dati</h2>
+  <h2>Fornitori e dove vengono archiviati i dati</h2>
   <p>
     Per funzionare, l'app si appoggia ad alcuni servizi esterni che trattano i dati per nostro
     conto:
@@ -107,7 +107,7 @@
   </ul>
 
   <h2>I tuoi diritti</h2>
-  <p>Puoi in ogni momento:</p>
+  <p>In ogni momento puoi:</p>
   <ul>
     <li>
       <strong>vedere e scaricare</strong> i tuoi dati dal profilo, in
