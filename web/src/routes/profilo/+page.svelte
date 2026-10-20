@@ -9,6 +9,8 @@
   import LinkInvito from '$lib/componenti/LinkInvito.svelte';
   import ModificaProfilo from '$lib/componenti/ModificaProfilo.svelte';
   import CambioPassword from '$lib/componenti/CambioPassword.svelte';
+  import InterruttoreNotifiche from '$lib/componenti/InterruttoreNotifiche.svelte';
+  import InvitoNotifiche from '$lib/componenti/InvitoNotifiche.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
 
   const STATI = {
@@ -65,12 +67,19 @@
       {/if}
     </Scheda>
 
+    {#if sessione.profilo.stato === 'in_attesa'}
+      <InvitoNotifiche />
+    {/if}
     {#if sessione.permessi.admin}
       <p><a href={resolve('/admin')}>Pannello admin: richieste di account</a></p>
     {/if}
     {#if sessione.profilo.stato === 'approvato' && sessione.profilo.codiceInvito}
       <LinkInvito codice={sessione.profilo.codiceInvito} />
     {/if}
+
+    <Scheda>
+      <InterruttoreNotifiche />
+    </Scheda>
 
     <Scheda>
       <p class="etichetta">Sicurezza</p>

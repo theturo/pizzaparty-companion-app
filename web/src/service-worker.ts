@@ -32,6 +32,44 @@ sw.addEventListener('activate', (evento) => {
   );
 });
 
+// ---- Notifiche push (D-036) ----
+// Il server manda messaggi "solo dati" (Firebase Cloud Messaging): li mostriamo noi, sempre uguali.
+sw.addEventListener('push', (evento) => {
+  let messaggio: { data?: Record<string, string> } = {};
+  try {
+    messaggio = evento.data?.json() ?? {};
+  } catch {
+    // Messaggio non leggibile: si mostra comunque un avviso generico.
+  }
+  const dati = messaggio.data ?? {};
+  evento.waitUntil(
+    sw.registration.showNotification(dati.titolo || 'PizzaParty', {
+      body: dati.testo,
+      icon: '/icons/icona-192.png',
+      badge: '/icons/icona-192.png',
+      data: { link: dati.link || '/' },
+    }),
+  );
+});
+
+// Toccando la notifica si apre (o si porta in primo piano) l'app sulla pagina giusta.
+sw.addEventListener('notificationclick', (evento) => {
+  evento.notification.close();
+  const link = new URL(evento.notification.data?.link ?? '/', sw.location.origin).href;
+  evento.waitUntil(
+    (async () => {
+      const finestre = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      const finestra = finestre[0];
+      if (finestra) {
+        await finestra.navigate(link);
+        await finestra.focus();
+      } else {
+        await sw.clients.openWindow(link);
+      }
+    })(),
+  );
+});
+
 sw.addEventListener('fetch', (evento) => {
   const richiesta = evento.request;
   if (richiesta.method !== 'GET') return;

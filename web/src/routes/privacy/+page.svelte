@@ -35,6 +35,11 @@
       informativa e delle condizioni d'uso, con la loro versione e la data.
     </li>
     <li>
+      <strong>Notifiche, se le attivi:</strong> un codice che identifica il tuo dispositivo per mandargli
+      le notifiche, con una breve descrizione (per esempio "iPhone · Safari") e la data di attivazione.
+      Uscendo dall'account o disattivando le notifiche, il codice si cancella.
+    </li>
+    <li>
       <strong>Sul tuo dispositivo:</strong> l'app salva la sessione e una copia delle pagine per funzionare
       anche con poca rete. Non usiamo cookie di profilazione, statistiche o pubblicità.
     </li>
@@ -78,9 +83,9 @@
   </p>
   <ul>
     <li>
-      <strong>Google (Firebase)</strong>: accesso, database e funzioni sul server. Il database e le
-      funzioni si trovano a <strong>Milano</strong>. Il servizio di accesso è gestito da Google
-      anche fuori dall'Unione europea.
+      <strong>Google (Firebase)</strong>: accesso, database, funzioni sul server e invio delle
+      notifiche. Il database e le funzioni si trovano a <strong>Milano</strong>. Il servizio di
+      accesso e quello delle notifiche sono gestiti da Google anche fuori dall'Unione europea.
     </li>
     <li>
       <strong>GitHub</strong>: pubblica le pagine dell'app e, come ogni sito, può registrare nei

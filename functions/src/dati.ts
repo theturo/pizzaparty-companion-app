@@ -1,7 +1,7 @@
 // Operazioni sui dati di una persona, condivise da rifiuto, eliminazione e pulizia (D-033, D-035).
 import { db, auth } from './comune.js';
 
-/** Raccolte che contengono dati di una persona, indicizzate per uid. */
+/** Raccolte che contengono dati di una persona, indicizzate per uid (più la sottoraccolta dispositivi). */
 const DOCUMENTI_PERSONALI = ['utenti', 'profili', 'richieste'] as const;
 
 /**
@@ -9,8 +9,12 @@ const DOCUMENTI_PERSONALI = ['utenti', 'profili', 'richieste'] as const;
  * richiesta e codici d'invito. Ogni nuova funzione che salva dati personali va aggiunta qui.
  */
 export async function cancellaTuttoDi(uid: string): Promise<void> {
-  const inviti = await db.collection('inviti').where('proprietario', '==', uid).get();
+  const [inviti, dispositivi] = await Promise.all([
+    db.collection('inviti').where('proprietario', '==', uid).get(),
+    db.collection(`utenti/${uid}/dispositivi`).get(),
+  ]);
   const batch = db.batch();
+  dispositivi.forEach((d) => batch.delete(d.ref));
   for (const raccolta of DOCUMENTI_PERSONALI) batch.delete(db.doc(`${raccolta}/${uid}`));
   inviti.forEach((invito) => batch.delete(invito.ref));
   await batch.commit();
@@ -35,11 +39,12 @@ export function semplifica(valore: unknown): unknown {
 /** Tutto ciò che l'app conserva su una persona (diritto di accesso e portabilità, D-035). */
 export async function raccogliDatiDi(uid: string) {
   const utente = await auth.getUser(uid);
-  const [privato, pubblico, richiesta, inviti] = await Promise.all([
+  const [privato, pubblico, richiesta, inviti, dispositivi] = await Promise.all([
     db.doc(`utenti/${uid}`).get(),
     db.doc(`profili/${uid}`).get(),
     db.doc(`richieste/${uid}`).get(),
     db.collection('inviti').where('proprietario', '==', uid).get(),
+    db.collection(`utenti/${uid}/dispositivi`).get(),
   ]);
   return {
     generatoIl: new Date().toISOString(),
@@ -56,5 +61,10 @@ export async function raccogliDatiDi(uid: string) {
     schedaPubblica: pubblico.exists ? semplifica(pubblico.data()) : null,
     richiestaInAttesa: richiesta.exists ? semplifica(richiesta.data()) : null,
     codiciInvito: inviti.docs.map((d) => ({ codice: d.id, ...(semplifica(d.data()) as object) })),
+    // Il codice del dispositivo non si mostra per intero: basta riconoscere quali dispositivi sono.
+    dispositiviConNotifiche: dispositivi.docs.map((d) => ({
+      codice: `${d.id.slice(0, 8)}…`,
+      ...(semplifica(d.data()) as object),
+    })),
   };
 }

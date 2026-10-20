@@ -88,6 +88,9 @@ export async function accedi(email: string, password: string) {
 }
 
 export async function esci() {
+  // Uscendo, questo dispositivo smette di ricevere le notifiche dell'account (D-036).
+  const { disattivaNotifiche } = await import('$lib/notifiche/notifiche.svelte');
+  await disattivaNotifiche();
   await signOut(firebase().auth);
 }
 
@@ -150,6 +153,8 @@ export const esportaMieiDati = () => chiama<Record<string, unknown>>('esportaMie
 
 export async function eliminaAccount(password: string) {
   await confermaPassword(password);
+  const { disattivaNotifiche } = await import('$lib/notifiche/notifiche.svelte');
+  await disattivaNotifiche();
   await chiama('eliminaMioAccount');
   await signOut(firebase().auth);
 }

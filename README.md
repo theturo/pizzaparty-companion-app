@@ -92,6 +92,7 @@ Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.n
 - **Emulatore:** `npm run emulatori` le compila e le avvia insieme ad Auth e Firestore.
 - **Pubblicazione:** il workflow "Cloud Functions" le pubblica quando cambiano su `main`, senza chiavi. L'accesso si prepara una volta con `scripts/cloud-shell/configura-pubblicazione-functions.sh`.
 - **Privacy (D-035):** `esportaMieiDati`, `eliminaMioAccount` (serve un accesso recente) e `puliziaPeriodica`, ogni notte: richieste non approvate dopo 60 giorni, account inattivi da 3 anni. Ogni nuovo dato personale va aggiunto a `cancellaTuttoDi()` e `raccogliDatiDi()` in `functions/src/dati.ts`.
+- **Notifiche (D-036):** `functions/src/notifiche.ts` manda messaggi "solo dati" con Cloud Messaging, che il service worker dell'app mostra; i codici dei dispositivi stanno in `utenti/{uid}/dispositivi/`. Negli emulatori l'invio è simulato (solo log).
 - **Primo admin:** dopo essersi registrati nell'app, `scripts/cloud-shell/nomina-admin.sh <email>` in Cloud Shell.
 
 ### Pubblicazione delle regole Firebase

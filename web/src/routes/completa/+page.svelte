@@ -5,6 +5,7 @@
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
   import Bottone from '$lib/componenti/Bottone.svelte';
   import SceltaAvatar from '$lib/componenti/SceltaAvatar.svelte';
+  import InvitoNotifiche from '$lib/componenti/InvitoNotifiche.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
   import { AVATAR } from '$lib/account/avatar';
   import {
@@ -125,6 +126,7 @@
       hai l'app installata sul telefono, aprila e accedi con la tua email e la password appena
       scelta.
     </p>
+    <InvitoNotifiche />
     <p><a href={resolve('/profilo')}>Vai al profilo</a></p>
   {:else if giaRegistrato}
     <p>Sei già registrato. <a href={resolve('/profilo')}>Vai al profilo</a></p>

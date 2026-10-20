@@ -14,5 +14,11 @@ export const firebaseConfig = {
 // Progetto finto usato dagli emulatori locali (npm run emulatori): nessun accesso ai dati reali.
 export const PROGETTO_EMULATORI = 'demo-pizzaparty';
 
+/**
+ * Chiave pubblica "web push" del progetto (Impostazioni progetto → Cloud Messaging → Certificati
+ * Web Push). Come la configurazione, non è un segreto: serve al browser per ricevere le notifiche.
+ */
+export const CHIAVE_WEB_PUSH = '';
+
 // Regione delle Cloud Functions: la stessa di Firestore (D-034).
 export const REGIONE_FUNCTIONS = 'europe-west8';

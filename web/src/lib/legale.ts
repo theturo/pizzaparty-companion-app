@@ -7,4 +7,4 @@ export const TITOLARE = 'Arturo Scalori';
 export const CONTATTO_PRIVACY = 'privacy@pizza-party.net';
 export const VERSIONE = VERSIONE_DOCUMENTI;
 /** Data di entrata in vigore della versione attuale dei testi. */
-export const DATA_VERSIONE = '21 ottobre 2026';
+export const DATA_VERSIONE = '20 ottobre 2026';
