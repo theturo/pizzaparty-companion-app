@@ -15,8 +15,8 @@
   <p>
     Il titolare del trattamento è <strong>{TITOLARE}</strong>, organizzatore del PizzaParty, a
     titolo personale e senza scopo di lucro.<br />
-    Per qualsiasi domanda o richiesta sui tuoi dati scrivi a
-    <a href="mailto:{CONTATTO_PRIVACY}">{CONTATTO_PRIVACY}</a>.
+    Per qualsiasi domanda o richiesta sui tuoi dati scrivi a:<br />
+    <a class="email" href="mailto:{CONTATTO_PRIVACY}">{CONTATTO_PRIVACY}</a>
   </p>
 
   <h2>Quali dati usiamo</h2>
@@ -139,3 +139,10 @@
     nell'app.
   </p>
 </DocumentoLegale>
+
+<style>
+  /* L'indirizzo email non si spezza mai a metà. */
+  .email {
+    white-space: nowrap;
+  }
+</style>
