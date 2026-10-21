@@ -7,6 +7,9 @@ const firebase = [
   'https://securetoken.googleapis.com',
   'https://firestore.googleapis.com',
   'https://europe-west8-pizzaparty-companion.cloudfunctions.net',
+  // Notifiche push (D-036)
+  'https://fcmregistrations.googleapis.com',
+  'https://firebaseinstallations.googleapis.com',
 ];
 // Emulatori locali: solo in sviluppo e nelle build di prova (EMULATORI=true).
 const emulatori =

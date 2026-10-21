@@ -71,6 +71,20 @@ service cloud.firestore {
 
       // La cancellazione dell'account passa da una funzione sul server (1.3).
       allow delete: if false;
+
+      // Dispositivi con le notifiche attive (D-036): l'id è il codice del dispositivo.
+      // Solo la persona li registra e li toglie; li legge e li usa il server per inviare.
+      match /dispositivi/{codice} {
+        allow read, delete: if eLaPersona(uid);
+        allow create: if eLaPersona(uid)
+          && codice.size() <= 400
+          && request.resource.data.keys().hasOnly(['piattaforma', 'creato'])
+          && request.resource.data.keys().hasAll(['piattaforma', 'creato'])
+          && request.resource.data.piattaforma is string
+          && request.resource.data.piattaforma.size() <= 40
+          && request.resource.data.creato == request.time;
+        allow update: if false;
+      }
     }
 
     // ---- Schede pubbliche: nome e avatar, visibili tra approvati (D-033) ----

@@ -13,6 +13,7 @@ import {
   generaCodiceInvito,
 } from './comune.js';
 import { cancellaTuttoDi } from './dati.js';
+import { notificaA, notificaAgliAdmin } from './notifiche.js';
 
 interface InvitatoDa {
   codice: string | null;
@@ -56,7 +57,13 @@ export const nuovaRichiesta = onDocumentCreated(
       },
       creato: FieldValue.serverTimestamp(),
     });
-    // La notifica push all'admin arriva con la 1.4.
+    await notificaAgliAdmin({
+      titolo: 'Nuova richiesta di account',
+      testo: invitatoDaNome
+        ? `${profilo.nome}, invitato da ${invitatoDaNome}`
+        : `${profilo.nome} vuole entrare nell'app`,
+      link: '/admin',
+    });
   },
 );
 
@@ -88,6 +95,11 @@ export const approvaRichiesta = onCall(CHIAMABILE, async (richiesta) => {
   });
   batch.delete(db.doc(`richieste/${uid}`));
   await batch.commit();
+  await notificaA(uid, {
+    titolo: 'Sei dentro! 🍕',
+    testo: 'La tua richiesta è stata approvata: benvenuto nel PizzaParty.',
+    link: '/profilo',
+  });
   return { approvato: uid };
 });
 

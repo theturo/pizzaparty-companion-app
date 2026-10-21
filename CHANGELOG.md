@@ -3,7 +3,12 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
-## 0.4.0 — 2026-10-21
+## 0.5.0 — 2026-10-20
+
+- Informativa aggiornata con le notifiche (codice del dispositivo, servizio di Google).
+- In preparazione (non ancora visibili): notifiche push, con l'avviso ad Arturo per ogni nuova richiesta e quello "sei dentro!" per chi viene approvato; interruttore nel profilo e invito dopo la registrazione.
+
+## 0.4.0 — 2026-10-20
 
 - Informativa privacy e condizioni d'uso complete.
 - In preparazione (non ancora visibili): modifica del profilo, cambio password, pagina "I tuoi dati" con download, eliminazione dell'account, pulizia automatica dei dati scaduti.

@@ -29,6 +29,7 @@
     ['schedaPubblica', 'Scheda visibile agli altri approvati'],
     ['richiestaInAttesa', 'Richiesta in attesa (visibile solo ad Arturo)'],
     ['codiciInvito', "Codici d'invito"],
+    ['dispositiviConNotifiche', 'Dispositivi con le notifiche attive'],
   ];
 
   /** Voci "etichetta: valore" leggibili, anche per oggetti annidati. */
