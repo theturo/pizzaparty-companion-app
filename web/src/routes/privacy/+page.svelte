@@ -2,7 +2,7 @@
   // Informativa privacy (art. 13 GDPR, D-035). Se cambia, si alza VERSIONE_DOCUMENTI.
   import { resolve } from '$app/paths';
   import DocumentoLegale from '$lib/componenti/DocumentoLegale.svelte';
-  import { TITOLARE, CONTATTO_PRIVACY } from '$lib/legale';
+  import { TITOLARE, CONTATTO_PRIVACY, CONTATTO_AIUTO } from '$lib/legale';
 </script>
 
 <DocumentoLegale titolo="Informativa privacy">
@@ -40,6 +40,12 @@
       Uscendo dall'account o disattivando le notifiche, il codice si cancella.
     </li>
     <li>
+      <strong>Segnalazioni, se ce le mandi:</strong> la mail che prepari con "Segnala un problema" contiene,
+      oltre a quello che scrivi, la versione dell'app, il tipo di dispositivo (per esempio "iPhone · Safari")
+      e, se hai fatto accesso, il codice tecnico del tuo account. Puoi modificarla o cancellare questi
+      dettagli prima di inviarla.
+    </li>
+    <li>
       <strong>Sul tuo dispositivo:</strong> l'app salva la sessione e una copia delle pagine per funzionare
       anche con poca rete. Non usiamo cookie di profilazione, statistiche o pubblicità.
     </li>
@@ -60,7 +66,7 @@
       Per tenere l'app sicura ed evitare abusi, per esempio account falsi o inviti girati a
       sconosciuti (legittimo interesse, art. 6.1.f GDPR).
     </li>
-    <li>Per rispondere alle tue richieste.</li>
+    <li>Per rispondere alle tue richieste e risolvere i problemi che ci segnali.</li>
   </ul>
 
   <h2>Chi vede cosa</h2>
@@ -93,7 +99,7 @@
     </li>
     <li>
       <strong>Mailgun</strong>, tramite Squarespace: inoltra all'organizzatore le email scritte a
-      {CONTATTO_PRIVACY}.
+      {CONTATTO_PRIVACY} e a {CONTATTO_AIUTO}.
     </li>
   </ul>
   <p>
@@ -108,7 +114,9 @@
     <li>Se non usi l'app per <strong>3 anni</strong>, l'account si cancella da solo.</li>
     <li>Una richiesta mai approvata si cancella dopo <strong>60 giorni</strong>.</li>
     <li>Una richiesta rifiutata si cancella <strong>subito</strong>, insieme all'account.</li>
-    <li>Le email inviate a {CONTATTO_PRIVACY} si conservano il tempo necessario a gestirle.</li>
+    <li>
+      Le email inviate a {CONTATTO_PRIVACY} e a {CONTATTO_AIUTO} si conservano il tempo necessario a gestirle.
+    </li>
   </ul>
 
   <h2>I tuoi diritti</h2>

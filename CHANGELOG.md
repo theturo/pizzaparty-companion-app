@@ -3,6 +3,11 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.6.0 — 2026-10-21
+
+- Pulsante "Segnala un problema" in Informazioni: apre una mail per aiuto@pizza-party.net con versione, dispositivo e codice dell'account già compilati.
+- Informativa aggiornata con le segnalazioni e il nuovo indirizzo.
+
 ## 0.5.0 — 2026-10-20
 
 - Informativa aggiornata con le notifiche (codice del dispositivo, servizio di Google).
