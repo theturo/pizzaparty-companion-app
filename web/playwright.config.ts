@@ -5,6 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
 //
 // Playwright non scarica più i suoi browser su macOS 13: in locale si usa il Google Chrome
 // installato sul Mac e WebKit gira solo in CI (Ubuntu), dove ci sono tutti e due.
+// In CI si usa il Chromium completo ('chromium') e non la versione ridotta predefinita
+// (headless shell), che segna sempre le notifiche come bloccate.
 const inCI = !!process.env.CI;
 
 export default defineConfig({
@@ -17,7 +19,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium-telefono',
-      use: { ...devices['Pixel 7'], ...(inCI ? {} : { channel: 'chrome' }) },
+      use: { ...devices['Pixel 7'], channel: inCI ? 'chromium' : 'chrome' },
     },
     ...(inCI ? [{ name: 'webkit-telefono', use: { ...devices['iPhone 15'] } }] : []),
   ],
