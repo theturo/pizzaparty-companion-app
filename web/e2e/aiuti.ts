@@ -40,3 +40,9 @@ export async function accedi(page: Page, email: string, password = PASSWORD) {
   await page.getByRole('button', { name: 'Accedi' }).click();
   await expect(page).toHaveURL('/profilo');
 }
+
+/** Esce dal profilo e aspetta che l'uscita sia finita: cambiare pagina prima la interromperebbe. */
+export async function esci(page: Page) {
+  await page.getByRole('button', { name: 'Esci' }).click();
+  await expect(page.getByRole('link', { name: 'Accedi' })).toBeVisible();
+}

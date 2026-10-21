@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { creaAccount, emailDiProva, rendiAdmin } from './emulatori';
-import { accedi, registra, PASSWORD } from './aiuti';
+import { accedi, esci, registra, PASSWORD } from './aiuti';
 
 // Notifiche (D-036). Negli emulatori Cloud Messaging non esiste: si verifica tutto il resto
 // (permesso, registrazione del dispositivo, disattivazione all'uscita); l'invio vero si prova a mano.
@@ -30,7 +30,7 @@ test('invito dopo la registrazione: attivate, si vedono nei dati, uscendo si spe
 
   // Uscendo, il dispositivo si toglie: rientrando non c'è più.
   await page.goto('/profilo');
-  await page.getByRole('button', { name: 'Esci' }).click();
+  await esci(page);
   await accedi(page, email);
   await expect(page.getByRole('button', { name: 'Attiva le notifiche' })).toBeVisible();
   await page.getByRole('link', { name: 'Vedi e scarica i tuoi dati' }).click();

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { creaAccount, emailDiProva, ultimoLink } from './emulatori';
+import { esci } from './aiuti';
 
 test('registrazione completa con link d\'invito: link email, password, profilo "in attesa"', async ({
   page,
@@ -37,8 +38,7 @@ test('registrazione completa con link d\'invito: link email, password, profilo "
   await expect(page.getByRole('img', { name: 'Forno a legna' })).toBeVisible();
 
   // 5. Si esce e si rientra con email e password (come dall'app installata).
-  await page.getByRole('button', { name: 'Esci' }).click();
-  await expect(page.getByRole('link', { name: 'Accedi' })).toBeVisible();
+  await esci(page);
   await page.getByRole('link', { name: 'Accedi' }).click();
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill('pizza-margherita');

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { emailDiProva } from './emulatori';
-import { accedi, registra, PASSWORD } from './aiuti';
+import { accedi, esci, registra, PASSWORD } from './aiuti';
 
 // Esportazione ed eliminazione passano dalle Functions emulate ("a freddo" la prima volta).
 const ATTESA_FUNCTIONS = { timeout: 20_000 };
@@ -28,7 +28,7 @@ test('cambio password: con quella nuova si rientra', async ({ page }) => {
   await expect(page.getByText('Password cambiata.')).toBeVisible();
 
   await page.getByRole('button', { name: 'Chiudi' }).click();
-  await page.getByRole('button', { name: 'Esci' }).click();
+  await esci(page);
   await accedi(page, email, 'pizza-capricciosa');
 });
 
