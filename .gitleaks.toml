@@ -18,6 +18,8 @@ regexes = [
   '''@pizza-party\.test''',
   # Alias pubblico per le richieste privacy (D-027): inoltra ad Arturo, non è la sua email.
   '''privacy@pizza-party\.net''',
+  # Alias pubblico per le segnalazioni e le risposte alle email dell'app (D-037).
+  '''aiuto@pizza-party\.net''',
   '''@[a-z0-9-]+\.iam\.gserviceaccount\.com''',
   '''@developer\.gserviceaccount\.com''',
   '''@appspot\.gserviceaccount\.com''',

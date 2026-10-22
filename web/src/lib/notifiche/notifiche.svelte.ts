@@ -1,6 +1,7 @@
 // Notifiche push su questo dispositivo (D-036): permesso, codice del dispositivo, attiva/disattiva.
 import { firebase } from '$lib/firebase/app';
 import { CHIAVE_WEB_PUSH } from '$lib/firebase/config';
+import { appInstallata, descriviDispositivo } from '$lib/dispositivo';
 
 const CHIAVE_CODICE = 'pizzaparty-codice-notifiche';
 const CHIAVE_INVITO_CHIUSO = 'pizzaparty-invito-notifiche-chiuso';
@@ -35,39 +36,12 @@ function scrivi(chiave: string, valore: string | null) {
 /** Legge lo stato del dispositivo: va chiamata nel browser (es. in un $effect). */
 export function controllaNotifiche(): void {
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const installata =
-    matchMedia('(display-mode: standalone)').matches ||
-    (navigator as Navigator & { standalone?: boolean }).standalone === true;
-  notifiche.iosDaInstallare = ios && !installata;
+  notifiche.iosDaInstallare = ios && !appInstallata();
   notifiche.supportate =
     'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
   notifiche.permesso = 'Notification' in window ? Notification.permission : 'denied';
   notifiche.attive = notifiche.permesso === 'granted' && leggi(CHIAVE_CODICE) !== null;
   notifiche.invitoChiuso = leggi(CHIAVE_INVITO_CHIUSO) !== null;
-}
-
-/** Descrizione breve del dispositivo (es. "iPhone · Safari"), per riconoscerlo nei propri dati. */
-function piattaforma(): string {
-  const ua = navigator.userAgent;
-  const sistema = /iPhone|iPad|iPod/.test(ua)
-    ? 'iPhone'
-    : /Android/.test(ua)
-      ? 'Android'
-      : /Mac/.test(ua)
-        ? 'Mac'
-        : /Windows/.test(ua)
-          ? 'Windows'
-          : 'Altro';
-  const browser = /Firefox/.test(ua)
-    ? 'Firefox'
-    : /Edg\//.test(ua)
-      ? 'Edge'
-      : /Chrome|CriOS/.test(ua)
-        ? 'Chrome'
-        : /Safari/.test(ua)
-          ? 'Safari'
-          : 'browser';
-  return `${sistema} · ${browser}`;
 }
 
 export class NotificheNegate extends Error {}
@@ -97,7 +71,7 @@ export async function attivaNotifiche(): Promise<void> {
 
   const { doc, setDoc, serverTimestamp } = await import('firebase/firestore');
   await setDoc(doc(db, 'utenti', utente.uid, 'dispositivi', codice), {
-    piattaforma: piattaforma(),
+    piattaforma: descriviDispositivo(),
     creato: serverTimestamp(),
   });
   scrivi(CHIAVE_CODICE, codice);

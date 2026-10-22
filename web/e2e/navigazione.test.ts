@@ -59,3 +59,18 @@ test('dal profilo si vedono versione e novità', async ({ page }) => {
     page.getByRole('heading', { level: 3, name: new RegExp(`^${version}`) }),
   ).toBeVisible();
 });
+
+test('"Segnala un problema" prepara la mail con versione e dispositivo', async ({ page }) => {
+  const { version } = await import('../../package.json', { with: { type: 'json' } }).then(
+    (m) => m.default,
+  );
+  await page.goto('/informazioni');
+  const link = page.getByRole('link', { name: 'Segnala un problema' });
+  await expect(link).toHaveAttribute('href', /^mailto:aiuto@pizza-party\.net\?/);
+  const url = new URL((await link.getAttribute('href')) ?? '');
+  const testo = url.searchParams.get('body') ?? '';
+  expect(url.searchParams.get('subject')).toBe("Problema con l'app");
+  expect(testo).toContain(`Versione: ${version}`);
+  expect(testo).toMatch(/Dispositivo: (Android · Chrome|iPhone · Safari) · nel browser/);
+  expect(testo).toContain('Account: nessun accesso');
+});
