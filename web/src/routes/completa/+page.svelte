@@ -52,7 +52,7 @@
     if (codice && codiceInvitoValido(codice)) codiceInvito = codice;
 
     const { eLinkDiAccesso, emailRicordata } = await import('$lib/account/azioni');
-    if (__ACCOUNT_ATTIVI__ && eLinkDiAccesso(location.href)) {
+    if (eLinkDiAccesso(location.href)) {
       linkOriginale = location.href;
       // Il codice del link è monouso: lo si toglie dall'indirizzo.
       history.replaceState(null, '', codiceInvito ? `?invito=${codiceInvito}` : location.pathname);

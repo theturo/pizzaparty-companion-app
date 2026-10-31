@@ -35,7 +35,7 @@ export const sessione = $state<{
 let avviata = false;
 
 export async function avviaSessione(): Promise<void> {
-  if (avviata || !__ACCOUNT_ATTIVI__) return;
+  if (avviata) return;
   avviata = true;
   const [{ firebase }, { onAuthStateChanged }, { doc, onSnapshot }] = await Promise.all([
     import('$lib/firebase/app'),

@@ -1,8 +1,6 @@
 <script lang="ts">
-  // Contenitore delle pagine di accesso e registrazione.
-  // Finché gli account non sono attivi (produzione prima della fine del blocco 1) mostra "in arrivo".
+  // Contenitore delle pagine di accesso, registrazione e profilo.
   import type { Snippet } from 'svelte';
-  import SezioneInArrivo from './SezioneInArrivo.svelte';
 
   let {
     titolo,
@@ -15,18 +13,11 @@
   <title>{titolo} · PizzaParty</title>
 </svelte:head>
 
-{#if __ACCOUNT_ATTIVI__}
-  <section>
-    <p class="etichetta">{etichetta}</p>
-    <h1 class="titolo">{titolo}</h1>
-    {@render children()}
-  </section>
-{:else}
-  <SezioneInArrivo
-    {titolo}
-    descrizione="Gli account dell'app arriveranno insieme all'informativa privacy. Ci siamo quasi."
-  />
-{/if}
+<section>
+  <p class="etichetta">{etichetta}</p>
+  <h1 class="titolo">{titolo}</h1>
+  {@render children()}
+</section>
 
 <style>
   section {

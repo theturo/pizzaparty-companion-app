@@ -21,8 +21,6 @@ export default defineConfig(({ mode }) => {
   const build = infoBuild();
   // Emulatori Firebase: sempre in sviluppo, e nelle build di prova con EMULATORI=true (test end-to-end).
   const emulatori = mode === 'development' || process.env.EMULATORI === 'true';
-  // Funzioni con account: nascoste in produzione finché il blocco 1 non è completo (GDPR).
-  const accountAttivi = emulatori || process.env.ACCOUNT_ATTIVI === 'true';
 
   return {
     plugins: [sveltekit()],
@@ -31,7 +29,6 @@ export default defineConfig(({ mode }) => {
       __COMMIT__: JSON.stringify(build.commit),
       __DATA_BUILD__: JSON.stringify(build.data),
       __EMULATORI__: JSON.stringify(emulatori),
-      __ACCOUNT_ATTIVI__: JSON.stringify(accountAttivi),
     },
     // Il CHANGELOG sta nella radice della repo, fuori da web/.
     server: { fs: { allow: ['..'] } },
