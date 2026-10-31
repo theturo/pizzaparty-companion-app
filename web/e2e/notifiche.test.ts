@@ -59,7 +59,7 @@ test("l'approvazione con le notifiche attive va a buon fine", async ({
     .getByRole('button', { name: 'Approva' })
     .click(ATTESA_FUNCTIONS);
 
-  await expect(page.getByText('Approvato', { exact: true })).toBeVisible(ATTESA_FUNCTIONS);
+  await expect(page.getByRole('img', { name: 'Account verificato' })).toBeVisible(ATTESA_FUNCTIONS);
 });
 
 test('"No, grazie" chiude l\'invito, ma l\'interruttore resta nel profilo', async ({

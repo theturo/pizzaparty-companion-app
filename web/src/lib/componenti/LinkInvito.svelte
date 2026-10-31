@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Il link d'invito personale di chi è approvato (D-033): copia, condividi, rigenera.
+  // Il link d'invito personale di chi è approvato (D-033, D-040): mostra, copia, condividi, rigenera.
   import Scheda from './Scheda.svelte';
   import Bottone from './Bottone.svelte';
   import { messaggioErrore } from '$lib/account/errori';
@@ -8,9 +8,12 @@
   let avviso = $state('');
   let confermaRigenera = $state(false);
   let inCorso = $state(false);
+  let visibile = $state(false);
+
+  /** Messaggio pronto per la condivisione: il link si aggiunge in fondo (D-040). */
+  const TESTO_CONDIVISIONE = 'Vieni al PizzaParty! 🍕 Registrati qui:';
 
   const link = $derived(`${location.origin}/registrati?invito=${codice}`);
-  const puoCondividere = typeof navigator !== 'undefined' && 'share' in navigator;
 
   async function copia() {
     try {
@@ -21,16 +24,19 @@
     }
   }
 
+  // Sul telefono si apre la condivisione del sistema (WhatsApp, Telegram…); dove non c'è (PC),
+  // WhatsApp Web con il messaggio già scritto.
   async function condividi() {
-    try {
-      await navigator.share({
-        title: 'PizzaParty',
-        text: "Unisciti all'app del PizzaParty",
-        url: link,
-      });
-    } catch {
-      // Condivisione annullata: niente da fare.
+    const testo = `${TESTO_CONDIVISIONE} ${link}`;
+    if ('share' in navigator) {
+      try {
+        await navigator.share({ text: testo });
+      } catch {
+        // Condivisione annullata: niente da fare.
+      }
+      return;
     }
+    window.open(`https://wa.me/?text=${encodeURIComponent(testo)}`, '_blank', 'noopener');
   }
 
   async function rigenera() {
@@ -50,14 +56,17 @@
 
 <Scheda>
   <p class="etichetta">Il tuo link d'invito</p>
-  <p class="attenuato">
-    Giralo a chi vuoi portare nell'app, per esempio il tuo +1. La richiesta arriverà ad Arturo con
-    il tuo nome.
-  </p>
-  <p class="link"><code>{link}</code></p>
+  <p class="attenuato">Giralo a chi vuoi portare nell'app, per esempio il tuo +1.</p>
+  <p class="attenuato">La richiesta arriverà ad Arturo con il tuo nome.</p>
+  {#if visibile}
+    <p class="link"><code>{link}</code></p>
+  {/if}
   <div class="azioni">
+    <Bottone variante="secondario" aria-expanded={visibile} onclick={() => (visibile = !visibile)}>
+      {visibile ? 'Nascondi' : 'Mostra'}
+    </Bottone>
     <Bottone onclick={copia}>Copia</Bottone>
-    {#if puoCondividere}<Bottone variante="secondario" onclick={condividi}>Condividi</Bottone>{/if}
+    <Bottone onclick={condividi}>Condividi</Bottone>
     {#if confermaRigenera}
       <Bottone variante="secondario" disabled={inCorso} onclick={rigenera}>
         Conferma: nuovo link

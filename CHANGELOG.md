@@ -3,6 +3,13 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.8.0 — 2026-10-31
+
+- Toccando una notifica l'app si apre sulla pagina giusta anche quando era già aperta in background.
+- Le notifiche hanno la loro icona (una fetta di pizza) nella barra del telefono, invece di un pallino.
+- Profilo: badge "verificato" accanto al nome per gli account approvati, pannello admin con un pulsante dedicato, nuova sezione "Gestione account" con l'eliminazione dell'account in due passi.
+- Link d'invito: nascosto finché non tocchi "Mostra", e il nuovo pulsante "Condividi" lo manda su WhatsApp, Telegram o dove vuoi, con un messaggio già pronto.
+
 ## 0.7.0 — 2026-10-31
 
 - Gli account sono aperti: ci si registra con il link via email e una password, e si entra appena Arturo approva la richiesta.

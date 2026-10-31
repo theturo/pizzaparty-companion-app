@@ -46,26 +46,34 @@ sw.addEventListener('push', (evento) => {
     sw.registration.showNotification(dati.titolo || 'PizzaParty', {
       body: dati.testo,
       icon: '/icons/icona-192.png',
-      badge: '/icons/icona-192.png',
+      // Android usa solo la sagoma del badge: serve un'immagine monocromatica su trasparente.
+      badge: '/icons/badge-96.png',
       data: { link: dati.link || '/' },
     }),
   );
 });
 
 // Toccando la notifica si apre (o si porta in primo piano) l'app sulla pagina giusta.
+// Prima il primo piano, poi il cambio di pagina: su Android navigate() può fallire (finestra non
+// controllata da questo service worker) e prima bloccava tutto. In ogni caso di errore si apre
+// una finestra nuova.
 sw.addEventListener('notificationclick', (evento) => {
   evento.notification.close();
   const link = new URL(evento.notification.data?.link ?? '/', sw.location.origin).href;
   evento.waitUntil(
     (async () => {
       const finestre = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      const finestra = finestre[0];
+      const finestra = finestre.find((f) => new URL(f.url).origin === sw.location.origin);
       if (finestra) {
-        await finestra.navigate(link);
-        await finestra.focus();
-      } else {
-        await sw.clients.openWindow(link);
+        try {
+          const inPrimoPiano = await finestra.focus();
+          if (inPrimoPiano.url !== link) await inPrimoPiano.navigate(link);
+          return;
+        } catch {
+          // Si prosegue con una finestra nuova.
+        }
       }
+      await sw.clients.openWindow(link);
     })(),
   );
 });

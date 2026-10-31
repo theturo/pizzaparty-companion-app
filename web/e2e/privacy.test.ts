@@ -54,7 +54,16 @@ test('i tuoi dati: pagina leggibile e file JSON completo', async ({ page }) => {
 test("eliminazione dell'account: serve la password, poi non resta nulla", async ({ page }) => {
   const email = emailDiProva('addio');
   await registra(page, { email, nome: 'Di Passaggio' });
-  await page.getByRole('link', { name: "Elimina l'account" }).click();
+  // Primo passo (D-040): la finestra di conferma, che si può annullare.
+  await page.getByRole('button', { name: "Elimina l'account" }).click();
+  const conferma = page.getByRole('dialog', { name: "Vuoi davvero eliminare l'account?" });
+  await expect(conferma).toBeVisible();
+  await conferma.getByRole('button', { name: 'Annulla' }).click();
+  await expect(conferma).toBeHidden();
+  await expect(page).toHaveURL('/profilo');
+  await page.getByRole('button', { name: "Elimina l'account" }).click();
+  await conferma.getByRole('button', { name: 'Continua' }).click();
+  await expect(page).toHaveURL('/profilo/elimina');
 
   await page.getByLabel('Per sicurezza, reinserisci la password').fill('password-sbagliata');
   await page.getByLabel(/non si può annullare/).check();
