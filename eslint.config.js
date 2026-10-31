@@ -29,7 +29,6 @@ export default ts.config(
         ...globals.node,
         // Interruttori iniettati da Vite al momento della build (web/vite.config.ts).
         __EMULATORI__: 'readonly',
-        __ACCOUNT_ATTIVI__: 'readonly',
       },
     },
   },

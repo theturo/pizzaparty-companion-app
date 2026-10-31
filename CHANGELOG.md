@@ -3,6 +3,11 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.7.0 — 2026-10-31
+
+- Gli account sono aperti: ci si registra con il link via email e una password, e si entra appena Arturo approva la richiesta.
+- Ora visibili tutte le funzioni preparate nelle versioni precedenti: profilo con nome e avatar, link d'invito personale, cambio password, "I tuoi dati" con download, eliminazione dell'account e notifiche push.
+
 ## 0.6.1 — 2026-10-31
 
 - La pagina dei link nelle email gestisce anche il ripristino dell'indirizzo: se qualcuno cambia l'email del tuo account, il link ricevuto all'indirizzo vecchio lo annulla e invita a scegliere una nuova password.

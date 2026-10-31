@@ -84,7 +84,7 @@ Serve Java 21: va bene una JDK di sistema oppure la [Temurin](https://adoptium.n
 
 - Accesso con **link email per verificare, poi password**.
 - In sviluppo (`npm run dev`) e nei test l'app usa **sempre gli emulatori**: per provare la registrazione avvia prima `npm run emulatori`. I link "mandati via email" si leggono nell'interfaccia degli emulatori, alla voce Authentication.
-- **In produzione le pagine degli account restano nascoste** finché non sono pronti informativa, approvazione e cancellazione dei dati. Lo decide l'interruttore `ACCOUNT_ATTIVI` in `web/vite.config.ts`.
+- **Account attivi in produzione dalla 0.7.0**: registrazione aperta, ogni richiesta resta in attesa finché un admin non la approva.
 
 ### Cloud Functions
 
