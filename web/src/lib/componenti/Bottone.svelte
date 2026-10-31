@@ -6,7 +6,10 @@
     variante = 'primario',
     children,
     ...attributi
-  }: { variante?: 'primario' | 'secondario'; children: Snippet } & HTMLButtonAttributes = $props();
+  }: {
+    variante?: 'primario' | 'secondario' | 'pericolo';
+    children: Snippet;
+  } & HTMLButtonAttributes = $props();
 </script>
 
 <button class={variante} {...attributi}>{@render children()}</button>
@@ -36,5 +39,11 @@
     background: var(--colore-sfondo-2);
     color: var(--colore-testo);
     box-shadow: inset 0 0 0 1px var(--colore-accento-scuro);
+  }
+  /* Azioni che non si possono annullare (es. eliminare l'account). */
+  .pericolo {
+    background: var(--colore-sfondo-2);
+    color: var(--colore-secondario);
+    box-shadow: inset 0 0 0 1px var(--colore-secondario);
   }
 </style>

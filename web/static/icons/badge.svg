@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <!-- Icona della barra di stato (badge) delle notifiche: solo sagoma bianca su trasparente.
+       Provvisoria (D-040): una fetta di pizza, da sostituire nella sessione grafica. -->
+  <path fill="#fff" fill-rule="evenodd" d="M12 20 Q48 2 84 20 L80 29 Q48 14 16 29 Z M18 34 Q48 20 78 34 L48 92 Z M40 42 a6 6 0 1 0 0.01 0 Z M58 52 a5 5 0 1 0 0.01 0 Z M45 64 a5 5 0 1 0 0.01 0 Z"/>
+</svg>

@@ -36,9 +36,16 @@ test("l'admin approva: la persona lo vede subito e riceve il suo link d'invito",
   await expect(scheda).toHaveCount(0, ATTESA_FUNCTIONS);
 
   // Dall'altra parte, senza ricaricare: stato aggiornato e link d'invito.
-  await expect(page.getByText('Approvato', { exact: true })).toBeVisible(ATTESA_FUNCTIONS);
+  await expect(page.getByRole('img', { name: 'Account verificato' })).toBeVisible(ATTESA_FUNCTIONS);
+  await expect(page.getByText('In attesa di approvazione')).toHaveCount(0);
   await expect(page.getByText("Il tuo link d'invito")).toBeVisible(ATTESA_FUNCTIONS);
+  // Il link resta nascosto finché non si tocca "Mostra" (D-040).
+  await expect(page.locator('.link code')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Mostra' }).click();
   await expect(page.locator('.link code')).toContainText('/registrati?invito=');
+  await page.getByRole('button', { name: 'Nascondi' }).click();
+  await expect(page.locator('.link code')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Condividi' })).toBeVisible();
 });
 
 test("chi arriva da un link d'invito porta il nome di chi l'ha invitato; il rifiuto cancella", async ({
@@ -54,7 +61,8 @@ test("chi arriva da un link d'invito porta il nome di chi l'ha invitato; il rifi
     .locator('.scheda', { hasText: giulia })
     .getByRole('button', { name: 'Approva' })
     .click(ATTESA_FUNCTIONS);
-  await expect(page.locator('.link code')).toBeVisible(ATTESA_FUNCTIONS);
+  await page.getByRole('button', { name: 'Mostra' }).click(ATTESA_FUNCTIONS);
+  await expect(page.locator('.link code')).toBeVisible();
   const linkInvito = new URL((await page.locator('.link code').textContent())!.trim());
   const codice = linkInvito.searchParams.get('invito')!;
 
