@@ -3,6 +3,10 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.6.1 — 2026-10-31
+
+- La pagina dei link nelle email gestisce anche il ripristino dell'indirizzo: se qualcuno cambia l'email del tuo account, il link ricevuto all'indirizzo vecchio lo annulla e invita a scegliere una nuova password.
+
 ## 0.6.0 — 2026-10-21
 
 - Pulsante "Segnala un problema" in Informazioni: apre una mail per aiuto@pizza-party.net con versione, dispositivo e codice dell'account già compilati.

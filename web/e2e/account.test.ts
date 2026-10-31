@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { creaAccount, emailDiProva, ultimoLink } from './emulatori';
+import { cambiaEmail, creaAccount, emailDiProva, ultimoLink } from './emulatori';
 import { esci } from './aiuti';
 
 test('registrazione completa con link d\'invito: link email, password, profilo "in attesa"', async ({
@@ -108,4 +108,28 @@ test('password dimenticata: link email, nuova password, accesso', async ({ page 
   await page.getByLabel('Password').fill('pizza-nuova-1');
   await page.getByRole('button', { name: 'Accedi' }).click();
   await expect(page).toHaveURL('/profilo');
+});
+
+test("ripristino dell'email: il link annulla il cambio di indirizzo", async ({ page }) => {
+  const email = emailDiProva('derubato');
+  const nuova = emailDiProva('ladro');
+  await creaAccount(email, 'pizza-sicura');
+  await cambiaEmail(email, 'pizza-sicura', nuova);
+
+  const link = await ultimoLink(email, 'RECOVER_EMAIL');
+  await page.goto(`/azione${link.search}`);
+  await expect(page.getByRole('status')).toContainText(`è tornato a ${email}`);
+  await expect(page.getByRole('link', { name: 'Scegli una nuova password' })).toBeVisible();
+
+  // Con l'indirizzo di prima si rientra.
+  await page.goto('/accedi');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill('pizza-sicura');
+  await page.getByRole('button', { name: 'Accedi' }).click();
+  await expect(page).toHaveURL('/profilo');
+});
+
+test('un link di ripristino non valido mostra un errore chiaro', async ({ page }) => {
+  await page.goto('/azione?mode=recoverEmail&oobCode=codice-inventato');
+  await expect(page.getByRole('alert')).toContainText('Il link non è più valido');
 });

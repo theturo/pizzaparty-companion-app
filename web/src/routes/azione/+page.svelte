@@ -1,5 +1,6 @@
 <script lang="ts">
-  // Pagina d'arrivo dei link nelle email di Firebase (D-029): nuova password, verifica email, accesso.
+  // Pagina d'arrivo dei link nelle email di Firebase (D-029, D-039): nuova password, verifica e
+  // ripristino dell'email, accesso. Gestisce tutti i modi del gestore standard di Firebase.
   import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
@@ -7,7 +8,13 @@
   import { controllaPassword, PASSWORD_MIN } from '$lib/account/profilo';
   import { messaggioErrore } from '$lib/account/errori';
 
-  type Fase = 'verifica' | 'nuova-password' | 'password-cambiata' | 'email-confermata' | 'errore';
+  type Fase =
+    | 'verifica'
+    | 'nuova-password'
+    | 'password-cambiata'
+    | 'email-confermata'
+    | 'email-ripristinata'
+    | 'errore';
   let fase = $state<Fase>('verifica');
   let errore = $state('');
   let email = $state('');
@@ -32,6 +39,9 @@
       } else if (modo === 'verifyEmail') {
         await azioni.confermaEmail(codice);
         fase = 'email-confermata';
+      } else if (modo === 'recoverEmail') {
+        email = await azioni.ripristinaEmail(codice);
+        fase = 'email-ripristinata';
       } else {
         errore = 'Link non riconosciuto.';
         fase = 'errore';
@@ -82,6 +92,14 @@
   {:else if fase === 'email-confermata'}
     <p class="messaggio-ok" role="status">Email confermata.</p>
     <p><a href={resolve('/profilo')}>Vai al profilo</a></p>
+  {:else if fase === 'email-ripristinata'}
+    <p class="messaggio-ok" role="status">
+      L'indirizzo del tuo account è tornato a <strong>{email}</strong>.
+    </p>
+    <p class="attenuato">
+      Se non avevi chiesto tu il cambio, per sicurezza scegli subito una nuova password.
+    </p>
+    <p><a href={resolve('/password-dimenticata')}>Scegli una nuova password</a></p>
   {:else}
     <p class="messaggio-errore" role="alert">{errore}</p>
     <p><a href={resolve('/accedi')}>Torna all'accesso</a></p>
