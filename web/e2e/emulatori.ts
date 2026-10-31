@@ -9,7 +9,7 @@ export const emailDiProva = (nome: string) =>
 interface CodiceEmail {
   email: string;
   oobLink: string;
-  requestType: 'EMAIL_SIGNIN' | 'PASSWORD_RESET' | 'VERIFY_EMAIL';
+  requestType: 'EMAIL_SIGNIN' | 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL';
 }
 
 /** L'ultimo link che l'app ha "mandato via email" a quell'indirizzo, letto dall'emulatore. */
@@ -49,4 +49,26 @@ export async function rendiAdmin(uid: string): Promise<void> {
     },
   );
   if (!risposta.ok) throw new Error(`Permesso admin non assegnato: ${await risposta.text()}`);
+}
+
+/** Cambia l'email di un account come farebbe l'utente stesso: Firebase prepara il link per annullarlo. */
+export async function cambiaEmail(email: string, password: string, nuova: string): Promise<void> {
+  const chiama = async (metodo: string, corpo: object) => {
+    const risposta = await fetch(
+      `${AUTH}/identitytoolkit.googleapis.com/v1/accounts:${metodo}?key=chiave-finta`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      },
+    );
+    if (!risposta.ok) throw new Error(`${metodo}: ${await risposta.text()}`);
+    return (await risposta.json()) as { idToken: string };
+  };
+  const { idToken } = await chiama('signInWithPassword', {
+    email,
+    password,
+    returnSecureToken: true,
+  });
+  await chiama('update', { idToken, email: nuova, returnSecureToken: true });
 }

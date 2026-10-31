@@ -9,6 +9,7 @@ import {
   verifyPasswordResetCode,
   confirmPasswordReset,
   applyActionCode,
+  checkActionCode,
   signOut,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -111,6 +112,14 @@ export async function impostaNuovaPassword(codice: string, password: string) {
 
 export async function confermaEmail(codice: string) {
   await applyActionCode(firebase().auth, codice);
+}
+
+/** Annulla un cambio di indirizzo: l'account torna all'email precedente, che viene restituita. */
+export async function ripristinaEmail(codice: string): Promise<string> {
+  const { auth } = firebase();
+  const informazioni = await checkActionCode(auth, codice);
+  await applyActionCode(auth, codice);
+  return informazioni.data.email ?? '';
 }
 
 // ---- Approvazione e inviti (Cloud Functions, D-034) ----
