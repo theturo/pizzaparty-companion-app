@@ -9,10 +9,24 @@ const SEZIONI = [
   { nome: 'Profilo', percorso: '/profilo', titolo: 'Profilo' },
 ];
 
+/**
+ * Connessioni di Firebase interrotte da un ricaricamento della pagina: WebKit le scrive in console
+ * come errori, Chromium no. Non sono difetti dell'app, quindi si ignorano (solo queste).
+ */
+const RETE_INTERROTTA = [
+  /auth\/network-request-failed/,
+  /Could not reach Cloud Firestore backend/,
+  /Firestore\/(Listen|Write)\/channel.*due to access control checks/,
+];
+
 /** Raccoglie errori della console e violazioni della CSP durante il test. */
 function sorvegliaErrori(page: Page): string[] {
   const errori: string[] = [];
-  page.on('console', (m) => m.type() === 'error' && errori.push(m.text()));
+  page.on('console', (m) => {
+    if (m.type() !== 'error') return;
+    const testo = m.text();
+    if (!RETE_INTERROTTA.some((r) => r.test(testo))) errori.push(testo);
+  });
   page.on('pageerror', (e) => errori.push(e.message));
   return errori;
 }
