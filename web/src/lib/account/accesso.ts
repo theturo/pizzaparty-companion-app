@@ -7,10 +7,11 @@ export interface StatoSessione {
   stato: 'caricamento' | 'ospite' | 'connesso';
   profilo: { stato: StatoAccount } | null;
   profiloCaricato: boolean;
+  erroreProfilo: boolean;
 }
 
 /** Fasi di chi è dentro l'app o ne è fuori, con la pagina d'ingresso adatta a ciascuna. */
-export type FaseIngresso = 'ospite' | 'senza_profilo' | 'in_attesa' | 'sospeso';
+export type FaseIngresso = 'ospite' | 'senza_profilo' | 'in_attesa' | 'sospeso' | 'errore';
 export type Fase = 'caricamento' | 'approvato' | FaseIngresso;
 
 /** Sezioni riservate agli account approvati. `/profilo` e le pagine legali restano aperte a tutti. */
@@ -21,6 +22,8 @@ export function faseAccesso(s: StatoSessione): Fase {
   if (s.stato === 'caricamento') return 'caricamento';
   if (s.stato === 'ospite') return 'ospite';
   if (!s.profiloCaricato) return 'caricamento';
+  // Un profilo illeggibile non è un profilo mancante: non si manda a "completa la registrazione".
+  if (s.erroreProfilo) return 'errore';
   if (!s.profilo) return 'senza_profilo';
   switch (s.profilo.stato) {
     case 'approvato':

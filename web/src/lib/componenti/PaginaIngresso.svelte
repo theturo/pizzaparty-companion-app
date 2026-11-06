@@ -12,22 +12,29 @@
 
   let { fase }: { fase: FaseIngresso } = $props();
 
-  const TESTI: Record<FaseIngresso, { etichetta: string; titolo: string; righe: string[] }> = {
-    ospite: {
+  interface Testi {
+    etichetta: string;
+    titolo: string;
+    righe: string[];
+  }
+
+  // Chi non ha ancora fatto accesso e chi deve completare la registrazione leggono lo stesso testo.
+  const OSPITE: Testi = {
+    etichetta: 'PizzaParty',
+    titolo: 'La serata comincia qui.',
+    righe: [
+      "L'app degli invitati del PizzaParty:",
+      'check-in, trofei, foto e ordini della serata.',
+    ],
+  };
+
+  const TESTI: Record<FaseIngresso, Testi> = {
+    ospite: OSPITE,
+    senza_profilo: OSPITE,
+    errore: {
       etichetta: 'PizzaParty',
-      titolo: 'La serata comincia qui.',
-      righe: [
-        "L'app degli invitati del PizzaParty:",
-        'check-in, trofei, foto e ordini della serata.',
-      ],
-    },
-    senza_profilo: {
-      etichetta: 'PizzaParty',
-      titolo: 'La serata comincia qui.',
-      righe: [
-        "L'app degli invitati del PizzaParty:",
-        'check-in, trofei, foto e ordini della serata.',
-      ],
+      titolo: 'Non riesco a caricare il tuo account.',
+      righe: ['Controlla la connessione e riprova.'],
     },
     in_attesa: {
       etichetta: 'PizzaParty',
@@ -85,6 +92,9 @@
       <a class="pulsante secondario" href={resolve('/registrati')}>Registrati</a>
     {:else if fase === 'senza_profilo'}
       <a class="pulsante" href={resolve('/profilo')}>Completa la registrazione</a>
+    {:else if fase === 'errore'}
+      <Bottone onclick={() => location.reload()}>Riprova</Bottone>
+      <Bottone variante="secondario" onclick={esci}>Esci</Bottone>
     {:else}
       <a class="pulsante" href={resolve('/profilo')}>Profilo</a>
       <Bottone variante="secondario" onclick={esci}>Esci</Bottone>
@@ -107,10 +117,11 @@
 </section>
 
 <style>
+  /* Centrata in verticale come la Home degli approvati. */
   section {
-    min-height: 70dvh;
+    min-height: 60dvh;
     display: grid;
-    align-content: center;
+    place-content: center;
     justify-items: center;
     gap: var(--spazio-4);
     text-align: center;

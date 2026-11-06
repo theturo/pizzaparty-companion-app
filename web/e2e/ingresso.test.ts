@@ -141,6 +141,23 @@ test('connesso senza profilo: "Completa la registrazione" porta al profilo', asy
   await expect(page).toHaveURL('/profilo');
 });
 
+test("approvato: aprendo /trofei direttamente, l'ingresso non compare mai", async ({ page }) => {
+  await accediComeApprovato(page);
+
+  // Ogni navigazione del frame principale (caricamento e reindirizzamenti, anche senza ricarica).
+  const percorsi: string[] = [];
+  page.on('framenavigated', (frame) => {
+    if (frame === page.mainFrame()) percorsi.push(new URL(frame.url()).pathname);
+  });
+
+  await page.goto('/trofei');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Trofei');
+  expect(new URL(page.url()).pathname).toBe('/trofei');
+  expect(percorsi.length).toBeGreaterThan(0);
+  expect(percorsi).not.toContain('/');
+  await expect(page.getByText(TITOLO_OSPITE)).toHaveCount(0);
+});
+
 test('approvato: Home con la barra, le sezioni si aprono', async ({ page }) => {
   await accediComeApprovato(page);
 

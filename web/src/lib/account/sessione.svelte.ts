@@ -24,12 +24,15 @@ export const sessione = $state<{
   /** null = profilo non ancora creato (registrazione da completare). */
   profilo: Profilo | null;
   profiloCaricato: boolean;
+  /** true se il profilo non si è potuto leggere: non vuol dire "senza profilo" (D-045). */
+  erroreProfilo: boolean;
 }>({
   stato: 'caricamento',
   utente: null,
   permessi: NESSUN_PERMESSO,
   profilo: null,
   profiloCaricato: false,
+  erroreProfilo: false,
 });
 
 let avviata = false;
@@ -63,6 +66,7 @@ export async function avviaSessione(): Promise<void> {
         permessi: NESSUN_PERMESSO,
         profilo: null,
         profiloCaricato: true,
+        erroreProfilo: false,
       });
       return;
     }
@@ -73,20 +77,24 @@ export async function avviaSessione(): Promise<void> {
       emailVerificata: utente.emailVerified,
     };
     sessione.profiloCaricato = false;
+    sessione.erroreProfilo = false;
     void leggiPermessi();
     smettiProfilo = onSnapshot(
       doc(db, 'utenti', utente.uid),
       (istantanea) => {
         sessione.profilo = istantanea.exists() ? (istantanea.data() as Profilo) : null;
         sessione.profiloCaricato = true;
+        sessione.erroreProfilo = false;
         // Appena l'admin approva, il token va rinnovato per avere il permesso "approvato".
         if (sessione.profilo?.stato === 'approvato' && !sessione.permessi.approvato) {
           void leggiPermessi(true);
         }
       },
       () => {
+        // Errore di lettura: il profilo esiste ancora, quindi non è "senza profilo".
         sessione.profilo = null;
         sessione.profiloCaricato = true;
+        sessione.erroreProfilo = true;
       },
     );
   });
