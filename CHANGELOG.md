@@ -3,6 +3,10 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.9.0 — 2026-11-06
+
+- Pagina d'ingresso: chi non ha ancora accesso, o aspetta l'approvazione, vede una pagina dedicata con lo stato del suo account. Le sezioni (trofei, pizzagram, ordina) e la barra in basso compaiono solo quando l'account è approvato.
+
 ## 0.8.0 — 2026-10-31
 
 - Toccando una notifica l'app si apre sulla pagina giusta anche quando era già aperta in background.

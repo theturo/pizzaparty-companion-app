@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { accediComeApprovato } from './aiuti';
 
 test('la vetrina cambia tema e uscendo torna quello predefinito', async ({ page }) => {
+  // La barra in basso (per tornare alla Home) è riservata agli account approvati.
+  await accediComeApprovato(page);
   await page.goto('/stile');
   const radice = page.locator('html');
   await expect(radice).toHaveAttribute('data-tema', 'pizzaparty-2026');

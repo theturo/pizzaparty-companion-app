@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { accediComeApprovato } from './aiuti';
 
 const SEZIONI = [
   { nome: 'Home', percorso: '/', titolo: 'Il forno si sta scaldando.' },
@@ -16,8 +17,10 @@ function sorvegliaErrori(page: Page): string[] {
   return errori;
 }
 
+// La barra e le sezioni sono riservate agli account approvati (D-045): si prova con uno di loro.
 test('la barra porta a tutte le sezioni', async ({ page }) => {
   const errori = sorvegliaErrori(page);
+  await accediComeApprovato(page);
   await page.goto('/');
   const barra = page.getByRole('navigation', { name: 'Sezioni' });
   await expect(barra.getByRole('link')).toHaveCount(SEZIONI.length);
@@ -33,6 +36,7 @@ test('la barra porta a tutte le sezioni', async ({ page }) => {
 
 test('ogni pagina si apre direttamente, senza errori', async ({ page }) => {
   const errori = sorvegliaErrori(page);
+  await accediComeApprovato(page);
   for (const { percorso, titolo } of SEZIONI) {
     await page.goto(percorso);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(titolo);

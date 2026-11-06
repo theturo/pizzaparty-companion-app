@@ -1,6 +1,12 @@
 <script lang="ts">
   import Dinosauro from '$lib/componenti/Dinosauro.svelte';
   import Pellicola from '$lib/componenti/Pellicola.svelte';
+  import PaginaIngresso from '$lib/componenti/PaginaIngresso.svelte';
+  import { faseAccesso } from '$lib/account/accesso';
+  import { sessione } from '$lib/account/sessione.svelte';
+
+  // Chi non è approvato vede la pagina d'ingresso (D-045); finché lo stato non è noto, nulla.
+  const fase = $derived(faseAccesso(sessione));
 </script>
 
 <svelte:head>
@@ -8,18 +14,22 @@
   <meta name="description" content="L'app che accompagna il PizzaParty. In costruzione." />
 </svelte:head>
 
-<section>
-  <p class="etichetta">Companion App</p>
-  <h1 class="titolo">Il forno si sta scaldando.</h1>
-  <p class="attenuato">
-    Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in
-    primavera.
-  </p>
-  <div class="mascotte">
-    <Dinosauro larghezza={180} cappellino />
-    <Pellicola />
-  </div>
-</section>
+{#if fase === 'approvato'}
+  <section>
+    <p class="etichetta">Companion App</p>
+    <h1 class="titolo">Il forno si sta scaldando.</h1>
+    <p class="attenuato">
+      Qui arriveranno il countdown alla prossima edizione e il check-in della serata. Ci vediamo in
+      primavera.
+    </p>
+    <div class="mascotte">
+      <Dinosauro larghezza={180} cappellino />
+      <Pellicola />
+    </div>
+  </section>
+{:else if fase !== 'caricamento'}
+  <PaginaIngresso {fase} />
+{/if}
 
 <style>
   section {

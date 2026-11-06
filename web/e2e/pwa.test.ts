@@ -27,9 +27,10 @@ test("l'app è installabile e si apre senza rete", async ({ page, context, brows
   await page.reload();
 
   await context.setOffline(true);
-  await page.goto('/trofei');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Trofei');
+  await page.goto('/privacy');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Informativa privacy');
   await page.goto('/una-pagina-mai-vista');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Il forno si sta scaldando.');
+  // Senza accesso, la Home è la pagina d'ingresso (D-045).
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('La serata comincia qui.');
   await context.setOffline(false);
 });
