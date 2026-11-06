@@ -117,9 +117,12 @@
 </section>
 
 <style>
-  /* Centrata in verticale come la Home degli approvati. */
+  /* Centrata in verticale nello schermo: tutta l'altezza meno i margini del main (senza barra). */
   section {
-    min-height: 60dvh;
+    min-height: calc(
+      100dvh - var(--spazio-4) - var(--spazio-5) - env(safe-area-inset-top) -
+        env(safe-area-inset-bottom)
+    );
     display: grid;
     place-content: center;
     justify-items: center;
