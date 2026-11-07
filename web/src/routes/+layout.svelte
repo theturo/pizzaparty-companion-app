@@ -33,7 +33,7 @@
   {/if}
 </main>
 
-<BannerAggiornamento />
+<BannerAggiornamento conBarra={barra} />
 {#if barra}
   <BarraNavigazione />
 {/if}
@@ -48,5 +48,28 @@
   }
   main.con-barra {
     padding-bottom: calc(var(--altezza-barra) + var(--spazio-5) + env(safe-area-inset-bottom));
+  }
+
+  /* Da 900px in su (PC, D-047), solo con la barra laterale: il contenuto sta a destra della barra
+     e la colonna è centrata nello spazio rimasto, larga al massimo --larghezza-contenuto-ampio.
+     Senza barra (pagina d'ingresso) resta com'è: 560px. La soglia è sempre 900px. */
+  @media (min-width: 900px) {
+    main.con-barra {
+      /* Colonna: al massimo 960px, e in ogni caso lo spazio a destra della barra. */
+      --colonna: min(var(--larghezza-contenuto-ampio), 100% - var(--larghezza-barra-laterale));
+      width: var(--colonna);
+      max-width: none;
+      margin-top: 0;
+      margin-bottom: 0;
+      margin-right: auto;
+      /* Centrata nello spazio rimasto, a destra della barra. */
+      margin-left: calc(
+        var(--larghezza-barra-laterale) +
+          (100% - var(--larghezza-barra-laterale) - var(--colonna)) / 2
+      );
+      padding-left: var(--spazio-5);
+      padding-right: var(--spazio-5);
+      padding-bottom: calc(var(--spazio-5) + env(safe-area-inset-bottom));
+    }
   }
 </style>

@@ -28,6 +28,10 @@
 
   --larghezza-contenuto: 560px;
   --altezza-barra: 64px;
+  /* Versione per PC (D-047). La soglia è 900px nelle media query, che non possono usare variabili:
+     va scritta sempre uguale in tutti i file (es. BarraNavigazione, +layout, BannerAggiornamento). */
+  --larghezza-barra-laterale: 220px;
+  --larghezza-contenuto-ampio: 960px;
   --durata-breve: 150ms;
   --durata-media: 250ms;
   color-scheme: dark;
