@@ -97,3 +97,61 @@ test('"Segnala un problema" prepara la mail con versione e dispositivo', async (
   expect(testo).toMatch(/Dispositivo: (Android · Chrome|iPhone · Safari) · nel browser/);
   expect(testo).toContain('Account: nessun accesso');
 });
+
+// Versione per PC (D-047): da 900px in su la barra è a sinistra; sotto resta in basso come sul telefono.
+test.describe('su computer (1280×800)', () => {
+  // Il progetto emula un telefono: qui si toglie l'emulazione mobile, si prova il PC vero e proprio.
+  test.use({ viewport: { width: 1280, height: 800 }, isMobile: false, hasTouch: false });
+
+  test('barra laterale a sinistra, contenuto in colonna, nessuno scorrimento orizzontale', async ({
+    page,
+  }) => {
+    await accediComeApprovato(page);
+    await page.goto('/');
+    const barra = page.getByRole('navigation', { name: 'Sezioni' });
+    await expect(barra.getByRole('link')).toHaveCount(SEZIONI.length);
+
+    const b = await barra.boundingBox();
+    expect(b).not.toBeNull();
+    expect(b!.x).toBe(0);
+    expect(b!.width).toBeGreaterThanOrEqual(219);
+    expect(b!.width).toBeLessThanOrEqual(221);
+    expect(b!.height).toBe(800);
+    await expect(barra.getByText('PizzaParty', { exact: true })).toBeVisible();
+
+    const colonna = await page.locator('main').boundingBox();
+    expect(colonna).not.toBeNull();
+    expect(colonna!.x).toBeGreaterThanOrEqual(b!.x + b!.width);
+    expect(colonna!.width).toBeLessThanOrEqual(960);
+
+    const scorrimento = await page.evaluate(() => ({
+      largo: document.documentElement.scrollWidth,
+      visibile: document.documentElement.clientWidth,
+    }));
+    expect(scorrimento.largo).toBeLessThanOrEqual(scorrimento.visibile);
+
+    await barra.getByRole('link', { name: 'Trofei' }).click();
+    await expect(page).toHaveURL('/trofei');
+    await expect(barra.getByRole('link', { name: 'Trofei' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+  });
+});
+
+test.describe('sul telefono (390×844)', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('barra in basso, come prima, senza il nome PizzaParty', async ({ page }) => {
+    await accediComeApprovato(page);
+    await page.goto('/');
+    const barra = page.getByRole('navigation', { name: 'Sezioni' });
+    await expect(barra.getByRole('link')).toHaveCount(SEZIONI.length);
+
+    const b = await barra.boundingBox();
+    expect(b).not.toBeNull();
+    expect(b!.y + b!.height).toBe(844);
+    expect(Math.abs(b!.height - 64)).toBeLessThan(1);
+    await expect(barra.getByText('PizzaParty', { exact: true })).toBeHidden();
+  });
+});
