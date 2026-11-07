@@ -122,7 +122,11 @@ test.describe('su computer (1280×800)', () => {
     const colonna = await page.locator('main').boundingBox();
     expect(colonna).not.toBeNull();
     expect(colonna!.x).toBeGreaterThanOrEqual(b!.x + b!.width);
-    expect(colonna!.width).toBeLessThanOrEqual(960);
+    // A 1280px c'è posto per la colonna intera (960px), centrata nello spazio a destra della barra.
+    expect(Math.abs(colonna!.width - 960)).toBeLessThan(1);
+    const aSinistra = colonna!.x - (b!.x + b!.width);
+    const aDestra = 1280 - (colonna!.x + colonna!.width);
+    expect(Math.abs(aSinistra - aDestra)).toBeLessThan(1);
 
     const scorrimento = await page.evaluate(() => ({
       largo: document.documentElement.scrollWidth,

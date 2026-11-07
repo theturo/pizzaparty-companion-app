@@ -41,6 +41,8 @@
   @media (min-width: 900px) {
     .banner {
       bottom: calc(var(--spazio-4) + env(safe-area-inset-bottom));
+      /* Largo quanto il suo contenuto, non quanto la colonna. */
+      width: fit-content;
       max-width: var(--larghezza-contenuto-ampio);
       margin-inline: auto;
     }
