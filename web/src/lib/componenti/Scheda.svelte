@@ -13,7 +13,8 @@
     padding: var(--spazio-4);
     display: grid;
     gap: var(--spazio-2);
-    animation: comparsa-scheda var(--durata-media) var(--curva-uscita) both;
+    /* backwards: finita la comparsa l'animazione si toglie, e non fa da riferimento agli elementi fissi. */
+    animation: comparsa-scheda var(--durata-media) var(--curva-uscita) backwards;
   }
   /* Compare dal basso e dissolvendosi, una volta sola (D-048). */
   @keyframes comparsa-scheda {

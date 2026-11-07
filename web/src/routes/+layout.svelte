@@ -56,7 +56,8 @@
 
   /* Ogni sezione compare con una breve dissolvenza quando la apri (solo entrata, D-048). */
   .sezione {
-    animation: entrata-sezione var(--durata-media) var(--curva-uscita) both;
+    /* backwards: finita l'entrata l'animazione si toglie, e non fa da riferimento agli elementi fissi. */
+    animation: entrata-sezione var(--durata-media) var(--curva-uscita) backwards;
   }
   @keyframes entrata-sezione {
     from {

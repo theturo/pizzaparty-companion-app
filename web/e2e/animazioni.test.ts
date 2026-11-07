@@ -35,8 +35,7 @@ test.describe('senza preferenze', () => {
 
     await pulsante.hover();
     await page.mouse.down();
-    // Dopo la durata della transizione (150ms) il pulsante è già schiacciato.
-    await page.waitForTimeout(250);
+    // Si aspetta che la transizione (150ms) porti il pulsante a schiacciarsi.
     await expect
       .poll(() => pulsante.evaluate((el) => getComputedStyle(el).transform))
       .not.toBe('none');
