@@ -6,6 +6,7 @@
   import { resolve } from '$app/paths';
   import BarraNavigazione from '$lib/componenti/BarraNavigazione.svelte';
   import BannerAggiornamento from '$lib/componenti/BannerAggiornamento.svelte';
+  import Caricamento from '$lib/componenti/Caricamento.svelte';
   import { registraServiceWorker } from '$lib/pwa/aggiornamenti.svelte';
   import { avviaSessione, sessione } from '$lib/account/sessione.svelte';
   import { decisioneSu, mostraBarra } from '$lib/account/accesso';
@@ -34,6 +35,8 @@
         {@render children()}
       </div>
     {/key}
+  {:else if decisione === 'attendi'}
+    <Caricamento />
   {/if}
 </main>
 

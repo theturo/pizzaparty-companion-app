@@ -2,6 +2,7 @@
   import Dinosauro from '$lib/componenti/Dinosauro.svelte';
   import Pellicola from '$lib/componenti/Pellicola.svelte';
   import PaginaIngresso from '$lib/componenti/PaginaIngresso.svelte';
+  import Caricamento from '$lib/componenti/Caricamento.svelte';
   import { faseAccesso } from '$lib/account/accesso';
   import { sessione } from '$lib/account/sessione.svelte';
 
@@ -23,11 +24,13 @@
       primavera.
     </p>
     <div class="mascotte">
-      <Dinosauro larghezza={180} cappellino />
+      <Dinosauro posa="saluta" larghezza={180} />
       <Pellicola />
     </div>
   </section>
-{:else if fase !== 'caricamento'}
+{:else if fase === 'caricamento'}
+  <Caricamento />
+{:else}
   <PaginaIngresso {fase} />
 {/if}
 
