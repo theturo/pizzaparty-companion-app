@@ -1,10 +1,14 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
+  import { browser } from '$app/environment';
   import Bottone from './Bottone.svelte';
   import { pwa, aggiorna } from '$lib/pwa/aggiornamenti.svelte';
 
   // Con la barra laterale (PC, D-047) il banner sta a destra di lei.
   let { conBarra = false }: { conBarra?: boolean } = $props();
+
+  // Con "riduci movimento" attivo il banner compare senza scorrere (D-048). Solo nel browser.
+  const movimentoRidotto = browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 </script>
 
 {#if pwa.nuovaVersione}
@@ -12,7 +16,7 @@
     class="banner"
     class:con-barra={conBarra}
     role="status"
-    transition:fly={{ y: 24, duration: 250 }}
+    transition:fly={{ y: 24, duration: movimentoRidotto ? 0 : 250 }}
   >
     <span>È disponibile una nuova versione.</span>
     <Bottone onclick={aggiorna}>Aggiorna</Bottone>

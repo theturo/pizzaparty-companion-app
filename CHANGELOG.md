@@ -3,6 +3,10 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.11.0 — 2026-11-07
+
+- Pulsanti e voci della barra rispondono al tocco; su computer si illuminano al passaggio del mouse; sezioni e schede compaiono con una breve animazione. Chi ha attivato "riduci movimento" nel sistema non le vede.
+
 ## 0.10.0 — 2026-11-07
 
 - Su computer la barra delle sezioni è a sinistra e le pagine sono più larghe. Sul telefono non cambia nulla.
