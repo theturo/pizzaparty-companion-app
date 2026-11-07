@@ -10,24 +10,29 @@ const SEZIONI = [
 ];
 
 /**
- * Connessioni di Firebase interrotte da un ricaricamento della pagina: WebKit le scrive in console
- * come errori, Chromium no. Non sono difetti dell'app, quindi si ignorano (solo queste).
+ * Connessioni di Firebase interrotte da un ricaricamento della pagina: WebKit le segnala come errori
+ * (in console e come errori della pagina), Chromium no. Dopo l'interruzione il canale di Firestore
+ * prova la rete caricando `www.google.com/images/cleardot.gif`, che la CSP blocca (giustamente).
+ * Non sono difetti dell'app, quindi si ignorano: solo questi, tutto il resto conta.
  */
 const RETE_INTERROTTA = [
   /auth\/network-request-failed/,
   /Could not reach Cloud Firestore backend/,
-  /Firestore\/(Listen|Write)\/channel.*due to access control checks/,
+  /Firestore\/(Listen|Write)\/channel[\s\S]*due to access control checks/,
+  /www\.google\.com\/images\/cleardot\.gif[\s\S]*img-src/,
 ];
+
+const daIgnorare = (testo: string) => RETE_INTERROTTA.some((r) => r.test(testo));
 
 /** Raccoglie errori della console e violazioni della CSP durante il test. */
 function sorvegliaErrori(page: Page): string[] {
   const errori: string[] = [];
   page.on('console', (m) => {
-    if (m.type() !== 'error') return;
-    const testo = m.text();
-    if (!RETE_INTERROTTA.some((r) => r.test(testo))) errori.push(testo);
+    if (m.type() === 'error' && !daIgnorare(m.text())) errori.push(m.text());
   });
-  page.on('pageerror', (e) => errori.push(e.message));
+  page.on('pageerror', (e) => {
+    if (!daIgnorare(e.message)) errori.push(e.message);
+  });
   return errori;
 }
 
