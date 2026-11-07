@@ -29,7 +29,11 @@
 
 <main class:con-barra={barra}>
   {#if decisione === 'mostra'}
-    {@render children()}
+    {#key page.url.pathname}
+      <div class="sezione">
+        {@render children()}
+      </div>
+    {/key}
   {/if}
 </main>
 
@@ -48,6 +52,22 @@
   }
   main.con-barra {
     padding-bottom: calc(var(--altezza-barra) + var(--spazio-5) + env(safe-area-inset-bottom));
+  }
+
+  /* Ogni sezione compare con una breve dissolvenza quando la apri (solo entrata, D-048). */
+  .sezione {
+    /* backwards: finita l'entrata l'animazione si toglie, e non fa da riferimento agli elementi fissi. */
+    animation: entrata-sezione var(--durata-media) var(--curva-uscita) backwards;
+  }
+  @keyframes entrata-sezione {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* Da 900px in su (PC, D-047), solo con la barra laterale: il contenuto sta a destra della barra

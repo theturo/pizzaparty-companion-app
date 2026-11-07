@@ -50,9 +50,27 @@
     color: var(--colore-testo-attenuato);
     text-decoration: none;
     font-size: 0.7rem;
+    transition:
+      transform var(--durata-breve) var(--curva-uscita),
+      color var(--durata-breve),
+      background-color var(--durata-breve);
+  }
+  /* Al tocco la voce si schiaccia un poco (D-048). */
+  a:active {
+    transform: scale(0.94);
   }
   a[aria-current='page'] {
     color: var(--colore-accento);
+  }
+  /* Sul PC il mouse illumina la voce; la voce attiva resta del colore d'accento (D-048). */
+  @media (hover: hover) {
+    a:hover {
+      color: var(--colore-testo);
+      background-color: var(--colore-superficie);
+    }
+    a[aria-current='page']:hover {
+      color: var(--colore-accento);
+    }
   }
   a:focus-visible {
     outline: 2px solid var(--colore-accento);

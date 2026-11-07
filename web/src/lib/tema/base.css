@@ -34,6 +34,8 @@
   --larghezza-contenuto-ampio: 960px;
   --durata-breve: 150ms;
   --durata-media: 250ms;
+  /* Curva delle entrate e delle risposte al tocco (D-048): parte veloce, finisce dolce. */
+  --curva-uscita: cubic-bezier(0.2, 0, 0, 1);
   color-scheme: dark;
 
   /* ---- 2. Ruoli (con un valore di riserva se il tema non li definisce) ---- */
@@ -176,4 +178,17 @@ a {
 .messaggio-ok {
   margin: 0;
   color: var(--colore-conferma);
+}
+
+/* Chi ha attivato "riduci movimento" nel sistema non vede animazioni né transizioni (D-048).
+   Le animazioni restano al loro stato finale, così nulla resta a metà. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

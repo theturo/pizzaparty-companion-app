@@ -22,10 +22,16 @@
     font: inherit;
     font-weight: 700;
     cursor: pointer;
-    transition: filter var(--durata-breve);
+    transition:
+      filter var(--durata-breve),
+      transform var(--durata-breve) var(--curva-uscita);
   }
   button:hover {
     filter: brightness(1.08);
+  }
+  /* Il pulsante si schiaccia un poco mentre lo tieni premuto. */
+  button:active:not(:disabled) {
+    transform: scale(0.96);
   }
   button:disabled {
     opacity: 0.4;
