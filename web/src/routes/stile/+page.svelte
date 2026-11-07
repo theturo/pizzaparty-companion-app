@@ -8,6 +8,9 @@
   import Scheda from '$lib/componenti/Scheda.svelte';
   import Pellicola from '$lib/componenti/Pellicola.svelte';
   import Dinosauro from '$lib/componenti/Dinosauro.svelte';
+  import Caricamento from '$lib/componenti/Caricamento.svelte';
+
+  const POSE = ['aspetta', 'saluta', 'festeggia', 'corre'] as const;
 
   let scelto = $state<IdTema>(TEMA_PREDEFINITO);
   $effect(() => applicaTema(scelto));
@@ -99,11 +102,27 @@
   </section>
 
   <section>
-    <h2 class="etichetta">Mascotte (segnaposto)</h2>
-    <div class="riga">
-      <Dinosauro larghezza={140} />
-      <Dinosauro larghezza={140} verso="destra" cappellino />
+    <h2 class="etichetta">Mascotte</h2>
+    <div class="riga pose">
+      {#each POSE as posa (posa)}
+        <figure>
+          <Dinosauro {posa} larghezza={140} />
+          <figcaption>{posa}</figcaption>
+        </figure>
+      {/each}
+      <figure>
+        <Dinosauro larghezza={140} verso="destra" />
+        <figcaption>verso destra</figcaption>
+      </figure>
     </div>
+  </section>
+
+  <section>
+    <h2 class="etichetta">Caricamento</h2>
+    <figure>
+      <Caricamento />
+      <figcaption>caricamento</figcaption>
+    </figure>
   </section>
 </div>
 
@@ -127,6 +146,20 @@
     flex-wrap: wrap;
     gap: var(--spazio-2);
     align-items: center;
+  }
+  .pose {
+    align-items: flex-end;
+  }
+  .pose figure,
+  section > figure {
+    margin: 0;
+    display: grid;
+    justify-items: center;
+    gap: var(--spazio-1);
+  }
+  figcaption {
+    font-size: var(--testo-s);
+    color: var(--colore-testo-attenuato);
   }
   .campioni {
     list-style: none;

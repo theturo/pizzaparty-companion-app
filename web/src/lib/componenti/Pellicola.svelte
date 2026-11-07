@@ -1,12 +1,13 @@
 <script lang="ts">
   // Striscia di pellicola cinematografica (motivo del decennale).
   // Il tema decide se mostrarla (--pellicola: flex | none) e di che colori.
+  // Con «scorre» i fori scorrono verso destra (animazione CSS; con «riduci movimento» si fermano).
   import type { Snippet } from 'svelte';
 
-  let { children }: { children?: Snippet } = $props();
+  let { children, scorre = false }: { children?: Snippet; scorre?: boolean } = $props();
 </script>
 
-<div class="pellicola" aria-hidden={children ? undefined : 'true'}>
+<div class="pellicola" class:scorre aria-hidden={children ? undefined : 'true'}>
   <span class="fori"></span>
   <div class="fotogrammi">{@render children?.()}</div>
   <span class="fori"></span>
@@ -31,6 +32,18 @@
     background-size: 22px 8px;
     background-repeat: repeat-x;
     background-position: 0 center;
+  }
+  .scorre .fori {
+    animation: scorrimento-fori 400ms linear infinite;
+  }
+  /* Il motivo si ripete ogni 22px: a 22px il ciclo torna su se stesso, senza salti. */
+  @keyframes scorrimento-fori {
+    from {
+      background-position-x: 0;
+    }
+    to {
+      background-position-x: 22px;
+    }
   }
   .fotogrammi {
     display: flex;

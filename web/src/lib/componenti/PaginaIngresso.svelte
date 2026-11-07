@@ -75,7 +75,10 @@
 </script>
 
 <section>
-  <Dinosauro larghezza={150} cappellino />
+  <Dinosauro
+    posa={fase === 'ospite' || fase === 'senza_profilo' ? 'saluta' : 'aspetta'}
+    larghezza={150}
+  />
   <div class="testo">
     <p class="etichetta">{testi.etichetta}</p>
     <h1 class="titolo">{testi.titolo}</h1>
