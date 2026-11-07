@@ -1,6 +1,6 @@
 import { expect, test, type Browser } from '@playwright/test';
-import { creaAccount, emailDiProva, rendiAdmin } from './emulatori';
-import { accedi, registra, PASSWORD } from './aiuti';
+import { creaUtenteApprovato, emailDiProva, rendiAdmin } from './emulatori';
+import { accedi, accediComeApprovato, registra, PASSWORD } from './aiuti';
 
 // Le Functions emulate si "avviano a freddo" alla prima chiamata (qualche secondo, come in produzione).
 const ATTESA_FUNCTIONS = { timeout: 20_000 };
@@ -11,10 +11,10 @@ test.describe.configure({ timeout: 90_000 });
 /** Un admin connesso nel suo browser, con il pannello delle richieste aperto. */
 async function pannelloAdmin(browser: Browser) {
   const email = emailDiProva('admin');
-  await rendiAdmin(await creaAccount(email, PASSWORD));
+  await rendiAdmin(await creaUtenteApprovato(email, PASSWORD));
   const pagina = await (await browser.newContext()).newPage();
   await accedi(pagina, email);
-  // L'admin di prova non ha un profilo completo: si va dritti al pannello.
+  // L'admin di prova è approvato (le sezioni riservate lo richiedono): si va dritti al pannello.
   await pagina.goto('/admin');
   await expect(pagina.getByRole('heading', { level: 1 })).toHaveText('Richieste');
   return pagina;
@@ -88,7 +88,7 @@ test("chi arriva da un link d'invito porta il nome di chi l'ha invitato; il rifi
 });
 
 test('chi non è admin non vede le richieste', async ({ page }) => {
-  await registra(page, { email: emailDiProva('curioso'), nome: 'Curioso' });
+  await accediComeApprovato(page, 'curioso');
   await page.goto('/admin');
   await expect(page.getByText('Questa pagina è riservata agli admin.')).toBeVisible();
 });

@@ -1,6 +1,6 @@
 // Passaggi ricorrenti dei test, fatti dall'interfaccia come una persona.
 import { expect, type Page } from '@playwright/test';
-import { ultimoLink } from './emulatori';
+import { creaUtenteApprovato, emailDiProva, ultimoLink } from './emulatori';
 
 export const PASSWORD = 'pizza-margherita';
 
@@ -39,6 +39,13 @@ export async function accedi(page: Page, email: string, password = PASSWORD) {
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Accedi' }).click();
   await expect(page).toHaveURL('/profilo');
+}
+
+/** Accede con un account già approvato: serve per provare le sezioni riservate (barra compresa). */
+export async function accediComeApprovato(page: Page, nome = 'approvato'): Promise<void> {
+  const email = emailDiProva(nome);
+  await creaUtenteApprovato(email, PASSWORD);
+  await accedi(page, email);
 }
 
 /** Esce dal profilo e aspetta che l'uscita sia finita: cambiare pagina prima la interromperebbe. */

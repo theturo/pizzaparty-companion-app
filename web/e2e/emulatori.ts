@@ -38,6 +38,54 @@ export async function creaAccount(email: string, password: string): Promise<stri
   return ((await risposta.json()) as { localId: string }).localId;
 }
 
+/**
+ * Scrive il profilo di un account direttamente nell'emulatore di Firestore (come farebbe l'admin
+ * con lo stato): serve a provare gli stati "approvato" e "sospeso" senza passare dal pannello.
+ */
+export async function creaProfilo(
+  uid: string,
+  stato: 'in_attesa' | 'approvato' | 'sospeso',
+  nome = 'Ospite di prova',
+): Promise<void> {
+  const documento = {
+    fields: {
+      nome: { stringValue: nome },
+      avatar: { stringValue: 'margherita' },
+      stato: { stringValue: stato },
+      invitatoDa: {
+        mapValue: { fields: { codice: { nullValue: null }, testo: { nullValue: null } } },
+      },
+      accettazioni: {
+        mapValue: {
+          fields: {
+            maggiorenne: { booleanValue: true },
+            condizioni: { stringValue: '2026-10' },
+            privacy: { stringValue: '2026-10' },
+            il: { timestampValue: new Date().toISOString() },
+          },
+        },
+      },
+      creato: { timestampValue: new Date().toISOString() },
+    },
+  };
+  const risposta = await fetch(
+    `http://127.0.0.1:8080/v1/projects/${PROGETTO}/databases/(default)/documents/utenti/${uid}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+      body: JSON.stringify(documento),
+    },
+  );
+  if (!risposta.ok) throw new Error(`Profilo non scritto: ${await risposta.text()}`);
+}
+
+/** Un account già approvato, pronto ad accedere con la password data. Restituisce l'uid. */
+export async function creaUtenteApprovato(email: string, password: string): Promise<string> {
+  const uid = await creaAccount(email, password);
+  await creaProfilo(uid, 'approvato');
+  return uid;
+}
+
 /** Dà il permesso admin a un account, come farà lo script per Cloud Shell (D-034). */
 export async function rendiAdmin(uid: string): Promise<void> {
   const risposta = await fetch(

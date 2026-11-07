@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { creaAccount, emailDiProva, rendiAdmin } from './emulatori';
+import { creaUtenteApprovato, emailDiProva, rendiAdmin } from './emulatori';
 import { accedi, esci, registra, PASSWORD } from './aiuti';
 
 // Notifiche (D-036). Negli emulatori Cloud Messaging non esiste: si verifica tutto il resto
@@ -50,7 +50,7 @@ test("l'approvazione con le notifiche attive va a buon fine", async ({
   await expect(page.getByText('Attive su questo dispositivo')).toBeVisible();
 
   const emailAdmin = emailDiProva('admin');
-  await rendiAdmin(await creaAccount(emailAdmin, PASSWORD));
+  await rendiAdmin(await creaUtenteApprovato(emailAdmin, PASSWORD));
   const admin = await (await browser.newContext()).newPage();
   await accedi(admin, emailAdmin);
   await admin.goto('/admin');
