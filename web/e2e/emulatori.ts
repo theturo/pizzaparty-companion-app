@@ -120,3 +120,68 @@ export async function cambiaEmail(email: string, password: string, nuova: string
   });
   await chiama('update', { idToken, email: nuova, returnSecureToken: true });
 }
+
+const EDIZIONI = `http://127.0.0.1:8080/v1/projects/${PROGETTO}/databases/(default)/documents/edizioni`;
+
+export interface EdizioneDiProva {
+  nome: string;
+  quando: { tipo: 'data'; data: string } | { tipo: 'periodo'; periodo: string };
+  stato: 'bozza' | 'annunciata' | 'conclusa' | 'annullata';
+  tema?: string;
+}
+
+/** Scrive un'edizione nell'emulatore come farebbe il pannello admin (con il permesso di owner). */
+export async function creaEdizione(id: string, dati: EdizioneDiProva): Promise<void> {
+  const quando =
+    dati.quando.tipo === 'data'
+      ? { tipo: { stringValue: 'data' }, data: { stringValue: dati.quando.data } }
+      : { tipo: { stringValue: 'periodo' }, periodo: { stringValue: dati.quando.periodo } };
+  const adesso = new Date().toISOString();
+  const documento = {
+    fields: {
+      nome: { stringValue: dati.nome },
+      quando: { mapValue: { fields: quando } },
+      tema: { stringValue: dati.tema ?? 'pizzaparty-2026' },
+      quota: {
+        mapValue: {
+          fields: {
+            singolo: { integerValue: '5' },
+            conAccompagnatore: { integerValue: '10' },
+          },
+        },
+      },
+      pagamenti: {
+        mapValue: {
+          fields: {
+            paypal: { booleanValue: true },
+            satispay: { booleanValue: true },
+            contanti: { booleanValue: true },
+          },
+        },
+      },
+      stato: { stringValue: dati.stato },
+      creato: { timestampValue: adesso },
+      aggiornato: { timestampValue: adesso },
+    },
+  };
+  const risposta = await fetch(`${EDIZIONI}/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+    body: JSON.stringify(documento),
+  });
+  if (!risposta.ok) throw new Error(`Edizione non scritta: ${await risposta.text()}`);
+}
+
+/** Toglie tutte le edizioni dall'emulatore: i test della Home partono da un elenco vuoto. */
+export async function svuotaEdizioni(): Promise<void> {
+  const risposta = await fetch(EDIZIONI, { headers: { Authorization: 'Bearer owner' } });
+  if (!risposta.ok) throw new Error(`Edizioni non lette: ${await risposta.text()}`);
+  const { documents = [] } = (await risposta.json()) as { documents?: { name: string }[] };
+  for (const documento of documents) {
+    const cancellata = await fetch(`http://127.0.0.1:8080/v1/${documento.name}`, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer owner' },
+    });
+    if (!cancellata.ok) throw new Error(`Edizione non cancellata: ${await cancellata.text()}`);
+  }
+}
