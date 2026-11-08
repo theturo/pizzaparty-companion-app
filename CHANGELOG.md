@@ -3,6 +3,12 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.13.0 — 2026-11-08
+
+- Nuova icona dell'app: la testa del dinosauro davanti a una pizza.
+- Nuovo badge delle notifiche: la sagoma della testa del dinosauro.
+- Nuove icone della barra, disegnate per il PizzaParty: forno, coppa, fotocamera, fetta e profilo col cappellino.
+
 ## 0.12.0 — 2026-11-07
 
 - Arriva il dinosauro del PizzaParty, dipinto in quattro pose: saluta chi entra, aspetta con te l'approvazione e corre sulla pellicola mentre l'app si carica. Chi ha attivato "riduci movimento" nel sistema non vede i gesti.

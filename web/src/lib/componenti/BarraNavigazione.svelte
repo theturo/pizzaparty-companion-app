@@ -1,16 +1,16 @@
 <script lang="ts">
   // Barra con le cinque sezioni dell'app: in basso sul telefono, a sinistra da 900px in su (PC, D-047).
-  // Icone Lucide (licenza ISC): provvisorie, da sostituire con disegni a tema (vedi wiki).
+  // Icone disegnate per il PizzaParty (vedi IconaBarra).
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
-  import { House, Trophy, Camera, Pizza, User } from '@lucide/svelte';
+  import IconaBarra from './IconaBarra.svelte';
 
   const sezioni = [
-    { href: '/', etichetta: 'Home', icona: House },
-    { href: '/trofei', etichetta: 'Trofei', icona: Trophy },
-    { href: '/pizzagram', etichetta: 'Pizzagram', icona: Camera },
-    { href: '/ordina', etichetta: 'Ordina', icona: Pizza },
-    { href: '/profilo', etichetta: 'Profilo', icona: User },
+    { href: '/', etichetta: 'Home', icona: 'forno' },
+    { href: '/trofei', etichetta: 'Trofei', icona: 'trofeo' },
+    { href: '/pizzagram', etichetta: 'Pizzagram', icona: 'fotocamera' },
+    { href: '/ordina', etichetta: 'Ordina', icona: 'fetta' },
+    { href: '/profilo', etichetta: 'Profilo', icona: 'profilo' },
   ] as const;
 
   const attiva = (href: string) =>
@@ -20,9 +20,9 @@
 <nav aria-label="Sezioni">
   <!-- Solo su PC: nome in testa alla barra laterale, non un link. -->
   <p class="marchio">PizzaParty</p>
-  {#each sezioni as { href, etichetta, icona: Icona } (href)}
+  {#each sezioni as { href, etichetta, icona } (href)}
     <a href={resolve(href)} aria-current={attiva(href) ? 'page' : undefined}>
-      <Icona size={24} strokeWidth={attiva(href) ? 2.4 : 1.8} aria-hidden="true" />
+      <IconaBarra nome={icona} spessore={attiva(href) ? 2.4 : 1.8} />
       <span>{etichetta}</span>
     </a>
   {/each}

@@ -63,11 +63,7 @@ Il controllo fa parte di `npm run check`, quindi gira anche su ogni PR.
 
 ### Icone dell'app
 
-Le icone PNG si generano da `web/static/icons/icona.svg`:
-
-```bash
-npm run icone
-```
+Le icone dell'app (PNG in `web/static/icons/`) sono immagini dipinte, preparate fuori dalla repo: non si generano dal codice.
 
 ### Emulatori Firebase
 

@@ -19,6 +19,19 @@ test("l'app è installabile e si apre senza rete", async ({ page, context, brows
   const manifest = await (await page.request.get('/manifest.webmanifest')).json();
   expect(manifest.name).toBe('PizzaParty');
   expect(manifest.icons.length).toBeGreaterThanOrEqual(3);
+  // Ogni icona del manifest è un PNG raggiungibile (niente più SVG provvisori).
+  for (const icona of manifest.icons) {
+    expect(icona.type).toBe('image/png');
+    const risposta = await page.request.get(icona.src);
+    expect(risposta.status()).toBe(200);
+    expect(risposta.headers()['content-type']).toContain('image/png');
+  }
+  const favicon = await page.request.get('/icons/favicon-48.png');
+  expect(favicon.headers()['content-type']).toContain('image/png');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute(
+    'href',
+    /\/icons\/favicon-48\.png$/,
+  );
 
   // Si aspetta che il service worker abbia messo l'app in cache.
   await page.evaluate(async () => {
