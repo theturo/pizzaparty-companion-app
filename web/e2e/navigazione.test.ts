@@ -43,6 +43,10 @@ test('la barra porta a tutte le sezioni', async ({ page }) => {
   await page.goto('/');
   const barra = page.getByRole('navigation', { name: 'Sezioni' });
   await expect(barra.getByRole('link')).toHaveCount(SEZIONI.length);
+  // Ogni voce ha la sua icona disegnata (IconaBarra).
+  for (const { nome } of SEZIONI) {
+    await expect(barra.getByRole('link', { name: nome }).locator('svg')).toHaveCount(1);
+  }
 
   for (const { nome, percorso, titolo } of SEZIONI) {
     await barra.getByRole('link', { name: nome }).click();

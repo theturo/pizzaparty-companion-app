@@ -1,6 +1,6 @@
 {
   "name": "pizzaparty-companion-app",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -16,7 +16,6 @@
     "check": "npm run controlla-temi && tsc -p tests && tsc -p functions --noEmit && npm run check -w web",
     "preview": "npm run preview -w web",
     "emulatori": "npm run build -w functions && sh scripts/emulatori.sh",
-    "icone": "node scripts/icone.mjs",
     "controlla-temi": "node scripts/controlla-temi.mjs",
     "formatta": "prettier --write .",
     "lint": "prettier --check . && eslint .",
@@ -29,7 +28,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@firebase/rules-unit-testing": "^5.0.2",
-    "@resvg/resvg-js": "2.6.2",
     "@types/node": "^24.19.0",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
