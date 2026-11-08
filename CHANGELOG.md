@@ -3,6 +3,10 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.14.0 — 2026-11-08
+
+- Nel pannello arrivano le schede: Richieste, Edizioni e Gestione pagamenti. Da qui si creano, modificano, archiviano e annullano le edizioni del PizzaParty.
+
 ## 0.13.1 — 2026-11-08
 
 - Nuovo README: come funziona l'app e quali dati tratta.

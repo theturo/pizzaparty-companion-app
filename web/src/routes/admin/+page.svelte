@@ -4,6 +4,7 @@
   import { resolve } from '$app/paths';
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
   import SchedaRichiesta, { type Richiesta } from '$lib/componenti/SchedaRichiesta.svelte';
+  import SchedePannello from '$lib/componenti/SchedePannello.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
 
   let richieste = $state<Richiesta[] | null>(null);
@@ -41,6 +42,7 @@
 </script>
 
 <PaginaAccount titolo="Richieste" etichetta="Pannello admin">
+  {#if sessione.permessi.admin}<SchedePannello />{/if}
   {#if sessione.stato === 'caricamento'}
     <p class="attenuato" role="status">Un momento…</p>
   {:else if !sessione.permessi.admin}
