@@ -104,6 +104,74 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ---- Edizioni (D-053): le scrive e le legge tutte solo l'admin; gli approvati leggono
+    // solo quelle pubblicate (annunciata, conclusa, annullata). Le bozze restano all'admin. ----
+    function nomeEdizione(nome) {
+      return nome is string && nome.size() >= 2 && nome.size() <= 60 && nome.trim() == nome;
+    }
+    function quandoEdizione(q) {
+      return q is map && (
+        (q.tipo == 'data'
+          && q.keys().hasOnly(['tipo', 'data']) && q.keys().hasAll(['tipo', 'data'])
+          && q.data is string && q.data.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
+        || (q.tipo == 'periodo'
+          && q.keys().hasOnly(['tipo', 'periodo']) && q.keys().hasAll(['tipo', 'periodo'])
+          && q.periodo is string && q.periodo.size() >= 2 && q.periodo.size() <= 40)
+      );
+    }
+    function quotaEdizione(q) {
+      return q is map
+        && q.keys().hasOnly(['singolo', 'conAccompagnatore'])
+        && q.keys().hasAll(['singolo', 'conAccompagnatore'])
+        && q.singolo is int && q.singolo >= 0 && q.singolo <= 100
+        && q.conAccompagnatore is int && q.conAccompagnatore >= 0 && q.conAccompagnatore <= 100;
+    }
+    function pagamentiEdizione(p) {
+      return p is map
+        && p.keys().hasOnly(['paypal', 'satispay', 'contanti'])
+        && p.keys().hasAll(['paypal', 'satispay', 'contanti'])
+        && p.paypal is bool && p.satispay is bool && p.contanti is bool;
+    }
+    function edizioneValida(d) {
+      return d is map
+        && d.keys().hasOnly(['nome', 'quando', 'tema', 'quota', 'pagamenti', 'stato', 'creato', 'aggiornato'])
+        && d.keys().hasAll(['nome', 'quando', 'tema', 'quota', 'pagamenti', 'stato', 'creato', 'aggiornato'])
+        && nomeEdizione(d.nome)
+        && quandoEdizione(d.quando)
+        && d.tema is string && d.tema.matches('^[a-z0-9-]{1,40}$')
+        && quotaEdizione(d.quota)
+        && pagamentiEdizione(d.pagamenti)
+        && d.stato in ['bozza', 'annunciata', 'conclusa', 'annullata']
+        && d.aggiornato == request.time;
+    }
+
+    match /edizioni/{id} {
+      allow read: if admin()
+        || (approvato() && resource.data.stato in ['annunciata', 'conclusa', 'annullata']);
+      allow create: if admin()
+        && edizioneValida(request.resource.data)
+        && request.resource.data.creato == request.time;
+      allow update: if admin()
+        && edizioneValida(request.resource.data)
+        && request.resource.data.creato == resource.data.creato;
+      allow delete: if false;
+    }
+
+    // ---- Link di pagamento, uguali per tutte le edizioni (D-055): solo l'admin ----
+    match /impostazioni/pagamenti {
+      function linkValido(l) {
+        return l is string && (l == '' || (l.size() <= 300 && l.matches('^https://.+')));
+      }
+      allow read: if admin();
+      allow create, update: if admin()
+        && request.resource.data.keys().hasOnly(['paypal', 'satispay', 'aggiornato'])
+        && request.resource.data.keys().hasAll(['paypal', 'satispay', 'aggiornato'])
+        && linkValido(request.resource.data.paypal)
+        && linkValido(request.resource.data.satispay)
+        && request.resource.data.aggiornato == request.time;
+      allow delete: if false;
+    }
+
     // ---- Tutto il resto: chiuso ----
     match /{documento=**} {
       allow read, write: if false;
