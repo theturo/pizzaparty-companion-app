@@ -13,6 +13,8 @@ const RETE_INTERROTTA = [
   /auth\/network-request-failed/,
   /Could not reach Cloud Firestore backend/,
   /Firestore\/(Listen|Write)\/channel[\s\S]*due to access control checks/,
+  // Safari interrompe il rinnovo del token (che l'orologio finto fa sembrare scaduto) al cambio pagina.
+  /securetoken\.googleapis\.com[\s\S]*due to access control checks/,
   /www\.google\.com\/images\/cleardot\.gif[\s\S]*img-src/,
   // Con l'orologio del browser fermato da page.clock, Firestore avvisa che l'ora del server
   // è «nel futuro»: è l'effetto del finto orologio, non un errore dell'app.
