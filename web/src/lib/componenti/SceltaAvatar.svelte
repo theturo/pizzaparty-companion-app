@@ -11,7 +11,7 @@
     {#each AVATAR as avatar (avatar.id)}
       <label class:scelto={valore === avatar.id}>
         <input type="radio" name="avatar" value={avatar.id} bind:group={valore} />
-        <ImmagineAvatar id={avatar.id} dimensione={52} />
+        <ImmagineAvatar id={avatar.id} dimensione={52} decorativo />
         <span>{avatar.nome}</span>
       </label>
     {/each}

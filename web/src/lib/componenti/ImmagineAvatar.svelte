@@ -1,7 +1,12 @@
 <script lang="ts">
   import { AVATAR, immagineAvatar } from '$lib/account/avatar';
 
-  let { id, dimensione = 48 }: { id: string; dimensione?: number } = $props();
+  // decorativo: quando il nome è già scritto accanto (es. nelle scelte), l'immagine non lo ripete.
+  let {
+    id,
+    dimensione = 48,
+    decorativo = false,
+  }: { id: string; dimensione?: number; decorativo?: boolean } = $props();
   const avatar = $derived(AVATAR.find((a) => a.id === id) ?? AVATAR[0]);
 </script>
 
@@ -14,7 +19,7 @@
 >
   <img
     src={immagineAvatar(avatar.id)}
-    alt={avatar.nome}
+    alt={decorativo ? '' : avatar.nome}
     width={dimensione}
     height={dimensione}
     decoding="async"
