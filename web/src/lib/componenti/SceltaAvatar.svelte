@@ -11,7 +11,7 @@
     {#each AVATAR as avatar (avatar.id)}
       <label class:scelto={valore === avatar.id}>
         <input type="radio" name="avatar" value={avatar.id} bind:group={valore} />
-        <ImmagineAvatar id={avatar.id} dimensione={52} />
+        <ImmagineAvatar id={avatar.id} dimensione={52} decorativo />
         <span>{avatar.nome}</span>
       </label>
     {/each}
@@ -29,12 +29,15 @@
     color: var(--colore-testo-attenuato);
     margin-bottom: var(--spazio-2);
   }
+  /* 13 avatar: a capo di quattro per riga, con l'ultimo centrato invece che orfano a sinistra. */
   .griglia {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--spazio-2);
   }
   label {
+    width: calc((100% - 3 * var(--spazio-2)) / 4);
     display: grid;
     justify-items: center;
     gap: var(--spazio-1);

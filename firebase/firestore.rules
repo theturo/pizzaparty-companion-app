@@ -24,7 +24,7 @@ service cloud.firestore {
     }
     // Stesso elenco di web/src/lib/account/avatar.ts (un test controlla che coincidano).
     function avatarValido(avatar) {
-      return avatar in ['margherita', 'diavola', 'fetta', 'peperoncino', 'basilico', 'pomodoro', 'forno', 'chef', 'pala', 'funghi', 'birra', 'fiamma'];
+      return avatar in ['margherita', 'diavola', 'fetta', 'peperoncino', 'basilico', 'pomodoro', 'forno', 'chef', 'pala', 'funghi', 'birra', 'fiamma', 'dinosauro'];
     }
     function nomeValido(nome) {
       return nome is string && nome.size() >= 2 && nome.size() <= 40 && nome.trim() == nome;

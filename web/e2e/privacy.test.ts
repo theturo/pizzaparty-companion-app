@@ -14,7 +14,12 @@ test('modifica di nome e avatar dal profilo', async ({ page }) => {
   await page.getByText('Birra').click();
   await page.getByRole('button', { name: 'Salva' }).click();
   await expect(page.getByText('Nome Nuovo')).toBeVisible();
-  await expect(page.getByRole('img', { name: 'Birra' })).toBeVisible();
+  const avatar = page.getByRole('img', { name: 'Birra' });
+  await expect(avatar).toBeVisible();
+  // L'avatar scelto è un'immagine caricata, non un riquadro vuoto.
+  await expect
+    .poll(() => avatar.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
 });
 
 test('cambio password: con quella nuova si rientra', async ({ page }) => {
