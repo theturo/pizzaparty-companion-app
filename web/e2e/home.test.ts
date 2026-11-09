@@ -48,7 +48,7 @@ test('nessuna edizione: la Home è quella di sempre', async ({ page }) => {
   const errori = sorvegliaErrori(page);
   await homeApprovata(page);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(TITOLO_VUOTO);
-  await expect(page.getByText('Prossima edizione')).toHaveCount(0);
+  await expect(page.getByText('Prossima edizione', { exact: true })).toHaveCount(0);
   expect(errori).toEqual([]);
 });
 
@@ -73,7 +73,7 @@ test('annunciata con il periodo: nome, periodo e "data in arrivo", senza countdo
     stato: 'annunciata',
   });
   await homeApprovata(page);
-  await expect(page.getByText('Prossima edizione')).toBeVisible();
+  await expect(page.getByText('Prossima edizione', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Primavera 2027');
   await expect(page.getByText('Maggio 2027', { exact: true })).toBeVisible();
   await expect(page.getByText('data in arrivo')).toBeVisible();

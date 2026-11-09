@@ -28,8 +28,10 @@
   const tempo = $derived(dataConto ? tempoMancante(dataConto, adesso) : null);
   const conto = $derived(tempo !== null && typeof tempo === 'object' ? tempo : null);
 
+  // Le regole chiedono il permesso "approvato" sul token, che può arrivare poco dopo il profilo:
+  // l'ascolto parte (e riparte) solo quando c'è (all'admin basta il suo).
   $effect(() => {
-    if (fase !== 'approvato') return;
+    if (fase !== 'approvato' || !(sessione.permessi.approvato || sessione.permessi.admin)) return;
     let smetti: (() => void) | undefined;
     let annullato = false;
     (async () => {

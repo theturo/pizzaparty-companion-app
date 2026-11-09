@@ -79,24 +79,33 @@ export async function creaProfilo(
   if (!risposta.ok) throw new Error(`Profilo non scritto: ${await risposta.text()}`);
 }
 
-/** Un account già approvato, pronto ad accedere con la password data. Restituisce l'uid. */
-export async function creaUtenteApprovato(email: string, password: string): Promise<string> {
-  const uid = await creaAccount(email, password);
-  await creaProfilo(uid, 'approvato');
-  return uid;
-}
-
-/** Dà il permesso admin a un account, come farà lo script per Cloud Shell (D-034). */
-export async function rendiAdmin(uid: string): Promise<void> {
+/** Scrive i permessi sul token (custom claims), come fanno le Functions e lo script per Cloud Shell. */
+async function impostaPermessi(uid: string, permessi: Record<string, boolean>): Promise<void> {
   const risposta = await fetch(
     `${AUTH}/identitytoolkit.googleapis.com/v1/projects/${PROGETTO}/accounts:update`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
-      body: JSON.stringify({ localId: uid, customAttributes: JSON.stringify({ admin: true }) }),
+      body: JSON.stringify({ localId: uid, customAttributes: JSON.stringify(permessi) }),
     },
   );
-  if (!risposta.ok) throw new Error(`Permesso admin non assegnato: ${await risposta.text()}`);
+  if (!risposta.ok) throw new Error(`Permessi non assegnati: ${await risposta.text()}`);
+}
+
+/**
+ * Un account già approvato, pronto ad accedere con la password data. Restituisce l'uid.
+ * Come approvaRichiesta: profilo "approvato" e permesso "approvato" sul token (le regole lo richiedono).
+ */
+export async function creaUtenteApprovato(email: string, password: string): Promise<string> {
+  const uid = await creaAccount(email, password);
+  await creaProfilo(uid, 'approvato');
+  await impostaPermessi(uid, { approvato: true });
+  return uid;
+}
+
+/** Dà il permesso admin a un account approvato, come lo script per Cloud Shell (D-034). */
+export async function rendiAdmin(uid: string): Promise<void> {
+  await impostaPermessi(uid, { admin: true, approvato: true });
 }
 
 /** Cambia l'email di un account come farebbe l'utente stesso: Firebase prepara il link per annullarlo. */

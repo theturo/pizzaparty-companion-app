@@ -93,7 +93,7 @@
     {#if sessione.permessi.admin}
       <a class="pulsante pannello-admin" href={resolve('/admin')}>
         Pannello admin
-        <span>Richieste di account</span>
+        <span>Richieste, edizioni e pagamenti</span>
       </a>
     {/if}
     {#if sessione.profilo.stato === 'approvato' && sessione.profilo.codiceInvito}

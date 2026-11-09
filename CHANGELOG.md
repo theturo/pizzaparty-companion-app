@@ -6,6 +6,7 @@ Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui 
 ## 0.15.0 — 2026-11-08
 
 - La Home mostra la prossima edizione: il periodo o, quando c'è la data, il countdown al giorno del PizzaParty. Se un'edizione viene annullata, lo dice con le scuse della Fondazione PizzaParty.
+- Nel profilo, il pulsante del pannello ora dice cosa contiene: richieste, edizioni e pagamenti.
 
 ## 0.14.0 — 2026-11-08
 
