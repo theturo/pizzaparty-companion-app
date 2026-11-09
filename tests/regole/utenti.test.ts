@@ -126,6 +126,12 @@ describe('profili: modifica e cancellazione', () => {
     );
   });
 
+  it('si può scegliere il dinosauro come avatar', async () => {
+    await assertSucceeds(
+      setDoc(doc(persona('arturo'), 'utenti/arturo'), profiloValido({ avatar: 'dinosauro' })),
+    );
+  });
+
   it('non si cambia il proprio stato', async () => {
     await creaProfiloDiArturo();
     await assertFails(updateDoc(doc(persona('arturo'), 'utenti/arturo'), { stato: 'approvato' }));

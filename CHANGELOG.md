@@ -3,6 +3,10 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.16.0 — 2026-11-09
+
+- Avatar nuovi, dipinti a mano come il dinosauro del PizzaParty. E tra le scelte arriva proprio lui: il Dinosauro.
+
 ## 0.15.0 — 2026-11-08
 
 - La Home mostra la prossima edizione: il periodo o, quando c'è la data, il countdown al giorno del PizzaParty. Se un'edizione viene annullata, lo dice con le scuse della Fondazione PizzaParty.
