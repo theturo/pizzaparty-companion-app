@@ -259,7 +259,9 @@
     color: var(--colore-testo);
     cursor: pointer;
   }
-  .annulla:active {
-    transform: scale(0.96);
+  @media (prefers-reduced-motion: no-preference) {
+    .annulla:active {
+      transform: scale(0.96);
+    }
   }
 </style>

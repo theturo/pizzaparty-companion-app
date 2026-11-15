@@ -17,6 +17,7 @@ backup/
 
 # --- Lavoro locale ---
 scratch/
+.impeccable/
 *.log
 .DS_Store
 

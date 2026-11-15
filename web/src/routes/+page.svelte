@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import Dinosauro from '$lib/componenti/Dinosauro.svelte';
   import Pellicola from '$lib/componenti/Pellicola.svelte';
   import PaginaIngresso from '$lib/componenti/PaginaIngresso.svelte';
@@ -95,6 +96,13 @@
   let registrazioneInCorso = $state(false);
   let erroreRegistrazione = $state('');
 
+  // Chiuso lo scanner, il focus torna al pulsante che l'aveva aperto (se c'è ancora).
+  async function chiudiScanner() {
+    scannerAperto = false;
+    await tick();
+    document.getElementById('apri-scanner')?.focus();
+  }
+
   async function registraDalloScanner(codice: string) {
     scannerAperto = false;
     registrazioneInCorso = true;
@@ -106,6 +114,8 @@
       erroreRegistrazione = messaggioDiErrore(errore);
     } finally {
       registrazioneInCorso = false;
+      await tick();
+      document.getElementById('apri-scanner')?.focus();
     }
   }
 
@@ -192,7 +202,11 @@
             {:else}
               <h2 class="titolo-piccolo">Sei arrivato alla festa?</h2>
               <p>Inquadra il QR all'ingresso: si fa da qui.</p>
-              <Bottone onclick={() => (scannerAperto = true)} disabled={registrazioneInCorso}>
+              <Bottone
+                id="apri-scanner"
+                onclick={() => (scannerAperto = true)}
+                disabled={registrazioneInCorso}
+              >
                 {registrazioneInCorso ? 'Registro la presenza…' : 'Scansiona il QR'}
               </Bottone>
               {#if erroreRegistrazione}
@@ -226,7 +240,7 @@
       </div>
     </section>
     {#if scannerAperto}
-      <ScannerQr onCodice={registraDalloScanner} onAnnulla={() => (scannerAperto = false)} />
+      <ScannerQr onCodice={registraDalloScanner} onAnnulla={chiudiScanner} />
     {/if}
   {/if}
 {:else if fase === 'caricamento'}
