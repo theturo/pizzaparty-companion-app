@@ -1,12 +1,15 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import Dinosauro from '$lib/componenti/Dinosauro.svelte';
   import Pellicola from '$lib/componenti/Pellicola.svelte';
   import PaginaIngresso from '$lib/componenti/PaginaIngresso.svelte';
+  import ScannerQr from '$lib/componenti/ScannerQr.svelte';
+  import Bottone from '$lib/componenti/Bottone.svelte';
   import Caricamento from '$lib/componenti/Caricamento.svelte';
   import { faseAccesso } from '$lib/account/accesso';
   import { sessione } from '$lib/account/sessione.svelte';
   import { descriviQuando, orariDi, type Edizione } from '$lib/edizioni/edizione';
-  import { eAperto, oraRoma } from '$lib/edizioni/checkin';
+  import { eAperto, messaggioDiErrore, oraRoma } from '$lib/edizioni/checkin';
   import { maiuscola, scegliEdizioneHome, tempoMancante, testoMancante } from '$lib/edizioni/home';
   import { applicaTema, TEMA_PREDEFINITO, TEMI, type IdTema } from '$lib/tema/temi';
 
@@ -86,6 +89,35 @@
   const inCheckin = $derived(scelta !== null && eAperto(scelta, adesso));
   // undefined = non ancora letta; null = nessuna presenza; altrimenti l'ora di registrazione.
   let presenza = $state<{ registrata: Date } | null | undefined>(undefined);
+
+  // Lo scanner dentro l'app (D-064): il codice letto registra la presenza; la scheda passa a
+  // "Sei dentro!" da sola, dall'ascolto qui sopra.
+  let scannerAperto = $state(false);
+  let registrazioneInCorso = $state(false);
+  let erroreRegistrazione = $state('');
+
+  // Chiuso lo scanner, il focus torna al pulsante che l'aveva aperto (se c'è ancora).
+  async function chiudiScanner() {
+    scannerAperto = false;
+    await tick();
+    document.getElementById('apri-scanner')?.focus();
+  }
+
+  async function registraDalloScanner(codice: string) {
+    scannerAperto = false;
+    registrazioneInCorso = true;
+    erroreRegistrazione = '';
+    try {
+      const { registraPresenza } = await import('$lib/account/azioni');
+      await registraPresenza(codice, 'scanner');
+    } catch (errore) {
+      erroreRegistrazione = messaggioDiErrore(errore);
+    } finally {
+      registrazioneInCorso = false;
+      await tick();
+      document.getElementById('apri-scanner')?.focus();
+    }
+  }
 
   $effect(() => {
     const uid = sessione.utente?.uid;
@@ -169,7 +201,17 @@
               <p>Presenza registrata alle {oraRoma(presenza.registrata)}.</p>
             {:else}
               <h2 class="titolo-piccolo">Sei arrivato alla festa?</h2>
-              <p>Inquadra il QR all'ingresso con la fotocamera del telefono.</p>
+              <p>Inquadra il QR all'ingresso: si fa da qui.</p>
+              <Bottone
+                id="apri-scanner"
+                onclick={() => (scannerAperto = true)}
+                disabled={registrazioneInCorso}
+              >
+                {registrazioneInCorso ? 'Registro la presenza…' : 'Scansiona il QR'}
+              </Bottone>
+              {#if erroreRegistrazione}
+                <p class="messaggio-errore" role="alert">{erroreRegistrazione}</p>
+              {/if}
             {/if}
           </div>
         {/if}
@@ -197,6 +239,9 @@
         <Pellicola />
       </div>
     </section>
+    {#if scannerAperto}
+      <ScannerQr onCodice={registraDalloScanner} onAnnulla={chiudiScanner} />
+    {/if}
   {/if}
 {:else if fase === 'caricamento'}
   <Caricamento />

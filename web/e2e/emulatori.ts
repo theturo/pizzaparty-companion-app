@@ -244,3 +244,33 @@ export async function svuotaEdizioni(): Promise<void> {
     if (!cancellata.ok) throw new Error(`Edizione non cancellata: ${await cancellata.text()}`);
   }
 }
+
+/** Il codice di check-in di un'edizione, scritto come farebbe la Function (con il permesso di owner). */
+export async function creaCodiceCheckinDiProva(idEdizione: string, codice: string): Promise<void> {
+  const documento = {
+    fields: { edizione: { stringValue: idEdizione } },
+  };
+  const risposta = await fetch(
+    `http://127.0.0.1:8080/v1/projects/${PROGETTO}/databases/(default)/documents/codiciCheckin/${codice}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+      body: JSON.stringify(documento),
+    },
+  );
+  if (!risposta.ok) throw new Error(`Codice non scritto: ${await risposta.text()}`);
+}
+
+/** La presenza di una persona a un'edizione, com'è nell'emulatore (o `null` se manca). */
+export async function leggiPresenzaDiProva(
+  idEdizione: string,
+  uid: string,
+): Promise<{ via: string } | null> {
+  const risposta = await fetch(`${EDIZIONI}/${idEdizione}/presenze/${uid}`, {
+    headers: { Authorization: 'Bearer owner' },
+  });
+  if (risposta.status === 404) return null;
+  if (!risposta.ok) throw new Error(`Presenza non letta: ${await risposta.text()}`);
+  const documento = (await risposta.json()) as { fields?: { via?: { stringValue?: string } } };
+  return { via: documento.fields?.via?.stringValue ?? '' };
+}

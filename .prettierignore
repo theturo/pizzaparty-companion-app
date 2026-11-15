@@ -7,3 +7,6 @@ test-results/
 package-lock.json
 web/static/
 functions/lib/
+
+# Strumenti locali di chi sviluppa (non nella repo)
+.impeccable/
