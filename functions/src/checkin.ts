@@ -171,11 +171,20 @@ export const generaCodiceCheckin = onCall(CHIAMABILE, async (richiesta) => {
   return { codice };
 });
 
+/** Da dove è arrivata la presenza: con il link della pagina o con lo scanner dell'app (D-064). */
+export type ViaPresenza = 'link' | 'scanner';
+
+/** Qualunque valore diverso da 'scanner' vale 'link'. */
+export function viaDi(valore: unknown): ViaPresenza {
+  return valore === 'scanner' ? 'scanner' : 'link';
+}
+
 /** La persona approvata inquadra il QR: si registra la presenza una sola volta. */
 export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
   const uid = controllaAccesso(richiesta.auth);
   const codice =
     typeof richiesta.data?.codice === 'string' ? richiesta.data.codice.trim().toLowerCase() : '';
+  const via = viaDi(richiesta.data?.via);
   const adesso = new Date();
 
   const mappa = CODICE_CHECKIN.test(codice) ? await db.doc(`codiciCheckin/${codice}`).get() : null;
@@ -198,7 +207,7 @@ export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
       adesso,
     );
     if (decisione.scrivi)
-      t.set(rifPresenza, { uid, registrata: FieldValue.serverTimestamp(), via: 'link' });
+      t.set(rifPresenza, { uid, registrata: FieldValue.serverTimestamp(), via });
     return decisione;
   });
 

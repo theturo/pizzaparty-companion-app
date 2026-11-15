@@ -79,3 +79,46 @@ export function eAperto(edizione: { stato: string; quando: Quando }, adesso: Dat
   const { apertura, chiusura } = finestraCheckin(data, inizio);
   return adesso >= apertura && adesso < chiusura;
 }
+
+/** Il codice del check-in: xxxx-xxxx-xxxx, con l'alfabeto dei codici d'invito (come in functions/src/checkin.ts). */
+const CODICE_CHECKIN = /^[a-z2-9]{4}-[a-z2-9]{4}-[a-z2-9]{4}$/;
+const ORIGINE_APP = 'https://app.pizza-party.net';
+
+/**
+ * Il codice di check-in dal testo letto da un QR (D-064), o `null` se il QR non è nostro.
+ * Accetta il link `…/checkin?c=<codice>` sull'app pubblicata o sull'origine corrente (per i test in
+ * locale), e il solo codice scritto nel formato giusto. Gli altri parametri del link si ignorano.
+ */
+export function codiceDaQr(testo: string, origineCorrente?: string): string | null {
+  const pulito = testo.trim().toLowerCase();
+  if (CODICE_CHECKIN.test(pulito)) return pulito;
+
+  let link: URL;
+  try {
+    link = new URL(testo.trim());
+  } catch {
+    return null;
+  }
+  const origineAmmessa = link.origin === ORIGINE_APP || link.origin === origineCorrente;
+  if (!origineAmmessa || link.pathname !== '/checkin') return null;
+
+  const codici = link.searchParams.getAll('c');
+  if (codici.length !== 1) return null;
+  const codice = codici[0].trim().toLowerCase();
+  return CODICE_CHECKIN.test(codice) ? codice : null;
+}
+
+/** Il messaggio per la persona quando il check-in fallisce: quello del server, se è già leggibile. */
+const ERRORI_LEGGIBILI = [
+  'functions/unauthenticated',
+  'functions/permission-denied',
+  'functions/not-found',
+  'functions/failed-precondition',
+  'functions/invalid-argument',
+];
+const ERRORE_GENERICO = 'Non sono riuscito a registrare la presenza. Riprova tra poco.';
+
+export function messaggioDiErrore(errore: unknown): string {
+  const { code, message } = (errore ?? {}) as { code?: string; message?: string };
+  return code && ERRORI_LEGGIBILI.includes(code) && message ? message : ERRORE_GENERICO;
+}

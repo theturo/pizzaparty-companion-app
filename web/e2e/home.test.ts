@@ -196,9 +196,8 @@ test('la sera della festa: la scheda "Sei arrivato alla festa?" finché non si e
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'Primavera 2027' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Sei arrivato alla festa?' })).toBeVisible();
-  await expect(
-    page.getByText("Inquadra il QR all'ingresso con la fotocamera del telefono."),
-  ).toBeVisible();
+  await expect(page.getByText("Inquadra il QR all'ingresso: si fa da qui.")).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Scansiona il QR' })).toBeVisible();
 
   // Presenza registrata: la stessa scheda dice "Sei dentro!".
   await registraPresenzaDiProva(id, uid);

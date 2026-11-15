@@ -3,6 +3,13 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.18.0 — 2026-11-15
+
+- Il check-in si fa anche dentro l'app: nella Home, nella scheda "Sei arrivato alla festa?", il pulsante «Scansiona il QR» apre la fotocamera a schermo intero. Inquadrato il QR all'ingresso, la presenza si registra e la scheda dice "Sei dentro!". Serve il permesso per la fotocamera.
+- Con l'app installata, su Android il link del QR apre l'app invece del browser (dove il telefono lo permette). Su iPhone il link apre ancora il browser: lì conviene il pulsante nella Home.
+- Nella pagina del check-in, chi ha l'app installata trova il promemoria «Scansiona il QR» dalla Home.
+- Nei tuoi dati, le presenze dicono se sono arrivate con il link o con lo scanner dell'app.
+
 ## 0.17.0 — 2026-11-15
 
 - Il check-in alla festa si fa con il QR all'ingresso: si inquadra con la fotocamera del telefono e la presenza si registra da sola. Il QR porta a una pagina che dice "Sei dentro!" (o "Ci sei già!" se è già registrata). Chi non ha fatto accesso lo fa e torna alla stessa pagina.

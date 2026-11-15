@@ -138,12 +138,13 @@ export const rigeneraInvito = () => chiama<{ codice: string }>('rigeneraInvito')
 
 export const generaCodiceCheckin = (edizioneId: string) =>
   chiama<{ codice: string }>('generaCodiceCheckin', { edizioneId });
-export const registraPresenza = (codice: string) =>
+/** `via` dice da dove arriva il codice: il link della pagina o lo scanner dell'app (D-064). */
+export const registraPresenza = (codice: string, via: 'link' | 'scanner' = 'link') =>
   chiama<{
     esito: 'registrata' | 'gia-presente';
     edizione: { id: string; nome: string };
     registrata: string;
-  }>('registraPresenza', { codice });
+  }>('registraPresenza', { codice, via });
 
 // ---- Profilo e diritti (D-035) ----
 

@@ -18,6 +18,7 @@ const {
   orariDi,
   oraRoma,
   istanteRoma,
+  viaDi,
 } = await import('./checkin.js');
 
 const errore = (f: () => unknown) => {
@@ -167,5 +168,17 @@ describe('decisione sulla presenza', () => {
       registrata: prima,
       scrivi: false,
     });
+  });
+});
+
+describe('da dove arriva la presenza (D-064)', () => {
+  it("'scanner' resta 'scanner'; il link e tutto il resto valgono 'link'", () => {
+    expect(viaDi('scanner')).toBe('scanner');
+    expect(viaDi('link')).toBe('link');
+    expect(viaDi(undefined)).toBe('link');
+    expect(viaDi(null)).toBe('link');
+    expect(viaDi('Scanner')).toBe('link');
+    expect(viaDi('qualcosa')).toBe('link');
+    expect(viaDi(1)).toBe('link');
   });
 });

@@ -5,7 +5,7 @@
   import { resolve } from '$app/paths';
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
-  import { oraRoma } from '$lib/edizioni/checkin';
+  import { messaggioDiErrore, oraRoma } from '$lib/edizioni/checkin';
 
   type Stato =
     | { tipo: 'in-corso' }
@@ -14,17 +14,16 @@
     | { tipo: 'gia-presente'; ora: string }
     | { tipo: 'errore'; messaggio: string };
 
-  // Codici di errore del server il cui messaggio è già pensato per la persona.
-  const ERRORI_LEGGIBILI = [
-    'functions/unauthenticated',
-    'functions/permission-denied',
-    'functions/not-found',
-    'functions/failed-precondition',
-    'functions/invalid-argument',
-  ];
-  const ERRORE_GENERICO = 'Non sono riuscito a registrare la presenza. Riprova tra poco.';
-
   let stato = $state<Stato>({ tipo: 'in-corso' });
+
+  // Chi ha l'app installata non ha bisogno di questa riga: la pagina gira già lì dentro (D-064).
+  let mostraNotaApp = $state(false);
+  $effect(() => {
+    const installata =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    mostraNotaApp = !installata;
+  });
 
   // Il codice è nella query; si decide solo nel browser, quando la sessione è nota.
   $effect(() => {
@@ -51,11 +50,7 @@
         };
       } catch (errore) {
         if (annullato) return;
-        const { code, message } = errore as { code?: string; message?: string };
-        stato = {
-          tipo: 'errore',
-          messaggio: code && ERRORI_LEGGIBILI.includes(code) && message ? message : ERRORE_GENERICO,
-        };
+        stato = { tipo: 'errore', messaggio: messaggioDiErrore(errore) };
       }
     })();
     return () => {
@@ -109,3 +104,17 @@
     </p>
   </PaginaAccount>
 {/if}
+
+{#if mostraNotaApp}
+  <p class="nota-app">Hai l'app installata? Aprila e usa «Scansiona il QR» dalla Home.</p>
+{/if}
+
+<style>
+  .nota-app {
+    margin: var(--spazio-5) auto 0;
+    max-width: var(--larghezza-contenuto);
+    text-align: center;
+    font-size: var(--testo-s);
+    color: var(--colore-testo-attenuato);
+  }
+</style>

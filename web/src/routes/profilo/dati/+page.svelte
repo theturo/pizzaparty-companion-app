@@ -33,13 +33,21 @@
     ['dispositiviConNotifiche', 'Dispositivi con le notifiche attive'],
   ];
 
+  /** Come si legge da dove è arrivata una presenza (D-064). */
+  const VIE: Record<string, string> = {
+    link: 'con il link',
+    scanner: "con lo scanner dell'app",
+  };
+
   /** Voci "etichetta: valore" leggibili, anche per oggetti annidati. */
   function voci(valore: unknown, prefisso = ''): [string, string][] {
     if (valore === null || valore === undefined) return [];
     if (typeof valore !== 'object') return [[prefisso || 'valore', String(valore)]];
     return Object.entries(valore as Record<string, unknown>).flatMap(([chiave, v]) => {
       const nome = prefisso ? `${prefisso} › ${chiave}` : chiave;
-      return v !== null && typeof v === 'object' ? voci(v, nome) : [[nome, String(v ?? '—')]];
+      if (v !== null && typeof v === 'object') return voci(v, nome);
+      if (chiave === 'via' && typeof v === 'string') return [[nome, VIE[v] ?? v]];
+      return [[nome, String(v ?? '—')]];
     });
   }
 
