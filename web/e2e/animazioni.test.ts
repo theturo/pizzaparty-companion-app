@@ -1,6 +1,10 @@
 import { expect, test, type Locator } from '@playwright/test';
 import { accediComeApprovato } from './aiuti';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 /** Nome e durata dell'animazione d'entrata calcolati dal browser. */
 const animazione = (elemento: Locator) =>
   elemento.evaluate((el) => {

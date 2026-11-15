@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 test('alla prima visita non compare il banner "nuova versione"', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(async () => {

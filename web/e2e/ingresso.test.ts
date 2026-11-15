@@ -2,6 +2,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { creaAccount, creaProfilo, emailDiProva } from './emulatori';
 import { accedi, accediComeApprovato, PASSWORD, registra } from './aiuti';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 // Chi non è approvato vede la pagina d'ingresso, senza barra; la barra compare solo dopo l'approvazione (D-045).
 const TITOLO_OSPITE = 'La serata comincia qui.';
 const SEZIONI_RISERVATE = ['/trofei', '/pizzagram', '/ordina', '/admin'];

@@ -1,5 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 // La mascotte è un'immagine (WebP) con quattro pose; i gesti sono animazioni CSS (D-049).
 const NOME_DINO = 'Il dinosauro del PizzaParty';
 const POSE = ['aspetta', 'saluta', 'festeggia', 'corre'] as const;

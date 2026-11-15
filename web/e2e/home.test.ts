@@ -8,6 +8,10 @@ import {
   svuotaEdizioni,
 } from './emulatori';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 // L'elenco delle edizioni è uno solo per tutti i test: ogni test parte da zero e lascia zero.
 // Per questo i test di questo file girano in fila (serial).
 test.describe.configure({ mode: 'serial' });

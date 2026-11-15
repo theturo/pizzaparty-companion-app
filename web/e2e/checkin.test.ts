@@ -9,6 +9,10 @@ import {
   rendiAdmin,
 } from './emulatori';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 // Check-in con il link (D-058, D-059). I test girano in fila: il codice del punto (a) serve agli altri.
 // Le Functions dell'emulatore usano l'ora vera (non page.clock): per il caso "aperto" l'edizione è
 // di oggi e comincia a mezzanotte; per il caso "fuori finestra" è fra tre giorni.
