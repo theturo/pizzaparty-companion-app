@@ -40,6 +40,12 @@
       Uscendo dall'account o disattivando le notifiche, il codice si cancella.
     </li>
     <li>
+      <strong>Presenze alle feste.</strong> Quando registri la presenza con il QR d'ingresso salviamo
+      l'edizione, la data e l'ora del check-in. Servono a tenere lo storico delle partecipazioni e, in
+      futuro, ad assegnare i trofei. Le vede solo l'organizzatore, oltre a te; restano finché hai l'account,
+      e puoi chiederne la cancellazione.
+    </li>
+    <li>
       <strong>Segnalazioni, se ce le mandi:</strong> la mail che prepari con "Segnala un problema" contiene,
       oltre a quello che scrivi, la versione dell'app, il tipo di dispositivo (per esempio "iPhone · Safari")
       e, se hai fatto accesso, il codice tecnico del tuo account. Puoi modificarla o cancellare questi
@@ -52,8 +58,8 @@
   </ul>
   <p>
     Non raccogliamo posizione, dati di pagamento né dati sulla salute. Quando arriveranno nuove
-    funzioni (trofei, presenze, ordini delle pizze, foto), questa informativa verrà aggiornata e te
-    lo diremo nell'app.
+    funzioni (trofei, ordini delle pizze, foto), questa informativa verrà aggiornata e te lo diremo
+    nell'app.
   </p>
 
   <h2>Perché li usiamo</h2>

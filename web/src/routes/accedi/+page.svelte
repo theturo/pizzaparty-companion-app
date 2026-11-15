@@ -3,8 +3,10 @@
   import { resolve } from '$app/paths';
   import PaginaAccount from '$lib/componenti/PaginaAccount.svelte';
   import Bottone from '$lib/componenti/Bottone.svelte';
+  import { page } from '$app/state';
   import { sessione } from '$lib/account/sessione.svelte';
   import { messaggioErrore } from '$lib/account/errori';
+  import { percorsoDiRitorno } from '$lib/account/ritorno';
 
   let email = $state('');
   let password = $state('');
@@ -18,7 +20,12 @@
     try {
       const { accedi } = await import('$lib/account/azioni');
       await accedi(email.trim(), password);
-      await goto(resolve('/profilo'));
+      // Dopo l'accesso si torna dove si era (es. il check-in con il QR), se la pagina lo ha chiesto (D-059).
+      // Si legge qui e non all'avvio: la generazione statica non ha la query.
+      const ritorno = page.url.searchParams.get('ritorno');
+      await goto(
+        resolve((ritorno === null ? '/profilo' : percorsoDiRitorno(ritorno)) as '/profilo'),
+      );
     } catch (e) {
       errore = messaggioErrore(e);
     } finally {

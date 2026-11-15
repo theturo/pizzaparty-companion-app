@@ -134,16 +134,30 @@ const EDIZIONI = `http://127.0.0.1:8080/v1/projects/${PROGETTO}/databases/(defau
 
 export interface EdizioneDiProva {
   nome: string;
-  quando: { tipo: 'data'; data: string } | { tipo: 'periodo'; periodo: string };
+  quando:
+    | { tipo: 'data'; data: string; inizio?: string; fine?: string }
+    | { tipo: 'periodo'; periodo: string };
   stato: 'bozza' | 'annunciata' | 'conclusa' | 'annullata';
   tema?: string;
+}
+
+/** Il giorno di Roma, `giorniDopo` giorni da oggi, come AAAA-MM-GG (per le edizioni del check-in). */
+export function giornoRoma(giorniDopo = 0): string {
+  const oggi = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
+  const [anno, mese, giorno] = oggi.split('-').map(Number);
+  return new Date(Date.UTC(anno, mese - 1, giorno + giorniDopo)).toISOString().slice(0, 10);
 }
 
 /** Scrive un'edizione nell'emulatore come farebbe il pannello admin (con il permesso di owner). */
 export async function creaEdizione(id: string, dati: EdizioneDiProva): Promise<void> {
   const quando =
     dati.quando.tipo === 'data'
-      ? { tipo: { stringValue: 'data' }, data: { stringValue: dati.quando.data } }
+      ? {
+          tipo: { stringValue: 'data' },
+          data: { stringValue: dati.quando.data },
+          ...(dati.quando.inizio ? { inizio: { stringValue: dati.quando.inizio } } : {}),
+          ...(dati.quando.fine ? { fine: { stringValue: dati.quando.fine } } : {}),
+        }
       : { tipo: { stringValue: 'periodo' }, periodo: { stringValue: dati.quando.periodo } };
   const adesso = new Date().toISOString();
   const documento = {
@@ -179,6 +193,42 @@ export async function creaEdizione(id: string, dati: EdizioneDiProva): Promise<v
     body: JSON.stringify(documento),
   });
   if (!risposta.ok) throw new Error(`Edizione non scritta: ${await risposta.text()}`);
+}
+
+/** La scheda pubblica di un approvato (nome e avatar), come la scrive approvaRichiesta. */
+export async function creaSchedaPubblica(uid: string, nome: string): Promise<void> {
+  const documento = {
+    fields: { nome: { stringValue: nome }, avatar: { stringValue: 'margherita' } },
+  };
+  const risposta = await fetch(
+    `http://127.0.0.1:8080/v1/projects/${PROGETTO}/databases/(default)/documents/profili/${uid}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+      body: JSON.stringify(documento),
+    },
+  );
+  if (!risposta.ok) throw new Error(`Scheda non scritta: ${await risposta.text()}`);
+}
+
+/**
+ * Una presenza già registrata, scritta come la Function di check-in (con il permesso di owner).
+ * Serve ai test della Home, che non passano dal QR.
+ */
+export async function registraPresenzaDiProva(idEdizione: string, uid: string): Promise<void> {
+  const documento = {
+    fields: {
+      uid: { stringValue: uid },
+      registrata: { timestampValue: new Date().toISOString() },
+      via: { stringValue: 'link' },
+    },
+  };
+  const risposta = await fetch(`${EDIZIONI}/${idEdizione}/presenze/${uid}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' },
+    body: JSON.stringify(documento),
+  });
+  if (!risposta.ok) throw new Error(`Presenza non scritta: ${await risposta.text()}`);
 }
 
 /** Toglie tutte le edizioni dall'emulatore: i test della Home partono da un elenco vuoto. */

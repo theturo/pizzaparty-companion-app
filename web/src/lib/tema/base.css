@@ -73,8 +73,6 @@
   --grana: var(--tema-grana, 0);
 
   /* Mascotte */
-  --dino-pelle: var(--tema-dino-pelle, #4a4152);
-  --dino-dettagli: var(--tema-dino-dettagli, #f5c934);
 }
 
 * {

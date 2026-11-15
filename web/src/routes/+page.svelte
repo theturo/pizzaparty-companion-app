@@ -5,15 +5,19 @@
   import Caricamento from '$lib/componenti/Caricamento.svelte';
   import { faseAccesso } from '$lib/account/accesso';
   import { sessione } from '$lib/account/sessione.svelte';
-  import { descriviQuando, type Edizione } from '$lib/edizioni/edizione';
+  import { descriviQuando, orariDi, type Edizione } from '$lib/edizioni/edizione';
+  import { eAperto, oraRoma } from '$lib/edizioni/checkin';
   import { maiuscola, scegliEdizioneHome, tempoMancante, testoMancante } from '$lib/edizioni/home';
   import { applicaTema, TEMA_PREDEFINITO, TEMI, type IdTema } from '$lib/tema/temi';
 
   // Chi non è approvato vede la pagina d'ingresso (D-045); finché lo stato non è noto, nulla.
   const fase = $derived(faseAccesso(sessione));
 
+  // Il documento dell'edizione con il suo id (serve per la presenza, D-058).
+  type EdizioneConId = Edizione & { id: string };
+
   // Le edizioni da mostrare alla Home (D-056). null = la prima risposta non è ancora arrivata.
-  let edizioni = $state<Edizione[] | null>(null);
+  let edizioni = $state<EdizioneConId[] | null>(null);
   let errore = $state(false);
   const pronta = $derived(edizioni !== null || errore);
   const scelta = $derived(edizioni ? scegliEdizioneHome(edizioni) : null);
@@ -49,7 +53,7 @@
         elenco,
         (istantanea) => {
           errore = false;
-          edizioni = istantanea.docs.map((d) => d.data() as Edizione);
+          edizioni = istantanea.docs.map((d) => ({ ...(d.data() as Edizione), id: d.id }));
         },
         () => {
           errore = true;
@@ -76,6 +80,43 @@
       adesso = new Date();
     }, 30_000);
     return () => clearInterval(timer);
+  });
+
+  // Check-in (D-058): la scheda compare solo la sera della festa, con la finestra aperta.
+  const inCheckin = $derived(scelta !== null && eAperto(scelta, adesso));
+  // undefined = non ancora letta; null = nessuna presenza; altrimenti l'ora di registrazione.
+  let presenza = $state<{ registrata: Date } | null | undefined>(undefined);
+
+  $effect(() => {
+    const uid = sessione.utente?.uid;
+    const id = scelta?.id;
+    if (!inCheckin || !uid || !id) return;
+    let smetti: (() => void) | undefined;
+    let annullato = false;
+    (async () => {
+      const [{ firebase }, { doc, onSnapshot }] = await Promise.all([
+        import('$lib/firebase/app'),
+        import('firebase/firestore'),
+      ]);
+      if (annullato) return;
+      smetti = onSnapshot(
+        doc(firebase().db, 'edizioni', id, 'presenze', uid),
+        (istantanea) => {
+          const registrata = istantanea.get('registrata') as { toDate(): Date } | undefined;
+          presenza = istantanea.exists()
+            ? { registrata: registrata?.toDate() ?? new Date() }
+            : null;
+        },
+        () => {
+          presenza = null;
+        },
+      );
+    })();
+    return () => {
+      annullato = true;
+      smetti?.();
+      presenza = undefined;
+    };
   });
 </script>
 
@@ -119,6 +160,19 @@
         <p class="attenuato">data in arrivo</p>
       {:else}
         <p class="data">{maiuscola(descriviQuando(scelta.quando))}</p>
+        {@const orari = orariDi(scelta.quando)}
+        <p class="attenuato">dalle {orari.inizio} alle {orari.fine}</p>
+        {#if inCheckin && presenza !== undefined}
+          <div class="scheda-checkin">
+            {#if presenza}
+              <h2 class="titolo-piccolo">Sei dentro!</h2>
+              <p>Presenza registrata alle {oraRoma(presenza.registrata)}.</p>
+            {:else}
+              <h2 class="titolo-piccolo">Sei arrivato alla festa?</h2>
+              <p>Inquadra il QR all'ingresso con la fotocamera del telefono.</p>
+            {/if}
+          </div>
+        {/if}
         {#if tempo === 'oggi'}
           <p class="titolo-piccolo">Ci siamo: è oggi!</p>
         {:else if conto}
@@ -206,6 +260,16 @@
     font-style: var(--titoli-stile);
     line-height: 1;
     color: var(--colore-accento);
+  }
+  .scheda-checkin {
+    display: grid;
+    gap: var(--spazio-1);
+    justify-items: center;
+    max-width: 30rem;
+    margin: var(--spazio-3) auto 0;
+    padding: var(--spazio-3) var(--spazio-4);
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-s);
   }
   .unita {
     font-size: var(--testo-s);

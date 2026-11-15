@@ -134,6 +134,17 @@ export const approvaRichiesta = (uid: string) => chiama('approvaRichiesta', { ui
 export const rifiutaRichiesta = (uid: string) => chiama('rifiutaRichiesta', { uid });
 export const rigeneraInvito = () => chiama<{ codice: string }>('rigeneraInvito');
 
+// ---- Check-in con il link (D-058) ----
+
+export const generaCodiceCheckin = (edizioneId: string) =>
+  chiama<{ codice: string }>('generaCodiceCheckin', { edizioneId });
+export const registraPresenza = (codice: string) =>
+  chiama<{
+    esito: 'registrata' | 'gia-presente';
+    edizione: { id: string; nome: string };
+    registrata: string;
+  }>('registraPresenza', { codice });
+
 // ---- Profilo e diritti (D-035) ----
 
 export async function modificaProfilo(dati: { nome: string; avatar: string }) {
