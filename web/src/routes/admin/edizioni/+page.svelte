@@ -7,11 +7,14 @@
   import Bottone from '$lib/componenti/Bottone.svelte';
   import Scheda from '$lib/componenti/Scheda.svelte';
   import SchedePannello from '$lib/componenti/SchedePannello.svelte';
+  import SezioneCheckin from '$lib/componenti/SezioneCheckin.svelte';
   import { sessione } from '$lib/account/sessione.svelte';
   import { TEMA_PREDEFINITO, TEMI } from '$lib/tema/temi';
   import {
     descriviQuando,
     ETICHETTE_STATO,
+    ORARI_PREDEFINITI,
+    orariDi,
     validaEdizione,
     valoriIniziali,
     type CampoEdizione,
@@ -30,6 +33,8 @@
     nome: string;
     tipo: 'data' | 'periodo';
     giorno: string;
+    inizio: string;
+    fine: string;
     periodo: string;
     tema: string;
     singolo: number | string | null;
@@ -57,6 +62,8 @@
       nome: d.nome,
       tipo: d.quando.tipo,
       giorno: d.quando.tipo === 'data' ? d.quando.data : '',
+      inizio: d.quando.tipo === 'data' ? orariDi(d.quando).inizio : ORARI_PREDEFINITI.inizio,
+      fine: d.quando.tipo === 'data' ? orariDi(d.quando).fine : ORARI_PREDEFINITI.fine,
       periodo: d.quando.tipo === 'periodo' ? d.quando.periodo : '',
       tema: d.tema,
       singolo: d.quota.singolo,
@@ -78,7 +85,7 @@
   function datiDa(c: Campi): DatiEdizione {
     const quando: Quando =
       c.tipo === 'data'
-        ? { tipo: 'data', data: c.giorno }
+        ? { tipo: 'data', data: c.giorno, inizio: c.inizio, fine: c.fine }
         : { tipo: 'periodo', periodo: c.periodo.trim() };
     return {
       nome: c.nome.trim(),
@@ -244,6 +251,32 @@
             {#if errori.giorno}<p id="errore-giorno" class="errore" role="alert">
                 {errori.giorno}
               </p>{/if}
+            <div class="coppia">
+              <div>
+                <label for="inizio">Inizio</label>
+                <input
+                  id="inizio"
+                  type="time"
+                  bind:value={campi.inizio}
+                  aria-invalid={errori.orario ? 'true' : undefined}
+                  aria-describedby={errori.orario ? 'errore-orario' : undefined}
+                />
+              </div>
+              <div>
+                <label for="fine">Fine</label>
+                <input
+                  id="fine"
+                  type="time"
+                  bind:value={campi.fine}
+                  aria-invalid={errori.orario ? 'true' : undefined}
+                  aria-describedby={errori.orario ? 'errore-orario' : undefined}
+                />
+              </div>
+            </div>
+            <p class="nota">Se la fine è prima dell'inizio, la festa finisce dopo mezzanotte.</p>
+            {#if errori.orario}<p id="errore-orario" class="errore" role="alert">
+                {errori.orario}
+              </p>{/if}
           {:else}
             <label for="periodo">Periodo</label>
             <input
@@ -353,6 +386,12 @@
         {/if}
       </form>
     </Scheda>
+
+    {#if modulo.id !== null}
+      {#key modulo.id}
+        <SezioneCheckin id={modulo.id} nome={campi.nome.trim()} />
+      {/key}
+    {/if}
 
     <!-- Conferma prima di annullare (come per l'eliminazione dell'account, D-040). -->
     <dialog bind:this={dialogoAnnullamento} aria-labelledby="titolo-annullamento">

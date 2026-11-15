@@ -2,6 +2,10 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
 import { creaUtenteApprovato, emailDiProva, rendiAdmin } from './emulatori';
 import { accedi, accediComeApprovato, PASSWORD } from './aiuti';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 // Le Functions e gli emulatori possono metterci un po' alla prima chiamata.
 const ATTESA = { timeout: 20_000 };
 

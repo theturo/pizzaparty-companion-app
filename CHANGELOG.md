@@ -3,6 +3,14 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.17.0 — 2026-11-15
+
+- Il check-in alla festa si fa con il QR all'ingresso: si inquadra con la fotocamera del telefono e la presenza si registra da sola. Il QR porta a una pagina che dice "Sei dentro!" (o "Ci sei già!" se è già registrata). Chi non ha fatto accesso lo fa e torna alla stessa pagina.
+- Il check-in si apre 30 minuti prima dell'inizio della festa e si chiude alle 03:00 della notte dopo.
+- La sera della festa, la Home mostra la scheda "Sei arrivato alla festa?" finché non si entra, poi "Sei dentro!".
+- Nel pannello, ogni edizione con data ha gli orari di inizio e fine (predefiniti 19:30 e 23:30) e la sezione "Check-in e presenze": il QR da scaricare e stampare, il codice da rigenerare, l'elenco dei presenti con la possibilità di annullare una presenza.
+- Le presenze alle feste entrano nei tuoi dati (la pagina "I tuoi dati") e nella cancellazione dell'account. L'informativa privacy è aggiornata.
+
 ## 0.16.0 — 2026-11-09
 
 - Avatar nuovi, dipinti a mano come il dinosauro del PizzaParty. E tra le scelte arriva proprio lui: il Dinosauro.

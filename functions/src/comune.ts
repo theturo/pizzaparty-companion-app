@@ -47,10 +47,19 @@ export async function aggiungiPermessi(uid: string, nuovi: Permessi): Promise<vo
   await auth.setCustomUserClaims(uid, { ...(utente.customClaims ?? {}), ...nuovi });
 }
 
+/** Alfabeto dei codici: niente caratteri ambigui (0/o, 1/l/i). */
+const ALFABETO_CODICI = 'abcdefghjkmnpqrstuvwxyz23456789';
+
+/** Codice leggibile e difficile da indovinare: `gruppi` blocchi di 4 caratteri separati da "-". */
+export function generaCodiceGruppi(gruppi: number): string {
+  const byte = randomBytes(gruppi * 4);
+  const caratteri = [...byte].map((b) => ALFABETO_CODICI[b % ALFABETO_CODICI.length]);
+  const blocchi: string[] = [];
+  for (let i = 0; i < caratteri.length; i += 4) blocchi.push(caratteri.slice(i, i + 4).join(''));
+  return blocchi.join('-');
+}
+
 /** Codice d'invito leggibile e difficile da indovinare (es. "k7m2-9qxt"). */
 export function generaCodiceInvito(): string {
-  const alfabeto = 'abcdefghjkmnpqrstuvwxyz23456789';
-  const byte = randomBytes(8);
-  const caratteri = [...byte].map((b) => alfabeto[b % alfabeto.length]);
-  return `${caratteri.slice(0, 4).join('')}-${caratteri.slice(4).join('')}`;
+  return generaCodiceGruppi(2);
 }

@@ -1,6 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
-import { accediComeApprovato } from './aiuti';
-import { creaEdizione, svuotaEdizioni } from './emulatori';
+import { accedi, accediComeApprovato, PASSWORD } from './aiuti';
+import {
+  creaEdizione,
+  creaUtenteApprovato,
+  emailDiProva,
+  registraPresenzaDiProva,
+  svuotaEdizioni,
+} from './emulatori';
+
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
 
 // L'elenco delle edizioni è uno solo per tutti i test: ogni test parte da zero e lascia zero.
 // Per questo i test di questo file girano in fila (serial).
@@ -165,4 +175,51 @@ test('a 375 px le tre caselle del countdown stanno sulla stessa riga', async ({ 
   // Nessuno scorrimento orizzontale della pagina.
   const largezza = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(largezza).toBeLessThanOrEqual(375);
+});
+
+// Il check-in (D-058): la scheda compare solo la sera della festa, con la finestra aperta.
+test('la sera della festa: la scheda "Sei arrivato alla festa?" finché non si entra', async ({
+  page,
+}) => {
+  const errori = sorvegliaErrori(page);
+  const email = emailDiProva('checkin-home');
+  const uid = await creaUtenteApprovato(email, PASSWORD);
+  const id = `checkin-home-${Date.now() % 100000}`;
+  await creaEdizione(id, {
+    nome: 'Primavera 2027',
+    quando: { tipo: 'data', data: '2027-05-22' },
+    stato: 'annunciata',
+  });
+  await accedi(page, email);
+  // Il 22 maggio alle 20:00, dentro la finestra (19:00-03:00).
+  await page.clock.setFixedTime(new Date(2027, 4, 22, 20, 0, 0));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Primavera 2027' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sei arrivato alla festa?' })).toBeVisible();
+  await expect(
+    page.getByText("Inquadra il QR all'ingresso con la fotocamera del telefono."),
+  ).toBeVisible();
+
+  // Presenza registrata: la stessa scheda dice "Sei dentro!".
+  await registraPresenzaDiProva(id, uid);
+  await expect(page.getByRole('heading', { name: 'Sei dentro!' })).toBeVisible();
+  await expect(page.getByText(/Presenza registrata alle \d{2}:\d{2}\./)).toBeVisible();
+  expect(errori).toEqual([]);
+});
+
+test('fuori dalla finestra la scheda non compare', async ({ page }) => {
+  const email = emailDiProva('checkin-home-fuori');
+  await creaUtenteApprovato(email, PASSWORD);
+  await creaEdizione(`checkin-fuori-${Date.now() % 100000}`, {
+    nome: 'Primavera 2027',
+    quando: { tipo: 'data', data: '2027-05-22' },
+    stato: 'annunciata',
+  });
+  await accedi(page, email);
+  // Il 22 maggio alle 12:00: la finestra si apre alle 19:00.
+  await page.clock.setFixedTime(new Date(2027, 4, 22, 12, 0, 0));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Primavera 2027' })).toBeVisible();
+  await expect(page.getByText('dalle 19:30 alle 23:30')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sei arrivato alla festa?' })).toHaveCount(0);
 });

@@ -3,7 +3,28 @@
 
 export type StatoEdizione = 'bozza' | 'annunciata' | 'conclusa' | 'annullata';
 
-export type Quando = { tipo: 'data'; data: string } | { tipo: 'periodo'; periodo: string };
+/**
+ * Quando si svolge. Con la data esatta ci sono anche gli orari 'HH:MM' (D-058); sono facoltativi
+ * per le edizioni salvate prima, e in quel caso valgono i predefiniti (vedi orariDi).
+ * `fine` può essere prima di `inizio`: vuol dire dopo mezzanotte.
+ */
+export type Quando =
+  | { tipo: 'data'; data: string; inizio?: string; fine?: string }
+  | { tipo: 'periodo'; periodo: string };
+
+export const ORARI_PREDEFINITI = { inizio: '19:30', fine: '23:30' } as const;
+export const ORARIO_RE = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
+
+/** Gli orari dell'edizione con i predefiniti al posto di quelli mancanti. */
+export function orariDi(quando: { inizio?: string; fine?: string }): {
+  inizio: string;
+  fine: string;
+} {
+  return {
+    inizio: quando.inizio ?? ORARI_PREDEFINITI.inizio,
+    fine: quando.fine ?? ORARI_PREDEFINITI.fine,
+  };
+}
 
 export interface DatiEdizione {
   nome: string;
@@ -20,7 +41,7 @@ export interface Edizione extends DatiEdizione {
   aggiornato: unknown;
 }
 
-export type CampoEdizione = 'nome' | 'giorno' | 'periodo' | 'quota';
+export type CampoEdizione = 'nome' | 'giorno' | 'orario' | 'periodo' | 'quota';
 
 export interface ErroreEdizione {
   campo: CampoEdizione;
@@ -83,6 +104,13 @@ export function validaEdizione(dati: DatiEdizione): ErroreEdizione[] {
   if (quando.tipo === 'data') {
     if (!eDataValida(quando.data)) {
       errori.push({ campo: 'giorno', messaggio: 'Scegli il giorno.' });
+    }
+    const orari = orariDi(quando);
+    if (!ORARIO_RE.test(orari.inizio) || !ORARIO_RE.test(orari.fine)) {
+      errori.push({
+        campo: 'orario',
+        messaggio: 'Scrivi gli orari come HH:MM, per esempio 19:30.',
+      });
     }
   } else {
     const periodo = quando.periodo;

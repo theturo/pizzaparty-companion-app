@@ -25,8 +25,8 @@ function millisecondiDi(creato: unknown): number | null {
  * La più recente per `creato` tra le edizioni annunciate o annullate.
  * Un `creato` mancante conta come più vecchio di qualunque data; in caso di parità vince la prima.
  */
-export function scegliEdizioneHome(edizioni: Edizione[]): Edizione | null {
-  let scelta: Edizione | null = null;
+export function scegliEdizioneHome<T extends Edizione>(edizioni: T[]): T | null {
+  let scelta: T | null = null;
   let millisScelta = -Infinity;
   for (const edizione of edizioni) {
     if (!puoEssereInHome(edizione)) continue;

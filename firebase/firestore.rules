@@ -109,11 +109,17 @@ service cloud.firestore {
     function nomeEdizione(nome) {
       return nome is string && nome.size() >= 2 && nome.size() <= 60 && nome.trim() == nome;
     }
+    // Orari HH:MM dell'edizione con data esatta (D-058): facoltativi per le edizioni vecchie.
+    function orarioEdizione(o) {
+      return o is string && o.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+    }
     function quandoEdizione(q) {
       return q is map && (
         (q.tipo == 'data'
-          && q.keys().hasOnly(['tipo', 'data']) && q.keys().hasAll(['tipo', 'data'])
-          && q.data is string && q.data.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'))
+          && q.keys().hasOnly(['tipo', 'data', 'inizio', 'fine']) && q.keys().hasAll(['tipo', 'data'])
+          && q.data is string && q.data.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$')
+          && (!('inizio' in q) || orarioEdizione(q.inizio))
+          && (!('fine' in q) || orarioEdizione(q.fine)))
         || (q.tipo == 'periodo'
           && q.keys().hasOnly(['tipo', 'periodo']) && q.keys().hasAll(['tipo', 'periodo'])
           && q.periodo is string && q.periodo.size() >= 2 && q.periodo.size() <= 40)
@@ -155,6 +161,24 @@ service cloud.firestore {
         && edizioneValida(request.resource.data)
         && request.resource.data.creato == resource.data.creato;
       allow delete: if false;
+
+      // Codice del link d'ingresso, segreto: lo legge solo l'admin; lo scrivono solo le Functions (D-058).
+      match /riservato/checkin {
+        allow read: if admin();
+        allow write: if false;
+      }
+
+      // Presenze alle feste (D-058): le scrive solo la Function di check-in, l'admin le annulla.
+      match /presenze/{uid} {
+        allow read: if admin() || eLaPersona(uid);
+        allow create, update: if false;
+        allow delete: if admin();
+      }
+    }
+
+    // ---- Mappa dal codice del QR all'edizione: solo le Functions (D-058) ----
+    match /codiciCheckin/{codice} {
+      allow read, write: if false;
     }
 
     // ---- Link di pagamento, uguali per tutte le edizioni (D-055): solo l'admin ----

@@ -1,6 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { accediComeApprovato } from './aiuti';
 
+import { corsiaCondivisa } from './corsia';
+
+corsiaCondivisa();
+
 const SEZIONI = [
   { nome: 'Home', percorso: '/', titolo: 'Il forno si sta scaldando.' },
   { nome: 'Trofei', percorso: '/trofei', titolo: 'Trofei' },
