@@ -2,16 +2,23 @@ import { describe, expect, it } from 'vitest';
 import { percorsoDiRitorno } from './ritorno';
 
 describe('percorsoDiRitorno', () => {
-  it('accetta i percorsi interni, con query compresa', () => {
-    expect(percorsoDiRitorno('/checkin?c=abcd-efgh-jkmn')).toBe('/checkin?c=abcd-efgh-jkmn');
+  it('lascia invariati i percorsi interni, query compresa', () => {
+    expect(percorsoDiRitorno('/checkin?c=abcd-efgh-ijkl')).toBe('/checkin?c=abcd-efgh-ijkl');
     expect(percorsoDiRitorno('/profilo')).toBe('/profilo');
   });
 
-  it('rifiuta i link esterni e i percorsi che iniziano con "//"', () => {
-    expect(percorsoDiRitorno('https://esempio.org')).toBe('/');
-    expect(percorsoDiRitorno('//esempio.org')).toBe('/');
-    expect(percorsoDiRitorno('/\\esempio.org')).toBe('/');
-    expect(percorsoDiRitorno('profilo')).toBe('/');
-    expect(percorsoDiRitorno('')).toBe('/');
+  it('manda alla Home ogni valore che porterebbe fuori dall’app', () => {
+    const fuori = [
+      '/\t/evil.com',
+      '/\n/evil.com',
+      '/\r/evil.com',
+      '/\\evil.com',
+      '//evil.com',
+      'https://evil.com',
+      'javascript:alert(1)',
+      'profilo',
+      '',
+    ];
+    for (const valore of fuori) expect(percorsoDiRitorno(valore)).toBe('/');
   });
 });
