@@ -112,9 +112,18 @@ const tracceAperte = (page: Page) =>
 
 const scanner = (page: Page) => page.getByRole('dialog', { name: "Inquadra il QR all'ingresso" });
 
+// Su WebKit in CI il flusso video finto (canvas.captureStream) parte tardi o non parte: i casi che
+// hanno bisogno dei fotogrammi girano su Chromium, e su iPhone si provano a mano. Su WebKit resta (b).
+const saltaSuWebkit = () =>
+  test.skip(
+    test.info().project.name.startsWith('webkit'),
+    'Flusso video finto non affidabile su WebKit in CI',
+  );
+
 test('(a) l\'approvato inquadra il QR dalla Home: "Sei dentro!" e la presenza dice "scanner"', async ({
   browser,
 }) => {
+  saltaSuWebkit();
   const page = await (await browser.newContext()).newPage();
   await simulaFotocamera(page, { letture: [`/checkin?c=${CODICE}`] });
   await accedi(page, EMAIL_A);
@@ -152,6 +161,7 @@ test('(b) permesso negato: il messaggio dice come darlo, e chiudendo non resta n
 test('(c) un QR non nostro: "Questo QR non è del PizzaParty." e lo scanner continua a cercare', async ({
   browser,
 }) => {
+  saltaSuWebkit();
   const page = await (await browser.newContext()).newPage();
   await simulaFotocamera(page, { letture: ['https://esempio.it/menu'], ripeti: true });
   await accedi(page, EMAIL_B);
@@ -169,6 +179,7 @@ test('(c) un QR non nostro: "Questo QR non è del PizzaParty." e lo scanner cont
 });
 
 test('(d) Esc chiude lo scanner e ferma la fotocamera', async ({ browser }) => {
+  saltaSuWebkit();
   const page = await (await browser.newContext()).newPage();
   await simulaFotocamera(page, {});
   await accedi(page, EMAIL_B);
