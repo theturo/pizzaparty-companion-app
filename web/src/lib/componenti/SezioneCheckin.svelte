@@ -14,12 +14,20 @@
 
   // undefined = non ancora letto; null = il codice non c'è ancora; altrimenti il codice.
   let codice = $state<string | null | undefined>(undefined);
-  let presenze = $state<{ uid: string; registrata: Date }[] | null>(null);
+  // Un ospite (D-061, D-066) ha il nome nella presenza e il suo segnaposto; un account ha il profilo.
+  type Presenza = {
+    uid: string;
+    registrata: Date;
+    ospite: boolean;
+    nome: string;
+    segnaposto?: string;
+  };
+  let presenze = $state<Presenza[] | null>(null);
   let nomi = $state<Record<string, string>>({});
   let svgQr = $state('');
   let errore = $state('');
   let inCorso = $state(false);
-  let daAnnullare = $state<{ uid: string; nome: string } | null>(null);
+  let daAnnullare = $state<{ uid: string; nome: string; segnaposto?: string } | null>(null);
   let dialogoRigenera = $state<HTMLDialogElement>();
   let dialogoAnnulla = $state<HTMLDialogElement>();
 
@@ -55,15 +63,20 @@
         codice = s.exists() ? (s.get('codice') as string) : null;
       });
       smettiPresenze = onSnapshot(collection(db, 'edizioni', id, 'presenze'), (istantanea) => {
-        const elenco = istantanea.docs.map((d) => ({
+        const elenco: Presenza[] = istantanea.docs.map((d) => ({
           uid: d.id,
           registrata:
             (d.get('registrata') as { toDate(): Date } | undefined)?.toDate() ?? new Date(),
+          // Le presenze senza `tipo` sono degli account (prima della 0.19.0).
+          ospite: d.get('tipo') === 'ospite',
+          nome: (d.get('nome') as string | undefined) ?? '',
+          segnaposto: (d.get('segnaposto') as string | undefined) ?? undefined,
         }));
         presenze = elenco.sort((a, b) => a.registrata.getTime() - b.registrata.getTime());
-        // I nomi stanno nei profili pubblici: si leggono una volta per persona.
-        for (const { uid } of elenco) {
-          if (nomi[uid] !== undefined) continue;
+        // I nomi degli account stanno nei profili pubblici: si leggono una volta per persona.
+        // Quelli degli ospiti sono già nella presenza.
+        for (const { uid, ospite } of elenco) {
+          if (ospite || nomi[uid] !== undefined) continue;
           getDoc(doc(db, 'profili', uid)).then((profilo) => {
             nomi[uid] = (profilo.get('nome') as string | undefined) ?? 'Nome non disponibile';
           });
@@ -102,16 +115,26 @@
 
   async function annullaPresenza() {
     if (!daAnnullare) return;
-    const { uid } = daAnnullare;
+    const { uid, segnaposto } = daAnnullare;
     dialogoAnnulla?.close();
     inCorso = true;
     errore = '';
     try {
-      const [{ firebase }, { deleteDoc, doc }] = await Promise.all([
+      const [{ firebase }, { deleteDoc, doc, writeBatch }] = await Promise.all([
         import('$lib/firebase/app'),
         import('firebase/firestore'),
       ]);
-      await deleteDoc(doc(firebase().db, 'edizioni', id, 'presenze', uid));
+      const db = firebase().db;
+      const rifPresenza = doc(db, 'edizioni', id, 'presenze', uid);
+      if (segnaposto) {
+        // L'ospite: si cancellano insieme la presenza e il suo segnaposto (D-066).
+        const batch = writeBatch(db);
+        batch.delete(rifPresenza);
+        batch.delete(doc(db, 'segnaposto', segnaposto));
+        await batch.commit();
+      } else {
+        await deleteDoc(rifPresenza);
+      }
     } catch {
       errore = 'Non sono riuscito ad annullare la presenza. Riprova tra poco.';
     } finally {
@@ -166,15 +189,21 @@
   {:else}
     <ul class="presenti">
       {#each presenze as presenza (presenza.uid)}
+        {@const nomePersona = presenza.ospite ? presenza.nome : (nomi[presenza.uid] ?? '…')}
         <li>
-          <span class="persona">{nomi[presenza.uid] ?? '…'}</span>
+          <span class="persona">{nomePersona}</span>
+          {#if presenza.ospite}<span class="etichetta">ospite</span>{/if}
           <span class="ora">{oraRoma(presenza.registrata)}</span>
           <Bottone
             type="button"
             variante="secondario"
             disabled={inCorso}
             onclick={() => {
-              daAnnullare = { uid: presenza.uid, nome: nomi[presenza.uid] ?? 'questa persona' };
+              daAnnullare = {
+                uid: presenza.uid,
+                nome: nomePersona || 'questa persona',
+                segnaposto: presenza.segnaposto,
+              };
               dialogoAnnulla?.showModal();
             }}
           >
@@ -199,6 +228,9 @@
   <h2 id="titolo-annulla">Annullare la presenza di {daAnnullare?.nome ?? 'questa persona'}?</h2>
   <p class="attenuato">
     La presenza si toglie dallo storico. Si può registrare di nuovo con il QR.
+    {#if daAnnullare?.segnaposto}
+      Il nome dell'ospite si cancella insieme alla presenza.
+    {/if}
   </p>
   <div class="azioni">
     <Bottone variante="secondario" onclick={() => dialogoAnnulla?.close()}>Indietro</Bottone>
@@ -256,5 +288,10 @@
   }
   .ora {
     color: var(--colore-testo-attenuato);
+  }
+  .etichetta {
+    font-size: var(--testo-s);
+    color: var(--colore-testo-attenuato);
+    font-style: italic;
   }
 </style>

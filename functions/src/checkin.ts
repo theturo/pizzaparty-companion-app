@@ -179,14 +179,15 @@ export function viaDi(valore: unknown): ViaPresenza {
   return valore === 'scanner' ? 'scanner' : 'link';
 }
 
-/** La persona approvata inquadra il QR: si registra la presenza una sola volta. */
-export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
-  const uid = controllaAccesso(richiesta.auth);
-  const codice =
-    typeof richiesta.data?.codice === 'string' ? richiesta.data.codice.trim().toLowerCase() : '';
-  const via = viaDi(richiesta.data?.via);
-  const adesso = new Date();
-
+/**
+ * Risolve il codice del QR nell'edizione e controlla che il check-in sia aperto (per account e ospiti).
+ * Il codice viene dalla chiamata, quindi si controlla qui la forma prima di leggere la mappa.
+ */
+async function risolviEdizione(
+  codiceGrezzo: unknown,
+  adesso: Date,
+): Promise<{ id: string; dati: DatiPerCheckin }> {
+  const codice = typeof codiceGrezzo === 'string' ? codiceGrezzo.trim().toLowerCase() : '';
   const mappa = CODICE_CHECKIN.test(codice) ? await db.doc(`codiciCheckin/${codice}`).get() : null;
   const idEdizione = mappa?.exists ? (mappa.get('edizione') as string) : null;
   const rifEdizione = idEdizione ? db.doc(`edizioni/${idEdizione}`) : null;
@@ -195,6 +196,15 @@ export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
     throw new HttpsError('not-found', 'Questo QR non è valido.');
   const dati = edizione.data() as DatiPerCheckin;
   controllaEdizione(dati, adesso);
+  return { id: idEdizione, dati };
+}
+
+/** La persona approvata inquadra il QR: si registra la presenza una sola volta. */
+export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
+  const uid = controllaAccesso(richiesta.auth);
+  const via = viaDi(richiesta.data?.via);
+  const adesso = new Date();
+  const { id: idEdizione, dati } = await risolviEdizione(richiesta.data?.codice, adesso);
 
   const rifPresenza = db.doc(`edizioni/${idEdizione}/presenze/${uid}`);
   const risultato = await db.runTransaction(async (t) => {
@@ -207,7 +217,7 @@ export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
       adesso,
     );
     if (decisione.scrivi)
-      t.set(rifPresenza, { uid, registrata: FieldValue.serverTimestamp(), via });
+      t.set(rifPresenza, { uid, registrata: FieldValue.serverTimestamp(), via, tipo: 'account' });
     return decisione;
   });
 
@@ -215,5 +225,97 @@ export const registraPresenza = onCall(CHIAMABILE, async (richiesta) => {
     esito: risultato.esito,
     edizione: { id: idEdizione, nome: dati.nome },
     registrata: risultato.registrata.toISOString(),
+  };
+});
+
+/** Chi entra come ospite: l'accesso anonimo di Firebase, senza email (D-065). */
+export function controllaOspite(
+  auth: { uid: string; token: { firebase?: { sign_in_provider?: string } } } | null | undefined,
+): string {
+  if (!auth)
+    throw new HttpsError('unauthenticated', 'Entra come ospite per registrare la presenza.');
+  if (auth.token.firebase?.sign_in_provider !== 'anonymous')
+    throw new HttpsError('failed-precondition', 'Hai già un account: usa Accedi.');
+  return auth.uid;
+}
+
+/** Il nome dell'ospite (D-067): senza spazi in più, tra 2 e 40 caratteri. */
+export function nomeOspite(valore: unknown): string {
+  const pulito = typeof valore === 'string' ? valore.trim().replace(/\s+/g, ' ') : '';
+  if (pulito.length < 2 || pulito.length > 40)
+    throw new HttpsError('invalid-argument', 'Scrivi un nome tra 2 e 40 caratteri.');
+  return pulito;
+}
+
+/** Forma di confronto del nome: minuscole, senza accenti, spazi ridotti (per l'avviso del doppione). */
+export function normalizzaNome(nome: string): string {
+  return nome
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Vero se un'altra presenza dell'edizione ha lo stesso nome. Solo un avviso: non blocca (D-067). */
+async function nomeGiaPresente(idEdizione: string, nomeNormalizzato: string, uid: string) {
+  const uguali = await db
+    .collection(`edizioni/${idEdizione}/presenze`)
+    .where('nomeNormalizzato', '==', nomeNormalizzato)
+    .get();
+  return uguali.docs.some((presenza) => presenza.id !== uid);
+}
+
+/**
+ * L'ospite inquadra il QR e lascia il nome (D-060, D-065–D-068). Il segnaposto e la presenza si
+ * scrivono insieme, una sola volta per dispositivo ed edizione.
+ */
+export const registraOspite = onCall(CHIAMABILE, async (richiesta) => {
+  const uid = controllaOspite(richiesta.auth);
+  const nome = nomeOspite(richiesta.data?.nome);
+  const via = viaDi(richiesta.data?.via);
+  const adesso = new Date();
+  const { id: idEdizione, dati } = await risolviEdizione(richiesta.data?.codice, adesso);
+
+  const nomeNorm = normalizzaNome(nome);
+  const doppione = await nomeGiaPresente(idEdizione, nomeNorm, uid);
+
+  const rifPresenza = db.doc(`edizioni/${idEdizione}/presenze/${uid}`);
+  const rifSegnaposto = db.collection('segnaposto').doc();
+  const risultato = await db.runTransaction(async (t) => {
+    const esistente = await t.get(rifPresenza);
+    const ts = esistente.exists
+      ? (esistente.get('registrata') as Timestamp | undefined)
+      : undefined;
+    const decisione = decidiPresenza(
+      esistente.exists ? { registrata: ts?.toDate() } : undefined,
+      adesso,
+    );
+    if (decisione.scrivi) {
+      t.set(rifSegnaposto, {
+        nome,
+        nomeNormalizzato: nomeNorm,
+        creato: FieldValue.serverTimestamp(),
+        origine: 'ospite',
+        edizione: idEdizione,
+      });
+      t.set(rifPresenza, {
+        uid,
+        registrata: FieldValue.serverTimestamp(),
+        via,
+        tipo: 'ospite',
+        segnaposto: rifSegnaposto.id,
+        nome,
+        nomeNormalizzato: nomeNorm,
+      });
+    }
+    return decisione;
+  });
+
+  return {
+    esito: risultato.esito,
+    edizione: { id: idEdizione, nome: dati.nome },
+    registrata: risultato.registrata.toISOString(),
+    nomeGiaPresente: risultato.esito === 'registrata' && doppione,
   };
 });

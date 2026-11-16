@@ -40,10 +40,17 @@
       Uscendo dall'account o disattivando le notifiche, il codice si cancella.
     </li>
     <li>
-      <strong>Presenze alle feste.</strong> Quando registri la presenza con il QR d'ingresso salviamo
-      l'edizione, la data e l'ora del check-in. Servono a tenere lo storico delle partecipazioni e, in
-      futuro, ad assegnare i trofei. Le vede solo l'organizzatore, oltre a te; restano finché hai l'account,
-      e puoi chiederne la cancellazione.
+      <strong>Presenze alle feste.</strong> Quando registri la presenza con il QR d'ingresso
+      salviamo l'edizione, la data e l'ora del check-in. Servono a tenere lo storico delle
+      partecipazioni e, in futuro, ad assegnare i trofei. Le vede solo l'organizzatore, oltre a te;
+      per chi ha un account restano finché lo ha, e puoi chiederne la cancellazione.
+      <br />
+      <br />
+      <strong>Ospiti senza account:</strong> se registri la presenza come ospite salviamo il nome che
+      scrivi, l'ora di arrivo e un identificativo anonimo del dispositivo (nessuna email). Ci servono
+      per contare i presenti e, se ti registri, per collegare la presenza al tuo account. Conserviamo
+      il nome finché non viene collegato a un account o finché non ci chiedi di cancellarlo, e comunque
+      non oltre 3 anni; l'identificativo anonimo si cancella dopo 30 giorni.
     </li>
     <li>
       <strong>Segnalazioni, se ce le mandi:</strong> la mail che prepari con "Segnala un problema" contiene,

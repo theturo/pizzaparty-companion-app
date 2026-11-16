@@ -80,6 +80,9 @@ export async function raccogliDatiDi(uid: string) {
       },
       registrata: (semplifica(p.get('registrata')) as string | null) ?? null,
       via: p.get('via') ?? null,
+      // Le presenze senza `tipo` sono quelle degli account (prima della 0.19.0). Per l'ospite
+      // si mostra anche il nome scritto al check-in (D-067).
+      ...(p.get('tipo') === 'ospite' ? { ospite: true, nome: p.get('nome') ?? null } : {}),
     })),
     // Il codice del dispositivo non si mostra per intero: basta riconoscere quali dispositivi sono.
     dispositiviConNotifiche: dispositivi.docs.map((d) => ({
