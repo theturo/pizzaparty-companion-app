@@ -49,8 +49,8 @@
       <strong>Ospiti senza account:</strong> se registri la presenza come ospite salviamo il nome che
       scrivi, l'ora di arrivo e un identificativo anonimo del dispositivo (nessuna email). Ci servono
       per contare i presenti e, se ti registri, per collegare la presenza al tuo account. Conserviamo
-      il nome finché non viene collegato a un account o finché non ci chiedi di cancellarlo, e comunque
-      non oltre 3 anni; l'identificativo anonimo si cancella dopo 30 giorni.
+      nome e identificativo finché non vengono collegati a un account o finché non ci chiedi di cancellarli,
+      e comunque non oltre 3 anni.
     </li>
     <li>
       <strong>Segnalazioni, se ce le mandi:</strong> la mail che prepari con "Segnala un problema" contiene,
