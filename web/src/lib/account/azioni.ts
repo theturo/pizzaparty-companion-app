@@ -196,3 +196,17 @@ export async function eliminaAccount(password: string) {
   await chiama('eliminaMioAccount');
   await signOut(firebase().auth);
 }
+
+// ---- Presenze e persone senza account dal pannello (blocco 3.4, D-070, D-071) ----
+
+export const creaSegnaposto = (nome: string) => chiama<{ id: string }>('creaSegnaposto', { nome });
+export const rinominaSegnaposto = (id: string, nome: string) =>
+  chiama('rinominaSegnaposto', { id, nome });
+export const cancellaSegnaposto = (id: string) => chiama('cancellaSegnaposto', { id });
+/** Aggiunge a mano una presenza: con account (`uid`) oppure per una persona senza account (`segnaposto`). */
+export const aggiungiPresenza = (
+  edizione: string,
+  persona: { uid: string } | { segnaposto: string },
+) => chiama<{ esito: 'registrata' | 'gia-presente' }>('aggiungiPresenza', { edizione, ...persona });
+export const collegaSegnaposto = (segnaposto: string, uid: string) =>
+  chiama<{ spostate: number; giaPresenti: number }>('collegaSegnaposto', { segnaposto, uid });

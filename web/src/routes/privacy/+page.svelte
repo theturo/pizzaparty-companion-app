@@ -43,7 +43,9 @@
       <strong>Presenze alle feste.</strong> Quando registri la presenza con il QR d'ingresso
       salviamo l'edizione, la data e l'ora del check-in. Servono a tenere lo storico delle
       partecipazioni e, in futuro, ad assegnare i trofei. Le vede solo l'organizzatore, oltre a te;
-      per chi ha un account restano finché lo ha, e puoi chiederne la cancellazione.
+      per chi ha un account restano finché lo ha, e puoi chiederne la cancellazione. Per le edizioni
+      passate, le presenze possono essere ricostruite dagli archivi delle iscrizioni di quegli anni,
+      con il solo nome; chi lo desidera può chiederne la cancellazione.
       <br />
       <br />
       <strong>Ospiti senza account:</strong> se registri la presenza come ospite salviamo il nome che

@@ -4,7 +4,7 @@
   import QRCode from 'qrcode';
   import Bottone from '$lib/componenti/Bottone.svelte';
   import Scheda from '$lib/componenti/Scheda.svelte';
-  import { generaCodiceCheckin } from '$lib/account/azioni';
+  import { aggiungiPresenza, generaCodiceCheckin } from '$lib/account/azioni';
   import { oraRoma } from '$lib/edizioni/checkin';
 
   let { id, nome }: { id: string; nome: string } = $props();
@@ -28,6 +28,17 @@
   let errore = $state('');
   let inCorso = $state(false);
   let daAnnullare = $state<{ uid: string; nome: string; segnaposto?: string } | null>(null);
+  // Aggiunta a mano (D-070): una persona con account (a:uid) o senza account (s:id), in un solo elenco.
+  interface Opzione {
+    valore: string;
+    nome: string;
+  }
+  let aggiungendo = $state(false);
+  let opzioniAccount = $state<Opzione[] | null>(null);
+  let opzioniSenzaAccount = $state<Opzione[] | null>(null);
+  let scelta = $state('');
+  let esitoAggiunta = $state('');
+  let erroreAggiunta = $state('');
   let dialogoRigenera = $state<HTMLDialogElement>();
   let dialogoAnnulla = $state<HTMLDialogElement>();
 
@@ -99,6 +110,53 @@
       codice = risposta.codice;
     } catch {
       errore = 'Non sono riuscito a generare il codice. Riprova tra poco.';
+    } finally {
+      inCorso = false;
+    }
+  }
+
+  /** Legge le persone a cui si può aggiungere una presenza: approvati e senza account (una volta). */
+  async function apriAggiunta() {
+    aggiungendo = !aggiungendo;
+    esitoAggiunta = '';
+    erroreAggiunta = '';
+    if (!aggiungendo || opzioniAccount !== null) return;
+    try {
+      const [{ firebase }, { collection, getDocs }] = await Promise.all([
+        import('$lib/firebase/app'),
+        import('firebase/firestore'),
+      ]);
+      const db = firebase().db;
+      const [profili, segnaposto] = await Promise.all([
+        getDocs(collection(db, 'profili')),
+        getDocs(collection(db, 'segnaposto')),
+      ]);
+      opzioniAccount = profili.docs
+        .map((d) => ({ valore: `a:${d.id}`, nome: (d.get('nome') as string | undefined) ?? '' }))
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'it'));
+      opzioniSenzaAccount = segnaposto.docs
+        .map((d) => ({ valore: `s:${d.id}`, nome: (d.get('nome') as string | undefined) ?? '' }))
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'it'));
+      scelta = opzioniAccount[0]?.valore ?? opzioniSenzaAccount[0]?.valore ?? '';
+    } catch {
+      erroreAggiunta = 'Non sono riuscito a leggere le persone. Ricarica la pagina.';
+    }
+  }
+
+  async function aggiungi(evento: SubmitEvent) {
+    evento.preventDefault();
+    if (!scelta) return;
+    const [tipo, chiave] = [scelta.slice(0, 1), scelta.slice(2)];
+    inCorso = true;
+    esitoAggiunta = '';
+    erroreAggiunta = '';
+    try {
+      const persona = tipo === 'a' ? { uid: chiave } : { segnaposto: chiave };
+      const { esito } = await aggiungiPresenza(id, persona);
+      esitoAggiunta =
+        esito === 'gia-presente' ? 'Questa persona risulta già presente.' : 'Presenza aggiunta.';
+    } catch {
+      erroreAggiunta = 'Non sono riuscito ad aggiungere la presenza. Riprova tra poco.';
     } finally {
       inCorso = false;
     }
@@ -180,6 +238,49 @@
   {/if}
 
   {#if errore}<p class="errore" role="alert">{errore}</p>{/if}
+
+  <div class="azioni">
+    <Bottone
+      type="button"
+      variante="secondario"
+      aria-expanded={aggiungendo}
+      disabled={inCorso}
+      onclick={apriAggiunta}
+    >
+      Aggiungi presenza
+    </Bottone>
+  </div>
+
+  {#if aggiungendo}
+    <form class="aggiunta" novalidate onsubmit={aggiungi}>
+      {#if opzioniAccount === null}
+        <p class="attenuato" role="status">Carico le persone…</p>
+      {:else if opzioniAccount.length === 0 && (opzioniSenzaAccount?.length ?? 0) === 0}
+        <p class="attenuato">Non ci sono persone da aggiungere.</p>
+      {:else}
+        <div class="campo">
+          <label for="persona-presenza-{id}">Persona</label>
+          <select id="persona-presenza-{id}" bind:value={scelta}>
+            <optgroup label="Con account">
+              {#each opzioniAccount as opzione (opzione.valore)}
+                <option value={opzione.valore}>{opzione.nome || 'Nome non disponibile'}</option>
+              {/each}
+            </optgroup>
+            <optgroup label="Senza account">
+              {#each opzioniSenzaAccount ?? [] as opzione (opzione.valore)}
+                <option value={opzione.valore}>{opzione.nome}</option>
+              {/each}
+            </optgroup>
+          </select>
+        </div>
+        <div class="azioni">
+          <Bottone type="submit" disabled={inCorso || !scelta}>Aggiungi</Bottone>
+        </div>
+      {/if}
+      {#if erroreAggiunta}<p class="errore" role="alert">{erroreAggiunta}</p>{/if}
+      {#if esitoAggiunta}<p class="conferma" role="status">{esitoAggiunta}</p>{/if}
+    </form>
+  {/if}
 
   <h3 class="sottotitolo">Presenti: {presenze?.length ?? 0}</h3>
   {#if presenze === null}
@@ -288,6 +389,38 @@
   }
   .ora {
     color: var(--colore-testo-attenuato);
+  }
+  .aggiunta {
+    display: grid;
+    gap: var(--spazio-2);
+    margin-top: var(--spazio-2);
+  }
+  .campo {
+    display: grid;
+    gap: var(--spazio-1);
+  }
+  label {
+    font-weight: 700;
+    font-size: var(--testo-s);
+  }
+  select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: var(--raggio-s);
+    padding: var(--spazio-2);
+    background: var(--colore-campo);
+    color: var(--colore-testo);
+    font: inherit;
+  }
+  .errore {
+    font-size: var(--testo-s);
+    font-weight: 700;
+    color: var(--colore-secondario);
+  }
+  .conferma {
+    color: var(--colore-conferma);
+    font-weight: 700;
   }
   .etichetta {
     font-size: var(--testo-s);
