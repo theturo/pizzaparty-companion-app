@@ -76,37 +76,58 @@ describe('edizione per le presenze a mano', () => {
 });
 
 describe('collegamento di un segnaposto: cosa spostare e cosa scartare', () => {
+  const p = (edizione: string, istante: number, via = 'link') => ({
+    edizione,
+    registrata: `ora-${istante}`,
+    istante,
+    via,
+  });
+
   it('sposta le presenze nelle edizioni in cui l’account non c’è, e scarta le altre', () => {
     const presenze = [
-      { edizione: 'festa-2024', registrata: 'ora-2024', via: 'manuale' },
-      { edizione: 'festa-2025', registrata: 'ora-2025', via: 'link' },
-      { edizione: 'festa-2026', registrata: 'ora-2026', via: 'scanner' },
+      p('festa-2024', 1, 'manuale'),
+      p('festa-2025', 2),
+      p('festa-2026', 3, 'scanner'),
     ];
     const piano = pianoCollegamento(presenze, new Set(['festa-2025']));
-    expect(piano.spostare.map((p) => p.edizione)).toEqual(['festa-2024', 'festa-2026']);
-    expect(piano.giaPresenti.map((p) => p.edizione)).toEqual(['festa-2025']);
+    expect(piano.spostare.map((x) => x.edizione)).toEqual(['festa-2024', 'festa-2026']);
+    expect(piano.giaPresenti.map((x) => x.edizione)).toEqual(['festa-2025']);
+    expect(piano.duplicate).toEqual([]);
   });
 
   it('copia la data e la modalità originali, senza cambiarle', () => {
-    const piano = pianoCollegamento(
-      [{ edizione: 'festa-2024', registrata: 'ora-2024', via: 'manuale' }],
-      new Set(),
-    );
+    const piano = pianoCollegamento([p('festa-2024', 1, 'manuale')], new Set());
     expect(piano.spostare).toEqual([
-      { edizione: 'festa-2024', registrata: 'ora-2024', via: 'manuale' },
+      { edizione: 'festa-2024', registrata: 'ora-1', istante: 1, via: 'manuale' },
     ]);
     expect(piano.giaPresenti).toEqual([]);
   });
 
   it('un segnaposto senza presenze non sposta nulla', () => {
     const piano = pianoCollegamento([], new Set(['festa-2025']));
-    expect(piano).toEqual({ spostare: [], giaPresenti: [] });
+    expect(piano).toEqual({ spostare: [], giaPresenti: [], duplicate: [] });
   });
 
   it('se l’account è già presente ovunque, non sposta niente ma conta tutto come già presente', () => {
-    const presenze = [{ edizione: 'festa-2025', registrata: 'x', via: 'link' }];
-    const piano = pianoCollegamento(presenze, new Set(['festa-2025']));
+    const piano = pianoCollegamento([p('festa-2025', 1)], new Set(['festa-2025']));
     expect(piano.spostare).toEqual([]);
     expect(piano.giaPresenti).toHaveLength(1);
+  });
+
+  it('più presenze nella stessa edizione: si tiene la più vecchia, le altre sono duplicati', () => {
+    const presenze = [p('festa-2025', 30), p('festa-2025', 10, 'scanner'), p('festa-2025', 20)];
+    const piano = pianoCollegamento(presenze, new Set());
+    expect(piano.spostare).toEqual([
+      { edizione: 'festa-2025', registrata: 'ora-10', istante: 10, via: 'scanner' },
+    ]);
+    expect(piano.duplicate.map((x) => x.istante)).toEqual([20, 30]);
+  });
+
+  it('un duplicato in un’edizione dove l’account è già presente non si conta come già presente', () => {
+    const presenze = [p('festa-2025', 1), p('festa-2025', 2)];
+    const piano = pianoCollegamento(presenze, new Set(['festa-2025']));
+    expect(piano.giaPresenti).toHaveLength(1);
+    expect(piano.duplicate).toHaveLength(1);
+    expect(piano.spostare).toEqual([]);
   });
 });

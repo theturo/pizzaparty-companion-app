@@ -2,7 +2,7 @@
 // Tutte le Functions di questo file sono riservate all'admin. La logica che decide cosa
 // scrivere (scelta della persona, piano di collegamento) è pura e testata in presenze.test.ts.
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
 import { db, CHIAMABILE, soloAdmin, uidValido } from './comune.js';
 import { nomeOspite, normalizzaNome, type DatiPerCheckin } from './checkin.js';
 
@@ -42,24 +42,45 @@ export function accettaPresenze(dati: DatiPerCheckin | undefined): void {
     );
 }
 
-/** Una presenza del segnaposto, com'è nel database: l'edizione e i dati da conservare. */
+/**
+ * Una presenza del segnaposto, com'è nel database: l'edizione e i dati da conservare.
+ * `istante` (millisecondi) serve a scegliere la più vecchia se ce ne sono più d'una nella stessa edizione.
+ */
 export interface PresenzaDaSpostare<T> {
   edizione: string;
   registrata: T;
+  istante: number;
   via: string;
 }
 
 /**
- * Cosa fare al collegamento (D-071): ogni presenza del segnaposto passa all'account, tranne quelle
- * nelle edizioni dove l'account è già presente (si tiene la sua e questa si scarta).
+ * Cosa fare al collegamento (D-071). Per ogni edizione si tiene solo la presenza più vecchia del
+ * segnaposto (`duplicate` sono le altre, da cancellare senza contarle). Quella si sposta all'account,
+ * tranne nelle edizioni dove l'account è già presente: lì si tiene la sua e questa si scarta (`giaPresenti`).
  */
 export function pianoCollegamento<T>(
   presenze: PresenzaDaSpostare<T>[],
   edizioniDelAccount: ReadonlySet<string>,
-): { spostare: PresenzaDaSpostare<T>[]; giaPresenti: PresenzaDaSpostare<T>[] } {
+): {
+  spostare: PresenzaDaSpostare<T>[];
+  giaPresenti: PresenzaDaSpostare<T>[];
+  duplicate: PresenzaDaSpostare<T>[];
+} {
+  const ordinate = [...presenze].sort((a, b) => a.istante - b.istante);
+  const viste = new Set<string>();
+  const prime: PresenzaDaSpostare<T>[] = [];
+  const duplicate: PresenzaDaSpostare<T>[] = [];
+  for (const p of ordinate) {
+    if (viste.has(p.edizione)) duplicate.push(p);
+    else {
+      viste.add(p.edizione);
+      prime.push(p);
+    }
+  }
   return {
-    spostare: presenze.filter((p) => !edizioniDelAccount.has(p.edizione)),
-    giaPresenti: presenze.filter((p) => edizioniDelAccount.has(p.edizione)),
+    spostare: prime.filter((p) => !edizioniDelAccount.has(p.edizione)),
+    giaPresenti: prime.filter((p) => edizioniDelAccount.has(p.edizione)),
+    duplicate,
   };
 }
 
@@ -200,6 +221,7 @@ export const collegaSegnaposto = onCall(CHIAMABILE, async (richiesta) => {
     const daSpostare = presenze.docs.map((p) => ({
       edizione: p.ref.parent.parent?.id ?? '',
       registrata: p.get('registrata') as unknown,
+      istante: (p.get('registrata') as Timestamp | undefined)?.toMillis() ?? 0,
       via: (p.get('via') as string | undefined) ?? 'link',
       ref: p.ref,
     }));

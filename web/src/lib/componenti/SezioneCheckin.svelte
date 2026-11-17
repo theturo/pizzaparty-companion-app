@@ -27,7 +27,13 @@
   let svgQr = $state('');
   let errore = $state('');
   let inCorso = $state(false);
-  let daAnnullare = $state<{ uid: string; nome: string; segnaposto?: string } | null>(null);
+  let daAnnullare = $state<{
+    uid: string;
+    nome: string;
+    segnaposto?: string;
+    /** Il segnaposto ha presenze in altre edizioni: si annulla solo questa (D-070). */
+    altre?: boolean;
+  } | null>(null);
   // Aggiunta a mano (D-070): una persona con account (a:uid) o senza account (s:id), in un solo elenco.
   interface Opzione {
     valore: string;
@@ -171,6 +177,38 @@
     a.click();
   }
 
+  /** Vero se il segnaposto ha presenze diverse da questa (in questa o in altre edizioni). */
+  async function segnapostoHaAltrePresenze(segnaposto: string, uid: string): Promise<boolean> {
+    const [{ firebase }, { collectionGroup, getDocs, query, where }] = await Promise.all([
+      import('$lib/firebase/app'),
+      import('firebase/firestore'),
+    ]);
+    const presenze = await getDocs(
+      query(collectionGroup(firebase().db, 'presenze'), where('segnaposto', '==', segnaposto)),
+    );
+    return presenze.docs.some((p) => !(p.ref.parent.parent?.id === id && p.id === uid));
+  }
+
+  /** Apre la conferma: prima si vede se il segnaposto ha altre presenze, per adattare il testo. */
+  async function chiediAnnullamento(
+    presenza: {
+      uid: string;
+      segnaposto?: string;
+    },
+    nomePersona: string,
+  ) {
+    const altre = presenza.segnaposto
+      ? await segnapostoHaAltrePresenze(presenza.segnaposto, presenza.uid)
+      : false;
+    daAnnullare = {
+      uid: presenza.uid,
+      nome: nomePersona || 'questa persona',
+      segnaposto: presenza.segnaposto,
+      altre,
+    };
+    dialogoAnnulla?.showModal();
+  }
+
   async function annullaPresenza() {
     if (!daAnnullare) return;
     const { uid, segnaposto } = daAnnullare;
@@ -184,8 +222,10 @@
       ]);
       const db = firebase().db;
       const rifPresenza = doc(db, 'edizioni', id, 'presenze', uid);
-      if (segnaposto) {
-        // L'ospite: si cancellano insieme la presenza e il suo segnaposto (D-066).
+      // Si ricontrolla al momento: il segnaposto può aver preso altre presenze nel frattempo.
+      const altre = segnaposto ? await segnapostoHaAltrePresenze(segnaposto, uid) : false;
+      if (segnaposto && !altre) {
+        // Unica presenza dell'ospite: si cancellano insieme la presenza e il suo segnaposto (D-066).
         const batch = writeBatch(db);
         batch.delete(rifPresenza);
         batch.delete(doc(db, 'segnaposto', segnaposto));
@@ -261,16 +301,20 @@
         <div class="campo">
           <label for="persona-presenza-{id}">Persona</label>
           <select id="persona-presenza-{id}" bind:value={scelta}>
-            <optgroup label="Con account">
-              {#each opzioniAccount as opzione (opzione.valore)}
-                <option value={opzione.valore}>{opzione.nome || 'Nome non disponibile'}</option>
-              {/each}
-            </optgroup>
-            <optgroup label="Senza account">
-              {#each opzioniSenzaAccount ?? [] as opzione (opzione.valore)}
-                <option value={opzione.valore}>{opzione.nome}</option>
-              {/each}
-            </optgroup>
+            {#if opzioniAccount.length > 0}
+              <optgroup label="Con account">
+                {#each opzioniAccount as opzione (opzione.valore)}
+                  <option value={opzione.valore}>{opzione.nome || 'Nome non disponibile'}</option>
+                {/each}
+              </optgroup>
+            {/if}
+            {#if (opzioniSenzaAccount?.length ?? 0) > 0}
+              <optgroup label="Senza account">
+                {#each opzioniSenzaAccount ?? [] as opzione (opzione.valore)}
+                  <option value={opzione.valore}>{opzione.nome}</option>
+                {/each}
+              </optgroup>
+            {/if}
           </select>
         </div>
         <div class="azioni">
@@ -299,14 +343,7 @@
             type="button"
             variante="secondario"
             disabled={inCorso}
-            onclick={() => {
-              daAnnullare = {
-                uid: presenza.uid,
-                nome: nomePersona || 'questa persona',
-                segnaposto: presenza.segnaposto,
-              };
-              dialogoAnnulla?.showModal();
-            }}
+            onclick={() => chiediAnnullamento(presenza, nomePersona)}
           >
             Annulla la presenza
           </Bottone>
@@ -326,10 +363,16 @@
 </dialog>
 
 <dialog bind:this={dialogoAnnulla} aria-labelledby="titolo-annulla">
-  <h2 id="titolo-annulla">Annullare la presenza di {daAnnullare?.nome ?? 'questa persona'}?</h2>
+  <h2 id="titolo-annulla">
+    {#if daAnnullare?.altre}
+      Annullare la presenza di {daAnnullare.nome} in questa edizione? Le altre presenze restano.
+    {:else}
+      Annullare la presenza di {daAnnullare?.nome ?? 'questa persona'}?
+    {/if}
+  </h2>
   <p class="attenuato">
     La presenza si toglie dallo storico. Si può registrare di nuovo con il QR.
-    {#if daAnnullare?.segnaposto}
+    {#if daAnnullare?.segnaposto && !daAnnullare.altre}
       Il nome dell'ospite si cancella insieme alla presenza.
     {/if}
   </p>
