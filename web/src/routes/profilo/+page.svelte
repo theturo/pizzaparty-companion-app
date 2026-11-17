@@ -8,6 +8,7 @@
   import ImmagineAvatar from '$lib/componenti/ImmagineAvatar.svelte';
   import VersioneApp from '$lib/componenti/VersioneApp.svelte';
   import LinkInvito from '$lib/componenti/LinkInvito.svelte';
+  import LeTuePresenze from '$lib/componenti/LeTuePresenze.svelte';
   import ModificaProfilo from '$lib/componenti/ModificaProfilo.svelte';
   import CambioPassword from '$lib/componenti/CambioPassword.svelte';
   import InterruttoreNotifiche from '$lib/componenti/InterruttoreNotifiche.svelte';
@@ -98,6 +99,9 @@
     {/if}
     {#if sessione.profilo.stato === 'approvato' && sessione.profilo.codiceInvito}
       <LinkInvito codice={sessione.profilo.codiceInvito} />
+    {/if}
+    {#if sessione.profilo.stato === 'approvato'}
+      <LeTuePresenze />
     {/if}
 
     <Scheda>

@@ -37,6 +37,7 @@
   const VIE: Record<string, string> = {
     link: 'con il link',
     scanner: "con lo scanner dell'app",
+    manuale: 'aggiunta a mano',
   };
 
   /** Voci "etichetta: valore" leggibili, anche per oggetti annidati. */

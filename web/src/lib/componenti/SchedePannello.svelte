@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Schede del pannello admin: Richieste, Edizioni e Gestione pagamenti (D-054).
+  // Schede del pannello admin: Richieste, Edizioni, Presenze e Gestione pagamenti (D-054, D-070).
   // Le pagine restano separate: ogni scheda è un link vero, così funzionano anche senza script.
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
@@ -14,6 +14,12 @@
     aria-current={page.url.pathname.startsWith('/admin/edizioni') ? 'page' : undefined}
   >
     Edizioni
+  </a>
+  <a
+    href={resolve('/admin/presenze')}
+    aria-current={page.url.pathname.startsWith('/admin/presenze') ? 'page' : undefined}
+  >
+    Presenze
   </a>
   <a
     href={resolve('/admin/pagamenti')}

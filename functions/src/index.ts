@@ -8,3 +8,10 @@ export {
 } from './approvazione.js';
 export { esportaMieiDati, eliminaMioAccount, puliziaPeriodica } from './privacy.js';
 export { generaCodiceCheckin, registraPresenza, registraOspite } from './checkin.js';
+export {
+  creaSegnaposto,
+  rinominaSegnaposto,
+  cancellaSegnaposto,
+  aggiungiPresenza,
+  collegaSegnaposto,
+} from './presenze.js';

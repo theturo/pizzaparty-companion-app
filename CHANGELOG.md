@@ -3,6 +3,14 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.20.0 — 2026-11-17
+
+- Nel pannello c'è la pagina «Presenze»: la panoramica di ogni edizione (presenti, con account, senza account, nuove leve), la classifica dei fedelissimi e la lista delle persone senza account.
+- Le persone senza account si aggiungono, si rinominano, si eliminano e si collegano a un account: collegandole, le loro presenze passano all'account con data e modalità originali.
+- Dalla sezione del check-in di un'edizione si aggiunge a mano la presenza di chiunque, con o senza account. Le presenze aggiunte a mano si dicono tali nei tuoi dati.
+- Nel profilo, la sezione «Le tue presenze» dice a quali feste hai partecipato.
+- L'informativa privacy spiega che le presenze delle edizioni passate possono venire dagli archivi delle iscrizioni, con il solo nome.
+
 ## 0.19.0 — 2026-11-16
 
 - Chi non ha un account può registrare la presenza alla festa: dalla pagina del QR sceglie «Entra come ospite», scrive il suo nome e la presenza si registra. Se c'è già un ospite con lo stesso nome, la pagina lo segnala, senza bloccare.
