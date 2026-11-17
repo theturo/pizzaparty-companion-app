@@ -208,6 +208,13 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---- Presenze di tutte le edizioni (D-072): la query del profilo e quella del pannello usano
+    // il collection group. Ognuno legge solo le proprie (l'admin tutte); nessuno le scrive qui. ----
+    match /{percorso=**}/presenze/{id} {
+      allow read: if admin() || (connesso() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+
     // ---- Tutto il resto: chiuso ----
     match /{documento=**} {
       allow read, write: if false;

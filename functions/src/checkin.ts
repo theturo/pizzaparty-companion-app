@@ -171,8 +171,8 @@ export const generaCodiceCheckin = onCall(CHIAMABILE, async (richiesta) => {
   return { codice };
 });
 
-/** Da dove è arrivata la presenza: con il link della pagina o con lo scanner dell'app (D-064). */
-export type ViaPresenza = 'link' | 'scanner';
+/** Da dove è arrivata la presenza: con il link della pagina, con lo scanner dell'app (D-064) o a mano dal pannello (D-070). */
+export type ViaPresenza = 'link' | 'scanner' | 'manuale';
 
 /** Qualunque valore diverso da 'scanner' vale 'link'. */
 export function viaDi(valore: unknown): ViaPresenza {
