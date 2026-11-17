@@ -215,7 +215,7 @@
       await cancellaSegnaposto(persona.id);
       daEliminare = null;
       if (azione?.id === persona.id) azione = null;
-      return `${persona.nome} è stato eliminato.`;
+      return `Eliminato: ${persona.nome}.`;
     });
   }
 
@@ -228,8 +228,8 @@
       daCollegare = null;
       azione = null;
       return esito.giaPresenti > 0
-        ? `Collegato. Ho tenuto le presenze già presenti sull'account in ${esito.giaPresenti} edizioni.`
-        : 'Collegato.';
+        ? `Collegamento fatto. Edizioni in cui l'account era già presente: ${esito.giaPresenti}.`
+        : 'Collegamento fatto.';
     });
   }
 
