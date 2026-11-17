@@ -59,7 +59,8 @@ export async function avviaSessione(): Promise<void> {
   onAuthStateChanged(auth, (utente) => {
     smettiProfilo?.();
     smettiProfilo = null;
-    if (!utente) {
+    // Un utente anonimo è un ospite del check-in (D-065): non è connesso, non ha profilo né permessi.
+    if (!utente || utente.isAnonymous) {
       Object.assign(sessione, {
         stato: 'ospite',
         utente: null,

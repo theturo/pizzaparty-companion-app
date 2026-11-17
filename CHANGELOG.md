@@ -3,6 +3,13 @@
 Le versioni dell'app, dalla più recente. Ogni PR alza il numero e aggiunge qui le sue novità:
 `0.x.0` per una funzione nuova, `0.x.y` per una correzione. La 1.0 arriverà con l'edizione di primavera 2027.
 
+## 0.19.0 — 2026-11-16
+
+- Chi non ha un account può registrare la presenza alla festa: dalla pagina del QR sceglie «Entra come ospite», scrive il suo nome e la presenza si registra. Se c'è già un ospite con lo stesso nome, la pagina lo segnala, senza bloccare.
+- Gli ospiti entrano senza email, con un accesso anonimo che non dà accesso a nulla dell'app: nessun profilo, nessun trofeo. Se poi si registrano, il loro accesso passa all'account.
+- Nel pannello, tra i presenti, gli ospiti hanno l'etichetta «ospite» e si annullano come gli altri.
+- L'informativa privacy spiega come trattiamo il nome degli ospiti e l'identificativo anonimo. Versione dei testi 2026-12.
+
 ## 0.18.0 — 2026-11-15
 
 - Il check-in si fa anche dentro l'app: nella Home, nella scheda "Sei arrivato alla festa?", il pulsante «Scansiona il QR» apre la fotocamera a schermo intero. Inquadrato il QR all'ingresso, la presenza si registra e la scheda dice "Sei dentro!". Serve il permesso per la fotocamera.

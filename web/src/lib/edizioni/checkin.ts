@@ -108,6 +108,15 @@ export function codiceDaQr(testo: string, origineCorrente?: string): string | nu
   return CODICE_CHECKIN.test(codice) ? codice : null;
 }
 
+/**
+ * Il nome dell'ospite (D-067), controllato anche nel browser prima della chiamata: da 2 a 40
+ * caratteri, spazi ai bordi e doppi ridotti come sul server. Restituisce il messaggio da mostrare, o `null`.
+ */
+export function erroreNomeOspite(nome: string): string | null {
+  const pulito = nome.trim().replace(/\s+/g, ' ');
+  return pulito.length >= 2 && pulito.length <= 40 ? null : 'Scrivi un nome tra 2 e 40 caratteri.';
+}
+
 /** Il messaggio per la persona quando il check-in fallisce: quello del server, se è già leggibile. */
 const ERRORI_LEGGIBILI = [
   'functions/unauthenticated',

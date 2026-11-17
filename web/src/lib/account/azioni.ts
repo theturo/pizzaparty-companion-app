@@ -146,6 +146,23 @@ export const registraPresenza = (codice: string, via: 'link' | 'scanner' = 'link
     registrata: string;
   }>('registraPresenza', { codice, via });
 
+/** Entra come ospite (D-065): accesso anonimo di Firebase, se non c'è già. Niente email. */
+export async function entraComeOspite(): Promise<void> {
+  const { auth } = firebase();
+  if (auth.currentUser?.isAnonymous) return;
+  const { signInAnonymously } = await import('firebase/auth');
+  await signInAnonymously(auth);
+}
+
+/** L'ospite registra la presenza con il nome (D-060, D-067). Il nome è già controllato nel browser. */
+export const registraOspite = (codice: string, nome: string) =>
+  chiama<{
+    esito: 'registrata' | 'gia-presente';
+    edizione: { id: string; nome: string };
+    registrata: string;
+    nomeGiaPresente: boolean;
+  }>('registraOspite', { codice, nome, via: 'link' });
+
 // ---- Profilo e diritti (D-035) ----
 
 export async function modificaProfilo(dati: { nome: string; avatar: string }) {

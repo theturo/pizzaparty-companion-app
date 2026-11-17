@@ -144,3 +144,68 @@ test('(e) fuori dalla finestra: "Check-in non riuscito" con l’orario di apertu
     }),
   ).toBeVisible();
 });
+
+// Ospiti senza account (D-065–D-068): accesso anonimo, nome, avviso del nome doppio, pannello.
+const NOME_OSPITE = 'Luca Ospite';
+
+test('(f) senza account, "Entra come ospite": nome troppo corto, poi nome valido → "Sei dentro!"', async ({
+  browser,
+}) => {
+  const ospite = await (await browser.newContext()).newPage();
+  await ospite.goto(`/checkin?c=${codiceOggi}`);
+  await expect(
+    ospite.getByRole('heading', { level: 1, name: 'Benvenuto al PizzaParty!' }),
+  ).toBeVisible(ATTESA);
+  await ospite.getByRole('button', { name: 'Entra come ospite' }).click();
+  await expect(ospite.getByRole('heading', { level: 2, name: 'Entra come ospite' })).toBeVisible();
+
+  await ospite.getByLabel('Il tuo nome').fill('A');
+  await ospite.getByRole('button', { name: 'Registra la presenza' }).click();
+  await expect(ospite.getByRole('alert')).toHaveText('Scrivi un nome tra 2 e 40 caratteri.');
+
+  await ospite.getByLabel('Il tuo nome').fill(NOME_OSPITE);
+  await ospite.getByRole('button', { name: 'Registra la presenza' }).click();
+  await expect(ospite.getByRole('heading', { level: 1, name: 'Sei dentro!' })).toBeVisible(ATTESA);
+  await expect(
+    ospite.getByText(/Presenza registrata alle \d{2}:\d{2}\. Buona festa!/),
+  ).toBeVisible();
+  // Nessun avviso: il nome è il primo dell'edizione.
+  await expect(ospite.getByText("C'è già un ospite con questo nome")).toHaveCount(0);
+
+  // Ricaricando e ripetendo dallo stesso browser: la presenza c'è già.
+  await ospite.reload();
+  await ospite.getByRole('button', { name: 'Entra come ospite' }).click();
+  await ospite.getByLabel('Il tuo nome').fill(NOME_OSPITE);
+  await ospite.getByRole('button', { name: 'Registra la presenza' }).click();
+  await expect(ospite.getByRole('heading', { level: 1, name: 'Ci sei già!' })).toBeVisible(ATTESA);
+});
+
+test('(g) un altro ospite con lo stesso nome: "Sei dentro!" con l’avviso del nome doppio', async ({
+  browser,
+}) => {
+  const altro = await (await browser.newContext()).newPage();
+  await altro.goto(`/checkin?c=${codiceOggi}`);
+  await altro.getByRole('button', { name: 'Entra come ospite' }).click();
+  await altro.getByLabel('Il tuo nome').fill(NOME_OSPITE);
+  await altro.getByRole('button', { name: 'Registra la presenza' }).click();
+  await expect(altro.getByRole('heading', { level: 1, name: 'Sei dentro!' })).toBeVisible(ATTESA);
+  await expect(
+    altro.getByText("C'è già un ospite con questo nome: se non sei tu, dillo allo staff."),
+  ).toBeVisible();
+});
+
+test('(h) l’admin vede gli ospiti con l’etichetta "ospite" e ne annulla uno', async ({
+  browser,
+}) => {
+  const admin = await modificaNelPannello(browser, EDIZIONE_OGGI.nome);
+  await expect(admin.getByRole('heading', { level: 3, name: 'Presenti: 2' })).toBeVisible(ATTESA);
+  await expect(admin.getByText('ospite', { exact: true })).toHaveCount(2);
+  await expect(admin.getByText(NOME_OSPITE)).toHaveCount(2);
+
+  await admin.getByRole('button', { name: 'Annulla la presenza' }).first().click();
+  const dialogo = admin.getByRole('dialog');
+  await expect(dialogo).toContainText(`Annullare la presenza di ${NOME_OSPITE}?`);
+  await expect(dialogo).toContainText("Il nome dell'ospite si cancella insieme alla presenza.");
+  await dialogo.getByRole('button', { name: 'Annulla la presenza' }).click();
+  await expect(admin.getByRole('heading', { level: 3, name: 'Presenti: 1' })).toBeVisible(ATTESA);
+});

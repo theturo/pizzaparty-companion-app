@@ -9,4 +9,4 @@ export const CONTATTO_PRIVACY = 'privacy@pizza-party.net';
 export const CONTATTO_AIUTO = 'aiuto@pizza-party.net';
 export const VERSIONE = VERSIONE_DOCUMENTI;
 /** Data di entrata in vigore della versione attuale dei testi. */
-export const DATA_VERSIONE = '15 novembre 2026';
+export const DATA_VERSIONE = '16 novembre 2026';

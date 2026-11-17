@@ -19,6 +19,9 @@ const {
   oraRoma,
   istanteRoma,
   viaDi,
+  controllaOspite,
+  nomeOspite,
+  normalizzaNome,
 } = await import('./checkin.js');
 
 const errore = (f: () => unknown) => {
@@ -180,5 +183,53 @@ describe('da dove arriva la presenza (D-064)', () => {
     expect(viaDi('Scanner')).toBe('link');
     expect(viaDi('qualcosa')).toBe('link');
     expect(viaDi(1)).toBe('link');
+  });
+});
+
+describe('chi entra come ospite (D-065)', () => {
+  const anonimo = { uid: 'ospite1', token: { firebase: { sign_in_provider: 'anonymous' } } };
+  const conPassword = { uid: 'giulia', token: { firebase: { sign_in_provider: 'password' } } };
+
+  it('senza accesso: "Entra come ospite per registrare la presenza."', () => {
+    const e = errore(() => controllaOspite(null));
+    expect(e.code).toBe('unauthenticated');
+    expect(e.message).toBe('Entra come ospite per registrare la presenza.');
+  });
+
+  it("con l'accesso anonimo passa e restituisce l'uid", () => {
+    expect(controllaOspite(anonimo)).toBe('ospite1');
+  });
+
+  it('chi ha un account (o un token senza fornitore) deve usare Accedi', () => {
+    const e = errore(() => controllaOspite(conPassword));
+    expect(e.code).toBe('failed-precondition');
+    expect(e.message).toBe('Hai già un account: usa Accedi.');
+    expect(errore(() => controllaOspite({ uid: 'x', token: {} })).code).toBe('failed-precondition');
+  });
+});
+
+describe('nome dell’ospite (D-067)', () => {
+  it('toglie gli spazi ai bordi e riduce quelli in mezzo a uno', () => {
+    expect(nomeOspite('  Anna   Maria  ')).toBe('Anna Maria');
+    expect(nomeOspite('Gigi\t\tRossi')).toBe('Gigi Rossi');
+  });
+
+  it('accetta da 2 a 40 caratteri, estremi inclusi', () => {
+    expect(nomeOspite('Al')).toBe('Al');
+    expect(nomeOspite('a'.repeat(40))).toBe('a'.repeat(40));
+  });
+
+  it('rifiuta un nome corto, lungo o non testuale, con il messaggio per la persona', () => {
+    for (const valore of ['', ' a ', 'a'.repeat(41), undefined, 42, null]) {
+      const e = errore(() => nomeOspite(valore));
+      expect(e.code).toBe('invalid-argument');
+      expect(e.message).toBe('Scrivi un nome tra 2 e 40 caratteri.');
+    }
+  });
+
+  it('il confronto ignora maiuscole, accenti e spazi doppi', () => {
+    expect(normalizzaNome('  Èlena   Ferrò ')).toBe('elena ferro');
+    expect(normalizzaNome('ELENA FERRO')).toBe('elena ferro');
+    expect(normalizzaNome('Gigi Rossi')).not.toBe(normalizzaNome('Gigi Rosso'));
   });
 });

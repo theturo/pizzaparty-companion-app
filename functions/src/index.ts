@@ -7,4 +7,4 @@ export {
   aggiornaProfiloPubblico,
 } from './approvazione.js';
 export { esportaMieiDati, eliminaMioAccount, puliziaPeriodica } from './privacy.js';
-export { generaCodiceCheckin, registraPresenza } from './checkin.js';
+export { generaCodiceCheckin, registraPresenza, registraOspite } from './checkin.js';
